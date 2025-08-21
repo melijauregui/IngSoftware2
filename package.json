@@ -1,0 +1,29 @@
+{
+  "name": "ingsoft2-project",
+  "version": "1.0.0",
+  "description": "Proyecto de Ingeniería de Software 2",
+  "main": "dist/server/index.js",
+  "scripts": {
+    "start": "node dist/server/index.js",
+    "dev": "tsx server/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "docker:build": "docker build -t ingsoft2-app .",
+    "docker:run": "docker run -p 3000:3000 ingsoft2-app"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.8.2",
+    "@hono/zod-openapi": "^0.9.6",
+    "dotenv": "^16.4.5",
+    "hono": "^4.0.5",
+    "mysql2": "^3.9.7",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

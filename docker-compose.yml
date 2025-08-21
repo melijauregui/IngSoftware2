@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  server:
+    build: .
+    container_name: melodia-server
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - melodia-network
+    depends_on:
+      - mysql
+    volumes:
+      - ./logs:/app/logs
+
+  mysql:
+    image: mysql:8.0
+    container_name: melodia-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-cherrypick_db}
+      MYSQL_USER: ${DB_USER:-cherrypick}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+    restart: unless-stopped
+    ports:
+      - "${DATABASE_PORT}:3306"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    networks:
+      - melodia-network
+
+networks:
+  melodia-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
