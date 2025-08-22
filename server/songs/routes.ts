@@ -1,10 +1,11 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import {
+  AllSongsResponseSchema,
   CreateSongRequestSchema,
   CreateSongResponseSchema,
 } from "../../schemas/songs";
 import { ErrorResponseSchema } from "../../schemas/error";
-import { createSong } from "./functions";
+import { createSong, getAllSongs } from "./functions";
 import { Context } from "hono";
 import { handlerError } from "../app";
 import logger from "../logger";
@@ -24,7 +25,7 @@ songsApp.onError((err: Error, c: Context) => {
   return handlerError(err, c);
 });
 
-// Create song endpoint
+// post song endpoint
 const createSongRoute = createRoute({
   method: "post",
   path: "/",
@@ -74,3 +75,48 @@ songsApp.openapi(createSongRoute, async (c) => {
 });
 
 export default songsApp;
+
+// get:
+// summary: Retrieve all songs
+// responses:
+//   '200':
+//     description: A list of songs
+//     content:
+//       application/json:
+//         schema:
+//           type: object
+//           properties:
+//             data:
+//               type: array
+//               items:
+//                 $ref: '#/components/schemas/Song'
+
+// get all songs endpoint
+const getAllSongsRoute = createRoute({
+  method: "get",
+  path: "/",
+  responses: {
+    201: {
+      content: {
+        "application/json": {
+          schema: AllSongsResponseSchema,
+        },
+      },
+      description: "Song created successfully",
+    },
+    500: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Internal server error",
+    },
+  },
+});
+
+songsApp.openapi(getAllSongsRoute, async (c) => {
+  logger.http(`GET /songs - Getting all songs`);
+  const response = await getAllSongs();
+  return c.json(response, 201);
+});

@@ -12,6 +12,10 @@ El repositorio debe incluir un archivo README.md (en español) con:
 + Comandos para correr la imagen del servicio.
 + Fecha máxima de entrega: 28-08-2025
 
-
-curl -X POST http://localhost:3000/songs -H "Content-Type: application/json" -d '{"title": "", "artist": "Queen"}' | jq
 npx ts-node server/index.ts
+
+/songs
+curl -X POST http://localhost:3000/songs -H "Content-Type: application/json" -d '{"title": "I Want To Break Free", "artist": "Queen"}' | jq
+curl -X GET http://localhost:3000/songs
+
+

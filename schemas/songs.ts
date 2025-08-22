@@ -59,3 +59,14 @@ export const CreateSongResponseSchema = z.object({
 export type CreateSongResponseSchemaType = z.infer<
   typeof CreateSongResponseSchema
 >;
+
+// AllSongsResponse:
+// data:
+//    type: array
+//    items:
+//      $ref: '#/components/schemas/Song'
+export const AllSongsResponseSchema = z.object({
+  data: z.array(SongSchema),
+});
+
+export type AllSongsResponseSchemaType = z.infer<typeof AllSongsResponseSchema>;
