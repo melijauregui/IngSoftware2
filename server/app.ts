@@ -2,6 +2,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import songsApp from "./songs/routes";
 import { Context } from "hono";
 import { ZodError } from "zod";
+import logger from "./logger";
 
 const app = new OpenAPIHono();
 
@@ -22,6 +23,7 @@ export function handlerError(err: Error, c: Context) {
       instance: c.req.path,
     };
 
+    logger.warn(`Validation error on ${c.req.path}: ${errorResponse.detail}`);
     return c.json(errorResponse, 400);
   }
 
@@ -37,6 +39,7 @@ export function handlerError(err: Error, c: Context) {
       instance: c.req.path,
     };
 
+    logger.error(`Database error on ${c.req.path}: ${err.message}`);
     return c.json(errorResponse, 500);
   }
 
@@ -49,5 +52,6 @@ export function handlerError(err: Error, c: Context) {
     instance: c.req.path,
   };
 
+  logger.error(`Internal server error on ${c.req.path}: ${err.message}`);
   return c.json(errorResponse, 500);
 }

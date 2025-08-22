@@ -2,10 +2,24 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const {
-  // EXPO_PUBLIC_ANDROID_CLIENT_ID,
+  PORT,
+  HOSTNAME,
+  MYSQL_ROOT_PASSWORD,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+  DATABASE_PORT,
+  DB_HOST,
 } = process.env;
 const REQUIRED_VARS = {
-  // EXPO_PUBLIC_ANDROID_CLIENT_ID,
+  PORT,
+  HOSTNAME,
+  MYSQL_ROOT_PASSWORD,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+  DATABASE_PORT,
+  DB_HOST,
 };
 
 // Check if any required variable is missing
@@ -22,5 +36,12 @@ if (missingVars.length > 0) {
 
 // Export the variables for easy use
 export const config = {
-  // PINECONE_API_KEY: process.env.PINECONE_API_KEY as string,
+  PORT,
+  HOSTNAME,
+  MYSQL_ROOT_PASSWORD,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+  DATABASE_PORT,
+  DB_HOST,
 };

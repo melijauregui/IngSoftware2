@@ -1,6 +1,7 @@
 import { CreateSongResponseSchemaType } from "../../schemas/songs";
 import { ResultSetHeader, FieldPacket } from "mysql2/promise";
 import { db } from "../db";
+import logger from "../logger";
 
 export async function createSong(
   title: string,
@@ -11,6 +12,8 @@ export async function createSong(
     "INSERT INTO songs (title, artist) VALUES (?, ?)",
     [title, artist]
   );
+
+  logger.info(`Song created: ${title} by ${artist}`);
 
   response = {
     data: {

@@ -1,11 +1,13 @@
 import "../config";
 import { serve } from "@hono/node-server";
 import app from "./app";
+import logger from "./logger";
+import { config } from "../config";
 
 serve({
   fetch: app.fetch,
-  port: 3000,
-  hostname: "0.0.0.0",
+  port: Number(config.PORT),
+  hostname: config.HOSTNAME,
 });
 
-console.log("Server running on http://localhost:3000");
+logger.info(`Server running on http://${config.HOSTNAME}:${config.PORT}`);

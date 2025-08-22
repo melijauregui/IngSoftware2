@@ -7,6 +7,7 @@ import { ErrorResponseSchema } from "../../schemas/error";
 import { createSong } from "./functions";
 import { Context } from "hono";
 import { handlerError } from "../app";
+import logger from "../logger";
 
 const songsApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -66,6 +67,7 @@ const createSongRoute = createRoute({
 });
 
 songsApp.openapi(createSongRoute, async (c) => {
+  logger.http(`POST /songs - Creating new song`);
   const { title, artist } = c.req.valid("json");
   const response = await createSong(title, artist);
   return c.json(response, 201);

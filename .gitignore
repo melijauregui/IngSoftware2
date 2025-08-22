@@ -51,3 +51,6 @@ database/fashionclipFinetuned/__pycache__/**
 database/cached_images/**
 
 .venv-mp/
+logs/
+.gitignore
+.gitignore
