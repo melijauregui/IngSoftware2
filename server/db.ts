@@ -11,12 +11,15 @@ export const db = mysql.createPool({
   database: config.DB_NAME,
 });
 
-// Test database connection
-db.getConnection()
-  .then((connection) => {
-    logger.info("Database connection established successfully");
-    connection.release();
-  })
-  .catch((error) => {
-    logger.error(`Database connection failed: ${error.message}`);
-  });
+// Only test database connection if not in test mode
+if (process.env.NODE_ENV !== "test") {
+  // Test database connection
+  db.getConnection()
+    .then((connection) => {
+      logger.info("Database connection established successfully");
+      connection.release();
+    })
+    .catch((error) => {
+      logger.error(`Database connection failed: ${error.message}`);
+    });
+}
