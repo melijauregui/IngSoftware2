@@ -21,7 +21,9 @@ export async function getSongById(id: number): Promise<SongSchemaType> {
   const song = result[0];
   const { success, data, error } = SongSchema.safeParse(song);
   if (!success) {
-    logger.error(`Invalid song data: ${JSON.stringify(error)}`);
+    logger.error(
+      `Invalid song data for song id ${id}: ${JSON.stringify(error)}`
+    );
     throw createNotFoundError("Song", id, `/songs/${id}`);
   }
   logger.info(`Song found: ${JSON.stringify(data)}`);

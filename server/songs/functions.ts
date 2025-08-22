@@ -41,7 +41,11 @@ export async function getAllSongs(): Promise<SongsResponseSchemaType> {
     .map((row) => {
       const { success, data, error } = SongSchema.safeParse(row);
       if (!success) {
-        logger.error(`Invalid song data: ${JSON.stringify(error)}`);
+        logger.error(
+          `Invalid song data for song ${JSON.stringify(row)}: ${JSON.stringify(
+            error
+          )}`
+        );
         return null;
       }
       return data;
