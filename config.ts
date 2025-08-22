@@ -10,6 +10,7 @@ const {
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
+  ENVIRONMENT,
 } = process.env;
 const REQUIRED_VARS = {
   PORT,
@@ -20,6 +21,7 @@ const REQUIRED_VARS = {
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
+  ENVIRONMENT,
 };
 
 // Check if any required variable is missing
@@ -44,4 +46,5 @@ export const config = {
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
+  ENVIRONMENT: ENVIRONMENT || "development",
 };
