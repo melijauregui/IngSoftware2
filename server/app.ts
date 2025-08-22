@@ -3,10 +3,13 @@ import songsApp from "./songs/routes";
 import { Context } from "hono";
 import { ZodError } from "zod";
 import logger from "./logger";
+import { NotFoundError } from "../schemas/error";
+import songsIdApp from "./songs-id/routes";
 
 const app = new OpenAPIHono();
 
 // Mount songs routes
+app.route("/songs/:id", songsIdApp);
 app.route("/songs", songsApp);
 
 export default app;
@@ -25,6 +28,20 @@ export function handlerError(err: Error, c: Context) {
 
     logger.warn(`Validation error on ${c.req.path}: ${errorResponse.detail}`);
     return c.json(errorResponse, 400);
+  }
+
+  // Handle 404 Not Found errors
+  if (err instanceof NotFoundError) {
+    const errorResponse = {
+      type: err.type,
+      title: err.title,
+      status: err.status,
+      detail: err.message,
+      instance: err.instance,
+    };
+
+    logger.warn(`Not found error on ${c.req.path}: ${err.message}`);
+    return c.json(errorResponse, 404);
   }
 
   // Handle database errors

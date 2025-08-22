@@ -25,6 +25,33 @@ songsApp.onError((err: Error, c: Context) => {
   return handlerError(err, c);
 });
 
+export default songsApp;
+
+// post:
+// summary: Create a new song
+// requestBody:
+//   required: true
+//   content:
+//     application/json:
+//       schema:
+//         $ref: '#/components/schemas/CreateSongRequest'
+// responses:
+//   '201':
+//     description: Song created successfully
+//     content:
+//       application/json:
+//         schema:
+//           type: object
+//           properties:
+//             data:
+//               $ref: '#/components/schemas/Song'
+//   '400':
+//     description: Bad request error
+//     content:
+//       application/json:
+//         schema:
+//           $ref: '#/components/schemas/ErrorResponse'
+
 // post song endpoint
 const createSongRoute = createRoute({
   method: "post",
@@ -74,8 +101,6 @@ songsApp.openapi(createSongRoute, async (c) => {
   return c.json(response, 201);
 });
 
-export default songsApp;
-
 // get:
 // summary: Retrieve all songs
 // responses:
@@ -96,13 +121,13 @@ const getAllSongsRoute = createRoute({
   method: "get",
   path: "/",
   responses: {
-    201: {
+    200: {
       content: {
         "application/json": {
           schema: AllSongsResponseSchema,
         },
       },
-      description: "Song created successfully",
+      description: "A list of songs",
     },
     500: {
       content: {
@@ -118,5 +143,5 @@ const getAllSongsRoute = createRoute({
 songsApp.openapi(getAllSongsRoute, async (c) => {
   logger.http(`GET /songs - Getting all songs`);
   const response = await getAllSongs();
-  return c.json(response, 201);
+  return c.json({ data: response }, 200);
 });

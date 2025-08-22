@@ -3,6 +3,7 @@ import {
   CreateSongResponseSchemaType,
   SongSchema,
   SongSchemaType,
+  SongsResponseSchemaType,
 } from "../../schemas/songs";
 import { ResultSetHeader, FieldPacket } from "mysql2/promise";
 import { db } from "../db";
@@ -31,7 +32,7 @@ export async function createSong(
   return response;
 }
 
-export async function getAllSongs(): Promise<AllSongsResponseSchemaType> {
+export async function getAllSongs(): Promise<SongsResponseSchemaType> {
   const [result]: [ResultSetHeader[], FieldPacket[]] = await db.query(
     "SELECT * FROM songs"
   );
@@ -40,11 +41,12 @@ export async function getAllSongs(): Promise<AllSongsResponseSchemaType> {
     .map((row) => {
       const { success, data, error } = SongSchema.safeParse(row);
       if (!success) {
-        throw new Error(`Invalid song data: ${JSON.stringify(error)}`);
+        logger.error(`Invalid song data: ${JSON.stringify(error)}`);
+        return null;
       }
       return data;
     })
     .filter((song) => song !== null);
   logger.info(`Songs found: ${JSON.stringify(songs)}`);
-  return { data: songs };
+  return songs;
 }

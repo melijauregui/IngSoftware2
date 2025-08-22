@@ -39,7 +39,7 @@ export type CreateSongRequestSchemaType = z.infer<
 //     type: string
 
 export const SongSchema = z.object({
-  id: z.number().int(),
+  id: z.number().int().positive(),
   title: z.string(),
   artist: z.string(),
 });
@@ -60,13 +60,17 @@ export type CreateSongResponseSchemaType = z.infer<
   typeof CreateSongResponseSchema
 >;
 
+export const SongsResponseSchema = z.array(SongSchema);
+
+export type SongsResponseSchemaType = z.infer<typeof SongsResponseSchema>;
+
 // AllSongsResponse:
 // data:
 //    type: array
 //    items:
 //      $ref: '#/components/schemas/Song'
 export const AllSongsResponseSchema = z.object({
-  data: z.array(SongSchema),
+  data: SongsResponseSchema,
 });
 
 export type AllSongsResponseSchemaType = z.infer<typeof AllSongsResponseSchema>;

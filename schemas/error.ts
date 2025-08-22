@@ -22,3 +22,29 @@ export const ErrorResponseSchema = z.object({
 });
 
 export type ErrorResponseSchemaType = z.infer<typeof ErrorResponseSchema>;
+
+// Custom error class for 404 Not Found errors
+export class NotFoundError extends Error {
+  public status: number;
+  public type: string;
+  public title: string;
+  public instance: string;
+
+  constructor(message: string, instance: string) {
+    super(message);
+    this.name = "NotFoundError";
+    this.status = 404;
+    this.type = "about:blank";
+    this.title = "Not Found";
+    this.instance = instance;
+  }
+}
+
+// Helper function to create NotFoundError instances
+export function createNotFoundError(
+  resource: string,
+  id: string | number,
+  path: string
+): NotFoundError {
+  return new NotFoundError(`${resource} not found with id: ${id}`, path);
+}

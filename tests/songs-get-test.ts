@@ -28,7 +28,7 @@ describe("GET /songs", () => {
     vi.restoreAllMocks();
   });
 
-  describe("Case 1: Success - Retrieve all songs successfully (201)", () => {
+  describe("Case 1: Success - Retrieve all songs successfully (200)", () => {
     it("should return all songs when database has songs", async () => {
       // Arrange
       const mockSongs = [
@@ -57,7 +57,7 @@ describe("GET /songs", () => {
       });
 
       // Assert
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         data: [
@@ -92,7 +92,7 @@ describe("GET /songs", () => {
       });
 
       // Assert
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         data: [],
@@ -118,7 +118,7 @@ describe("GET /songs", () => {
       });
 
       // Assert
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         data: [
@@ -207,15 +207,17 @@ describe("GET /songs", () => {
       });
 
       // Assert
-      // This should fail because the second song doesn't match the schema
-      expect(response.status).toBe(500);
+      // Should return 200 with only valid songs, invalid ones are filtered out
+      expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Internal Server Error",
-        status: 500,
-        detail: expect.stringContaining("artist"),
-        instance: "/songs",
+        data: [
+          {
+            id: 1,
+            title: "Bohemian Rhapsody",
+            artist: "Queen",
+          },
+        ],
       });
       expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
     });
@@ -238,14 +240,11 @@ describe("GET /songs", () => {
       });
 
       // Assert
-      expect(response.status).toBe(500);
+      // Should return 200 with empty data array since all songs are invalid
+      expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Internal Server Error",
-        status: 500,
-        detail: expect.stringContaining("Expected number"),
-        instance: "/songs",
+        data: [],
       });
       expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
     });
