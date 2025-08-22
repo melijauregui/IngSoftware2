@@ -262,41 +262,41 @@ describe("POST /songs", () => {
     });
   });
 
-  // describe("Additional validation cases", () => {
-  //   it("should handle special characters correctly", async () => {
-  //     // Arrange
-  //     const songData = {
-  //       title: "¿Qué tal?",
-  //       artist: "Artista & Co.",
-  //     };
+  describe("Additional validation cases", () => {
+    it("should handle special characters correctly", async () => {
+      // Arrange
+      const songData = {
+        title: "¿Qué tal?",
+        artist: "Artista & Co.",
+      };
 
-  //     const mockResult = {
-  //       insertId: 3,
-  //       affectedRows: 1,
-  //       changedRows: 0,
-  //     };
+      const mockResult = {
+        insertId: 3,
+        affectedRows: 1,
+        changedRows: 0,
+      };
 
-  //     mockQuery.mockResolvedValueOnce([mockResult, []]);
+      mockQuery.mockResolvedValueOnce([mockResult, []]);
 
-  //     // Act
-  //     const response = await app.request("/songs", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(songData),
-  //     });
+      // Act
+      const response = await app.request("/songs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(songData),
+      });
 
-  //     // Assert
-  //     expect(response.status).toBe(201);
-  //     const responseBody = await response.json();
-  //     expect(responseBody).toEqual({
-  //       data: {
-  //         id: 3,
-  //         title: "¿Qué tal?",
-  //         artist: "Artista & Co.",
-  //       },
-  //     });
-  //   });
-  // });
+      // Assert
+      expect(response.status).toBe(201);
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        data: {
+          id: 3,
+          title: "¿Qué tal?",
+          artist: "Artista & Co.",
+        },
+      });
+    });
+  });
 });
