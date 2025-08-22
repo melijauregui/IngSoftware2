@@ -6,7 +6,7 @@ El repositorio debe incluir un archivo README.md (en español) con:
 + Una introducción con no más de un párrafo pequeño y conciso sobre la solución planteada.
 + Una sección sobre qué fue lo más desafiante del proyecto.
 + Un apartado de pre-requisitos listando lo necesario para levantar el entorno de desarrollo, especificando los lenguajes y versiones de los manejadores de paquetes necesarios.
-+ Link al “user-guide” de la libreria que se uso para testear, o en su defecto link al repo. e.g: Junit, gin-gonic
++ Link al "user-guide" de la libreria que se uso para testear, o en su defecto link al repo. e.g: Junit, gin-gonic
 + Comandos para construir la imagen de Docker.
 + Comandos para correr la base de datos.
 + Comandos para correr la imagen del servicio.
@@ -14,8 +14,132 @@ El repositorio debe incluir un archivo README.md (en español) con:
 
 npx ts-node server/index.ts
 
-/songs
-curl -X POST http://localhost:3000/songs -H "Content-Type: application/json" -d '{"title": "I Want To Break Free", "artist": "Queen"}' | jq
-curl -X GET http://localhost:3000/songs
+## Endpoints y Comandos curl
+
+### 1. Crear una nueva canción (POST /songs)
+```bash
+curl -X POST http://localhost:3000/songs \
+  -H "Content-Type: application/json" \
+  -d '{"title": "I Want To Break Free", "artist": "Queen"}' | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "I Want To Break Free",
+    "artist": "Queen"
+  }
+}
+```
+
+### 2. Obtener todas las canciones (GET /songs)
+```bash
+curl -X GET http://localhost:3000/songs | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "I Want To Break Free",
+      "artist": "Queen"
+    }
+  ]
+}
+```
+
+### 3. Obtener una canción por ID (GET /songs/:id)
+```bash
+curl -X GET http://localhost:3000/songs/1 | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "I Want To Break Free",
+    "artist": "Queen"
+  }
+}
+```
+
+### 4. Actualizar una canción por ID (PUT /songs/:id)
+```bash
+# Actualizar título y artista
+curl -X PUT http://localhost:3000/songs/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Bohemian Rhapsody", "artist": "Queen 1975"}' | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Bohemian Rhapsody",
+    "artist": "Queen 1975"
+  }
+}
+```
+
+```bash
+# Actualizar solo el título
+curl -X PUT http://localhost:3000/songs/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Another One Bites The Dust"}' | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Another One Bites The Dust",
+    "artist": "Queen 1975"
+  }
+}
+```
+
+```bash
+# Actualizar solo el artista
+curl -X PUT http://localhost:3000/songs/1 \
+  -H "Content-Type: application/json" \
+  -d '{"artist": "Queen & David Bowie"}' | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Another One Bites The Dust",
+    "artist": "Queen & David Bowie"
+  }
+}
+```
+
+### 5. Eliminar una canción por ID (DELETE /songs/:id)
+```bash
+curl -X DELETE http://localhost:3000/songs/1
+```
+
+**Respuesta esperada:**
+```
+(No content - Status 204)
+```
+
+
+### Notas importantes:
+- Todos los endpoints devuelven JSON
+- El parámetro `id` debe ser un número entero positivo
+- Para las actualizaciones (PUT), al menos uno de los campos (`title` o `artist`) debe ser proporcionado
+- Los campos `title` y `artist` tienen un límite máximo de 50 caracteres
+- El comando `jq` al final es opcional, pero ayuda a formatear la salida JSON de manera legible
+
 
 

@@ -5,7 +5,7 @@ import {
   SongResponseSchema,
 } from "../../schemas/songs";
 import { ErrorResponseSchema } from "../../schemas/error";
-import { getSongById, updateSongById } from "./functions";
+import { deleteSongById, getSongById, updateSongById } from "./functions";
 import { Context } from "hono";
 import { handlerError } from "../app";
 import logger from "../logger";
@@ -200,4 +200,51 @@ songsIdApp.openapi(putSongByIdRoute, async (c) => {
   const { title, artist } = c.req.valid("json");
   const response = await updateSongById(id, title, artist);
   return c.json({ data: response }, 200);
+});
+
+// delete:
+// summary: Delete a song by ID
+// parameters:
+//   - in: path
+//     name: id
+//     required: true
+//     schema:
+//       type: integer
+// responses:
+//   '204':
+//     description: Song deleted successfully
+//   '404':
+//     description: Song not found
+//     content:
+//       application/json:
+//         schema:
+//           $ref: '#/components/schemas/ErrorResponse'
+
+// delete song by id endpoint
+const deleteSongByIdRoute = createRoute({
+  method: "delete",
+  path: "/",
+  request: {
+    params: SongIdSchema,
+  },
+  responses: {
+    204: {
+      description: "Song deleted successfully",
+    },
+    404: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Song not found",
+    },
+  },
+});
+
+songsIdApp.openapi(deleteSongByIdRoute, async (c) => {
+  logger.http(`DELETE /songs/:id - Deleting song by id`);
+  const { id } = c.req.valid("param");
+  await deleteSongById(id);
+  return new Response(null, { status: 204 });
 });

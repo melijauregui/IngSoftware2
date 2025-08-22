@@ -68,3 +68,13 @@ export async function updateSongById(
   }
   return getSongById(id);
 }
+
+export async function deleteSongById(id: number): Promise<void> {
+  const [result]: [ResultSetHeader, FieldPacket[]] = await db.query(
+    "DELETE FROM songs WHERE id = ?",
+    [id]
+  );
+  if (result.affectedRows === 0) {
+    throw createNotFoundError("Song", id, `/songs/${id}`);
+  }
+}
