@@ -8,7 +8,10 @@
     "dev": "tsx server/index.ts",
     "build": "tsc -p tsconfig.json",
     "docker:build": "docker build -t ingsoft2-app .",
-    "docker:run": "docker run -p 3000:3000 ingsoft2-app"
+    "docker:run": "docker run -p 3000:3000 ingsoft2-app",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@hono/node-server": "^1.8.2",
@@ -20,8 +23,12 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
+    "@types/supertest": "^6.0.3",
+    "@vitest/ui": "^3.2.4",
+    "supertest": "^7.1.4",
     "tsx": "^4.6.2",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "vitest": "^3.2.4"
   },
   "keywords": [],
   "author": "",

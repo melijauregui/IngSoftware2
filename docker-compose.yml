@@ -1,20 +1,20 @@
 version: '3.8'
 
 services:
-  server:
-    build: .
-    container_name: melodia-server
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    restart: unless-stopped
-    networks:
-      - melodia-network
-    depends_on:
-      - mysql
-    volumes:
-      - ./logs:/app/logs
+  # server:
+  #   build: .
+  #   container_name: melodia-server
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - .env
+  #   restart: unless-stopped
+  #   networks:
+  #     - melodia-network
+  #   depends_on:
+  #     - mysql
+  #   volumes:
+  #     - ./logs:/app/logs
 
   mysql:
     image: mysql:8.0

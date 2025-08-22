@@ -12,8 +12,16 @@ import { z } from "zod";
 //           type: string
 
 export const CreateSongRequestSchema = z.object({
-  title: z.string(),
-  artist: z.string(),
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title is required")
+    .max(50, "Title is too long"),
+  artist: z
+    .string()
+    .trim()
+    .min(1, "Artist is required")
+    .max(50, "Artist is too long"),
 });
 
 export type CreateSongRequestSchemaType = z.infer<
