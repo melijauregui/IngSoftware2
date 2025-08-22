@@ -1,8 +1,8 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import {
   AllSongsResponseSchema,
-  CreateSongRequestSchema,
-  CreateSongResponseSchema,
+  SongRequestSchema,
+  SongResponseSchema,
 } from "../../schemas/songs";
 import { ErrorResponseSchema } from "../../schemas/error";
 import { createSong, getAllSongs } from "./functions";
@@ -61,7 +61,7 @@ const createSongRoute = createRoute({
       required: true,
       content: {
         "application/json": {
-          schema: CreateSongRequestSchema,
+          schema: SongRequestSchema,
         },
       },
     },
@@ -70,7 +70,7 @@ const createSongRoute = createRoute({
     201: {
       content: {
         "application/json": {
-          schema: CreateSongResponseSchema,
+          schema: SongResponseSchema,
         },
       },
       description: "Song created successfully",

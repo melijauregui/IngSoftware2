@@ -29,3 +29,42 @@ export async function getSongById(id: number): Promise<SongSchemaType> {
   logger.info(`Song found: ${JSON.stringify(data)}`);
   return data;
 }
+
+export async function updateSongById(
+  id: number,
+  title?: string,
+  artist?: string
+): Promise<SongSchemaType> {
+  // Build dynamic UPDATE query based on provided fields
+  const updateFields: string[] = [];
+  const updateValues: any[] = [];
+
+  if (title !== undefined) {
+    updateFields.push("title = ?");
+    updateValues.push(title);
+  }
+
+  if (artist !== undefined) {
+    updateFields.push("artist = ?");
+    updateValues.push(artist);
+  }
+
+  // This should never happen due to schema validation, but keeping as safety check
+  if (updateFields.length === 0) {
+    throw new Error(
+      "At least one field (title or artist) must be provided for update"
+    );
+  }
+
+  updateValues.push(id);
+  const query = `UPDATE songs SET ${updateFields.join(", ")} WHERE id = ?`;
+
+  const [result]: [ResultSetHeader, FieldPacket[]] = await db.query(
+    query,
+    updateValues
+  );
+  if (result.affectedRows === 0) {
+    throw createNotFoundError("Song", id, `/songs/${id}`);
+  }
+  return getSongById(id);
+}

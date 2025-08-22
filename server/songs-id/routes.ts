@@ -1,15 +1,15 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import {
   AllSongsResponseSchema,
-  CreateSongRequestSchema,
-  CreateSongResponseSchema,
+  SongRequestSchema,
+  SongResponseSchema,
 } from "../../schemas/songs";
 import { ErrorResponseSchema } from "../../schemas/error";
-import { getSongById } from "./functions";
+import { getSongById, updateSongById } from "./functions";
 import { Context } from "hono";
 import { handlerError } from "../app";
 import logger from "../logger";
-import { SongIdSchema } from "../../schemas/songs-id";
+import { SongIdSchema, UpdateSongRequestSchema } from "../../schemas/songs-id";
 
 const songsIdApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -65,7 +65,7 @@ const getSongByIdRoute = createRoute({
     200: {
       content: {
         "application/json": {
-          schema: CreateSongResponseSchema,
+          schema: SongResponseSchema,
         },
       },
       description: "Song retrieved successfully",
@@ -101,5 +101,103 @@ songsIdApp.openapi(getSongByIdRoute, async (c) => {
   logger.http(`GET /songs/:id - Getting song by id`);
   const { id } = c.req.valid("param");
   const response = await getSongById(id);
+  return c.json({ data: response }, 200);
+});
+
+// put:
+// summary: Update a song by ID
+// parameters:
+//   - in: path
+//     name: id
+//     required: true
+//     schema:
+//       type: integer
+// requestBody:
+//   required: true
+//   content:
+//     application/json:
+//       schema:
+//         $ref: '#/components/schemas/UpdateSongRequest'
+// responses:
+//   '200':
+//     description: Song updated successfully
+//     content:
+//       application/json:
+//         schema:
+//           type: object
+//           properties:
+//             data:
+//               $ref: '#/components/schemas/Song'
+//   '400':
+//     description: Bad request error
+//     content:
+//       application/json:
+//         schema:
+//           $ref: '#/components/schemas/ErrorResponse'
+//   '404':
+//     description: Song not found
+//     content:
+//       application/json:
+//         schema:
+//           $ref: '#/components/schemas/ErrorResponse'
+
+// put song by id endpoint
+const putSongByIdRoute = createRoute({
+  method: "put",
+  path: "/",
+  request: {
+    required: true,
+    params: SongIdSchema,
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: UpdateSongRequestSchema,
+        },
+      },
+    },
+  },
+
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: SongResponseSchema,
+        },
+      },
+      description: "Song updated successfully",
+    },
+    400: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Bad request error",
+    },
+    404: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Song not found",
+    },
+    500: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Internal server error",
+    },
+  },
+});
+
+songsIdApp.openapi(putSongByIdRoute, async (c) => {
+  logger.http(`PUT /songs/:id - Updating song by id`);
+  const { id } = c.req.valid("param");
+  const { title, artist } = c.req.valid("json");
+  const response = await updateSongById(id, title, artist);
   return c.json({ data: response }, 200);
 });

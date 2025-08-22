@@ -11,7 +11,7 @@ import { z } from "zod";
 //         artist:
 //           type: string
 
-export const CreateSongRequestSchema = z.object({
+export const SongRequestSchema = z.object({
   title: z
     .string()
     .trim()
@@ -24,9 +24,7 @@ export const CreateSongRequestSchema = z.object({
     .max(50, "Artist is too long"),
 });
 
-export type CreateSongRequestSchemaType = z.infer<
-  typeof CreateSongRequestSchema
->;
+export type CreateSongRequestSchemaType = z.infer<typeof SongRequestSchema>;
 
 // Song:
 // type: object
@@ -40,8 +38,7 @@ export type CreateSongRequestSchemaType = z.infer<
 
 export const SongSchema = z.object({
   id: z.number().int().positive(),
-  title: z.string(),
-  artist: z.string(),
+  ...SongRequestSchema.shape,
 });
 
 export type SongSchemaType = z.infer<typeof SongSchema>;
@@ -52,13 +49,11 @@ export type SongSchemaType = z.infer<typeof SongSchema>;
 //   data:
 //     $ref: '#/components/schemas/Song'
 
-export const CreateSongResponseSchema = z.object({
+export const SongResponseSchema = z.object({
   data: SongSchema,
 });
 
-export type CreateSongResponseSchemaType = z.infer<
-  typeof CreateSongResponseSchema
->;
+export type CreateSongResponseSchemaType = z.infer<typeof SongResponseSchema>;
 
 export const SongsResponseSchema = z.array(SongSchema);
 
