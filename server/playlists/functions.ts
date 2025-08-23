@@ -5,9 +5,9 @@ import { createNotFoundError } from "../../schemas/error";
 import {
   PlaylistDataSchema,
   PlaylistDataSchemaType,
-  PlaylistSchema,
   PlaylistSchemaType,
   PlaylistSongSchema,
+  PlaylistSongsSchemaType,
 } from "../../schemas/playlists";
 
 export async function createPlaylist(
@@ -62,14 +62,20 @@ export async function getPlaylistDataById(
 export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {
   let response: PlaylistSchemaType;
   const dataPlaylist = await getPlaylistDataById(id);
+  const songsResult = await getPlaylistSongsById(id);
+  response = { ...dataPlaylist, ...songsResult };
+  return response;
+}
 
+export async function getPlaylistSongsById(
+  id: number
+): Promise<PlaylistSongsSchemaType> {
   const [songs]: [any[], FieldPacket[]] = await db.query(
     "SELECT * FROM playlist_songs WHERE playlist_id = ?",
     [id]
   );
   if (songs.length === 0) {
-    response = { ...dataPlaylist, songs: [] };
-    return response;
+    return { songs: [] };
   }
 
   const songsResult = songs
@@ -95,6 +101,41 @@ export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {
   logger.info(
     `Songs found for playlist id ${id}: ${JSON.stringify(songsResult)}`
   );
-  response = { ...dataPlaylist, songs: songsResult };
-  return response;
+  return { songs: songsResult };
+}
+
+export async function getPlaylists(): Promise<PlaylistSchemaType[]> {
+  let response: PlaylistSchemaType[];
+  const [playlists]: [any[], FieldPacket[]] = await db.query(
+    "SELECT * FROM playlists ORDER BY published_at DESC"
+  );
+  const playlistsData = playlists
+    .map((playlist) => {
+      const playlistData = {
+        id: playlist.id,
+        name: playlist.name,
+        description: playlist.description,
+        isPublished: Boolean(playlist.is_published),
+        publishedAt: playlist.published_at.toISOString(),
+      };
+      const { success, data, error } =
+        PlaylistDataSchema.safeParse(playlistData);
+      if (!success) {
+        logger.error(
+          `Invalid playlist data for playlist id ${
+            playlist.id
+          }: ${JSON.stringify(error)}`
+        );
+        return null;
+      }
+      return data;
+    })
+    .filter((playlist) => playlist !== null);
+
+  const playlistsWithSongs = playlistsData.map(async (playlist) => {
+    const songsResult = await getPlaylistSongsById(playlist.id);
+    return { ...playlist, ...songsResult };
+  });
+
+  return await Promise.all(playlistsWithSongs);
 }

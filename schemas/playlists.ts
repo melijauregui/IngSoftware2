@@ -70,6 +70,14 @@ export const PlaylistDataSchema = z.object({
 
 export type PlaylistDataSchemaType = z.infer<typeof PlaylistDataSchema>;
 
+export const PlaylistSongsSchema = z.object({
+  songs: z
+    .array(PlaylistSongSchema)
+    .describe("Songs ordered by addition date (most recent first)"),
+});
+
+export type PlaylistSongsSchemaType = z.infer<typeof PlaylistSongsSchema>;
+
 //Playlist:
 //type: object
 //properties:
@@ -93,9 +101,7 @@ export type PlaylistDataSchemaType = z.infer<typeof PlaylistDataSchema>;
 //    description: Songs ordered by addition date (most recent first)
 export const PlaylistSchema = z.object({
   ...PlaylistDataSchema.shape,
-  songs: z
-    .array(PlaylistSongSchema)
-    .describe("Songs ordered by addition date (most recent first)"),
+  ...PlaylistSongsSchema.shape,
 });
 
 export type PlaylistSchemaType = z.infer<typeof PlaylistSchema>;
@@ -110,3 +116,15 @@ export const PlaylistResponseSchema = z.object({
 });
 
 export type PlaylistResponseSchemaType = z.infer<typeof PlaylistResponseSchema>;
+
+// data:
+//     type: array
+//     items:
+//       $ref: '#/components/schemas/Playlist'
+export const PlaylistResponseArraySchema = z.object({
+  data: z.array(PlaylistSchema),
+});
+
+export type PlaylistResponseArraySchemaType = z.infer<
+  typeof PlaylistResponseArraySchema
+>;

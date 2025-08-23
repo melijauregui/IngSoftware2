@@ -1,11 +1,12 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { ErrorResponseSchema } from "../../schemas/error";
-import { createPlaylist } from "./functions";
+import { createPlaylist, getPlaylists } from "./functions";
 import { Context } from "hono";
 import { handlerError } from "../app";
 import logger from "../logger";
 import {
   CreatePlaylistRequestSchema,
+  PlaylistResponseArraySchema,
   PlaylistResponseSchema,
 } from "../../schemas/playlists";
 
@@ -99,4 +100,49 @@ playlistsApp.openapi(postPlaylistRoute, async (c) => {
   const { name, description } = c.req.valid("json");
   const response = await createPlaylist(name, description);
   return c.json({ data: response }, 201);
+});
+
+// get:
+// summary: Retrieve published playlists (most recent first)
+// description: Returns playlists ordered by publishedAt (desc). In the base spec, playlists are created already published.
+// responses:
+//   '200':
+//     description: A list of published playlists ordered by publishedAt desc (songs ordered by addedAt desc)
+//     content:
+//       application/json:
+//         schema:
+//           type: object
+//           properties:
+//             data:
+//               type: array
+//               items:
+//                 $ref: '#/components/schemas/Playlist'
+const getPlaylistsRoute = createRoute({
+  method: "get",
+  path: "/",
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: PlaylistResponseArraySchema,
+        },
+      },
+      description:
+        "A list of published playlists ordered by publishedAt desc (songs ordered by addedAt desc)",
+    },
+    500: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Internal server error",
+    },
+  },
+});
+
+playlistsApp.openapi(getPlaylistsRoute, async (c) => {
+  logger.http(`GET /playlists - Retrieving published playlists`);
+  const res = await getPlaylists();
+  return c.json({ data: res }, 200);
 });

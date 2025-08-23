@@ -156,6 +156,42 @@ curl -X POST http://localhost:3000/playlists \
 }
 ```
 
+### 2. Obtener todas las playlists (GET /playlists)
+```bash
+curl -X GET http://localhost:3000/playlists | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": [
+    {
+      "id": 2,
+      "name": "Nueva Playlist",
+      "description": "Una playlist más reciente creada después de la primera con algunas canciones geniales",
+      "isPublished": true,
+      "publishedAt": "2024-01-02T00:00:00.000Z",
+      "songs": [
+        {
+          "id": 3,
+          "title": "Nueva Canción",
+          "artist": "Nuevo Artista",
+          "addedAt": "2024-01-04T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Mis Canciones Favoritas",
+      "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día",
+      "isPublished": true,
+      "publishedAt": "2024-01-01T00:00:00.000Z",
+      "songs": []
+    }
+  ]
+}
+```
+
 
 ### Notas importantes:
 - Todos los endpoints devuelven JSON
@@ -170,4 +206,7 @@ curl -X POST http://localhost:3000/playlists \
 - El comando `jq` al final es opcional, pero ayuda a formatear la salida JSON de manera legible
 
 
+
+
+//TODO AGREGAR TESTS CON BDD TESTING ESPECIALMENTE GET /playlists
 
