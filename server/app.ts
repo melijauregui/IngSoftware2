@@ -5,12 +5,14 @@ import { ZodError } from "zod";
 import logger from "./logger";
 import { NotFoundError } from "../schemas/error";
 import songsIdApp from "./songs-id/routes";
+import playlistsApp from "./playlists/routes";
 
 const app = new OpenAPIHono();
 
 // Mount songs routes
 app.route("/songs/:id", songsIdApp);
 app.route("/songs", songsApp);
+app.route("/playlists", playlistsApp);
 
 export default app;
 

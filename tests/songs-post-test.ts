@@ -30,7 +30,6 @@ describe("POST /songs", () => {
 
   describe("Case 1: Success - Create song successfully (201)", () => {
     it("should create a song successfully and return 201", async () => {
-      // Arrange
       const songData = {
         title: "Bohemian Rhapsody",
         artist: "Queen",
@@ -44,7 +43,6 @@ describe("POST /songs", () => {
 
       mockQuery.mockResolvedValueOnce([mockResult, []]);
 
-      // Act
       const response = await app.request("/songs", {
         method: "POST",
         headers: {
@@ -53,7 +51,6 @@ describe("POST /songs", () => {
         body: JSON.stringify(songData),
       });
 
-      // Assert
       expect(response.status).toBe(201);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -72,13 +69,11 @@ describe("POST /songs", () => {
 
   describe("Case 2: Validation error - Invalid data (400)", () => {
     it("should return 400 when the title is empty", async () => {
-      // Arrange
       const songData = {
         title: "",
         artist: "Queen",
       };
 
-      // Act
       const response = await app.request("/songs", {
         method: "POST",
         headers: {
@@ -87,7 +82,6 @@ describe("POST /songs", () => {
         body: JSON.stringify(songData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -101,13 +95,11 @@ describe("POST /songs", () => {
     });
 
     it("should return 400 when the artist is empty", async () => {
-      // Arrange
       const songData = {
         title: "Bohemian Rhapsody",
         artist: "",
       };
 
-      // Act
       const response = await app.request("/songs", {
         method: "POST",
         headers: {
@@ -116,7 +108,6 @@ describe("POST /songs", () => {
         body: JSON.stringify(songData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -130,13 +121,11 @@ describe("POST /songs", () => {
     });
 
     it("should return 400 when both fields are empty", async () => {
-      // Arrange
       const songData = {
         title: "",
         artist: "",
       };
 
-      // Act
       const response = await app.request("/songs", {
         method: "POST",
         headers: {
@@ -145,7 +134,6 @@ describe("POST /songs", () => {
         body: JSON.stringify(songData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -159,13 +147,11 @@ describe("POST /songs", () => {
     });
 
     it("should return 400 when the title only has spaces", async () => {
-      // Arrange
       const songData = {
         title: "   ",
         artist: "Queen",
       };
 
-      // Act
       const response = await app.request("/songs", {
         method: "POST",
         headers: {
@@ -174,7 +160,6 @@ describe("POST /songs", () => {
         body: JSON.stringify(songData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -190,7 +175,6 @@ describe("POST /songs", () => {
 
   describe("Case 3: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database error", async () => {
-      // Arrange
       const songData = {
         title: "Bohemian Rhapsody",
         artist: "Queen",
@@ -201,7 +185,6 @@ describe("POST /songs", () => {
       );
       mockQuery.mockRejectedValueOnce(dbError);
 
-      // Act
       const response = await app.request("/songs", {
         method: "POST",
         headers: {
@@ -210,7 +193,6 @@ describe("POST /songs", () => {
         body: JSON.stringify(songData),
       });
 
-      // Assert
       expect(response.status).toBe(500);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -227,7 +209,6 @@ describe("POST /songs", () => {
     });
 
     it("should return 500 with a generic message when the error is not an instance of Error", async () => {
-      // Arrange
       const songData = {
         title: "Bohemian Rhapsody",
         artist: "Queen",
@@ -236,7 +217,6 @@ describe("POST /songs", () => {
       const dbError = new Error("Internal Server Error");
       mockQuery.mockRejectedValueOnce(dbError);
 
-      // Act
       const response = await app.request("/songs", {
         method: "POST",
         headers: {
@@ -245,7 +225,6 @@ describe("POST /songs", () => {
         body: JSON.stringify(songData),
       });
 
-      // Assert
       expect(response.status).toBe(500);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -264,7 +243,6 @@ describe("POST /songs", () => {
 
   describe("Additional validation cases", () => {
     it("should handle special characters correctly", async () => {
-      // Arrange
       const songData = {
         title: "¿Qué tal?",
         artist: "Artista & Co.",
@@ -278,7 +256,6 @@ describe("POST /songs", () => {
 
       mockQuery.mockResolvedValueOnce([mockResult, []]);
 
-      // Act
       const response = await app.request("/songs", {
         method: "POST",
         headers: {
@@ -287,7 +264,6 @@ describe("POST /songs", () => {
         body: JSON.stringify(songData),
       });
 
-      // Assert
       expect(response.status).toBe(201);
       const responseBody = await response.json();
       expect(responseBody).toEqual({

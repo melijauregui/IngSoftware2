@@ -133,12 +133,40 @@ curl -X DELETE http://localhost:3000/songs/1
 (No content - Status 204)
 ```
 
+## Endpoints de Playlists
+
+### 1. Crear una nueva playlist (POST /playlists)
+```bash
+curl -X POST http://localhost:3000/playlists \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Mis Canciones Favoritas", "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día"}' | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Mis Canciones Favoritas",
+    "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día",
+    "isPublished": true,
+    "publishedAt": "2024-01-01T00:00:00.000Z",
+    "songs": []
+  }
+}
+```
+
 
 ### Notas importantes:
 - Todos los endpoints devuelven JSON
 - El parámetro `id` debe ser un número entero positivo
 - Para las actualizaciones (PUT), al menos uno de los campos (`title` o `artist`) debe ser proporcionado
 - Los campos `title` y `artist` tienen un límite máximo de 50 caracteres
+- **Para playlists:**
+  - El campo `name` debe tener entre 1 y 50 caracteres
+  - El campo `description` debe tener entre 50 y 255 caracteres
+  - Las playlists se crean automáticamente como publicadas (`isPublished: true`)
+  - El campo `songs` siempre se inicializa como un array vacío
 - El comando `jq` al final es opcional, pero ayuda a formatear la salida JSON de manera legible
 
 

@@ -30,7 +30,6 @@ describe("PUT /songs/:id", () => {
 
   describe("Case 1: Success - Update song by ID successfully (200)", () => {
     it("should update a song when it exists in the database", async () => {
-      // Arrange
       const songId = 1;
       const updateData = {
         title: "Updated Bohemian Rhapsody",
@@ -47,7 +46,6 @@ describe("PUT /songs/:id", () => {
       // Mock the SELECT query (from getSongById)
       mockQuery.mockResolvedValueOnce([[updatedSong], []]);
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -56,7 +54,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -77,7 +74,6 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should update only title when only title is provided", async () => {
-      // Arrange
       const songId = 1;
       const updateData = {
         title: "Only Title Updated",
@@ -93,7 +89,6 @@ describe("PUT /songs/:id", () => {
       // Mock the SELECT query (from getSongById)
       mockQuery.mockResolvedValueOnce([[updatedSong], []]);
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -102,7 +97,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -115,7 +109,6 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should update only artist when only artist is provided", async () => {
-      // Arrange
       const songId = 1;
       const updateData = {
         artist: "Only Artist Updated",
@@ -131,7 +124,6 @@ describe("PUT /songs/:id", () => {
       // Mock the SELECT query (from getSongById)
       mockQuery.mockResolvedValueOnce([[updatedSong], []]);
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -140,7 +132,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -157,7 +148,6 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should update only title when only title is provided", async () => {
-      // Arrange
       const songId = 1;
       const updateData = {
         title: "Only Title Updated",
@@ -173,7 +163,6 @@ describe("PUT /songs/:id", () => {
       // Mock the SELECT query (from getSongById)
       mockQuery.mockResolvedValueOnce([[updatedSong], []]);
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -182,7 +171,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(200);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -201,7 +189,6 @@ describe("PUT /songs/:id", () => {
 
   describe("Case 2: Not Found - Song doesn't exist (404)", () => {
     it("should return 404 when song with given ID doesn't exist", async () => {
-      // Arrange
       const songId = 999;
       const updateData = {
         title: "Updated Title",
@@ -211,7 +198,6 @@ describe("PUT /songs/:id", () => {
       // Mock the UPDATE query - no rows affected
       mockQuery.mockResolvedValueOnce([{ affectedRows: 0 }, []]);
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -220,7 +206,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -239,7 +224,6 @@ describe("PUT /songs/:id", () => {
 
   describe("Case 3: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database connection error", async () => {
-      // Arrange
       const songId = 1;
       const updateData = {
         title: "Updated Title",
@@ -250,7 +234,6 @@ describe("PUT /songs/:id", () => {
       );
       mockQuery.mockRejectedValueOnce(dbError);
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -259,7 +242,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(500);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -272,7 +254,6 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should return 500 with a generic message when the error is not a database error", async () => {
-      // Arrange
       const songId = 1;
       const updateData = {
         title: "Updated Title",
@@ -281,7 +262,6 @@ describe("PUT /songs/:id", () => {
       const dbError = new Error("Internal Server Error");
       mockQuery.mockRejectedValueOnce(dbError);
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -290,7 +270,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(500);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
@@ -305,11 +284,9 @@ describe("PUT /songs/:id", () => {
 
   describe("Case 4: Validation errors - Invalid request body (400)", () => {
     it("should return 400 when both title and artist are missing", async () => {
-      // Arrange
       const songId = 1;
       const invalidData = {};
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -318,7 +295,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(invalidData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty("type");
@@ -332,11 +308,9 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should return 400 when both title and artist are missing", async () => {
-      // Arrange
       const songId = 1;
       const invalidData = {};
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -345,7 +319,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(invalidData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty("type");
@@ -356,14 +329,12 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should return 400 when title is empty string", async () => {
-      // Arrange
       const songId = 1;
       const invalidData = {
         title: "",
         artist: "Valid Artist",
       };
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -372,7 +343,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(invalidData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty("type");
@@ -383,14 +353,12 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should return 400 when artist is empty string", async () => {
-      // Arrange
       const songId = 1;
       const invalidData = {
         title: "Valid Title",
         artist: "",
       };
 
-      // Act
       const response = await app.request(`/songs/${songId}`, {
         method: "PUT",
         headers: {
@@ -399,7 +367,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(invalidData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty("type");
@@ -412,14 +379,12 @@ describe("PUT /songs/:id", () => {
 
   describe("Case 5: Parameter validation - Invalid ID parameter (400)", () => {
     it("should return 400 when ID is not a number", async () => {
-      // Arrange
       const invalidId = "abc";
       const updateData = {
         title: "Updated Title",
         artist: "Updated Artist",
       };
 
-      // Act
       const response = await app.request(`/songs/${invalidId}`, {
         method: "PUT",
         headers: {
@@ -428,7 +393,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty("type");
@@ -439,14 +403,12 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should return 400 when ID is zero", async () => {
-      // Arrange
       const invalidId = 0;
       const updateData = {
         title: "Updated Title",
         artist: "Updated Artist",
       };
 
-      // Act
       const response = await app.request(`/songs/${invalidId}`, {
         method: "PUT",
         headers: {
@@ -455,7 +417,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty("type");
@@ -466,14 +427,12 @@ describe("PUT /songs/:id", () => {
     });
 
     it("should return 400 when ID is negative", async () => {
-      // Arrange
       const invalidId = -1;
       const updateData = {
         title: "Updated Title",
         artist: "Updated Artist",
       };
 
-      // Act
       const response = await app.request(`/songs/${invalidId}`, {
         method: "PUT",
         headers: {
@@ -482,7 +441,6 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      // Assert
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toHaveProperty("type");
