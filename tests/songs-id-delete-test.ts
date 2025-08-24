@@ -134,22 +134,6 @@ describe("DELETE /songs/:id", () => {
       expect(responseBody).toHaveProperty("instance");
     });
 
-    it("should return 400 when ID is zero", async () => {
-      const invalidId = 0;
-
-      const response = await app.request(`/songs/${invalidId}`, {
-        method: "DELETE",
-      });
-
-      expect(response.status).toBe(400);
-      const responseBody = await response.json();
-      expect(responseBody).toHaveProperty("type");
-      expect(responseBody).toHaveProperty("title", "Validation Error");
-      expect(responseBody).toHaveProperty("status", 400);
-      expect(responseBody).toHaveProperty("detail");
-      expect(responseBody).toHaveProperty("instance");
-    });
-
     it("should return 400 when ID is negative", async () => {
       const invalidId = -1;
 

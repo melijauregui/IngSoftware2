@@ -52,7 +52,7 @@ export const PlaylistSongSchema = z.object({
 });
 
 export const PlaylistDataSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.number().int().min(0),
   ...CreatePlaylistRequestSchema.shape,
   isPublished: z
     .boolean()

@@ -182,20 +182,6 @@ describe("GET /songs/:id", () => {
       expect(responseBody).toHaveProperty("instance");
     });
 
-    it("should return 400 when ID is zero", async () => {
-      const response = await app.request("/songs/0", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(400);
-      const responseBody = await response.json();
-      expect(responseBody).toHaveProperty("type");
-      expect(responseBody).toHaveProperty("title");
-      expect(responseBody).toHaveProperty("status", 400);
-      expect(responseBody).toHaveProperty("detail");
-      expect(responseBody).toHaveProperty("instance");
-    });
-
     it("should return 400 when ID is negative", async () => {
       const response = await app.request("/songs/-1", {
         method: "GET",

@@ -192,6 +192,38 @@ curl -X GET http://localhost:3000/playlists | jq
 }
 ```
 
+### 3. Obtener una playlist por ID (GET /playlists/:id)
+```bash
+curl -X GET http://localhost:3000/playlists/1 | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Mis Canciones Favoritas",
+    "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día",
+    "isPublished": true,
+    "publishedAt": "2024-01-01T00:00:00.000Z",
+    "songs": [
+      {
+        "id": 1,
+        "title": "Bohemian Rhapsody",
+        "artist": "Queen",
+        "addedAt": "2024-01-02T00:00:00.000Z"
+      },
+      {
+        "id": 2,
+        "title": "Stairway to Heaven",
+        "artist": "Led Zeppelin",
+        "addedAt": "2024-01-03T00:00:00.000Z"
+      }
+    ]
+  }
+}
+```
+
 
 ### Notas importantes:
 - Todos los endpoints devuelven JSON

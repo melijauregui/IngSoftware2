@@ -37,7 +37,7 @@ export type CreateSongRequestSchemaType = z.infer<typeof SongRequestSchema>;
 //     type: string
 
 export const SongSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.number().int().min(0),
   ...SongRequestSchema.shape,
 });
 

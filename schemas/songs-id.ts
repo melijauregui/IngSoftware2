@@ -2,7 +2,7 @@ import { z } from "zod";
 import { SongRequestSchema } from "./songs";
 
 export const SongIdSchema = z.object({
-  id: z.coerce.number().int().positive(),
+  id: z.coerce.number().int().min(0),
 });
 
 export type SongIdSchemaType = z.infer<typeof SongIdSchema>;

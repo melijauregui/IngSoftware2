@@ -6,14 +6,15 @@ import logger from "./logger";
 import { NotFoundError } from "../schemas/error";
 import songsIdApp from "./songs-id/routes";
 import playlistsApp from "./playlists/routes";
+import playlistsIdApp from "./playlists-id/routes";
 
 const app = new OpenAPIHono();
 
 // Mount songs routes
 app.route("/songs/:id", songsIdApp);
 app.route("/songs", songsApp);
+app.route("/playlists/:id", playlistsIdApp);
 app.route("/playlists", playlistsApp);
-
 export default app;
 
 export function handlerError(err: Error, c: Context) {
