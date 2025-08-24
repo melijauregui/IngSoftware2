@@ -54,7 +54,10 @@ export async function getPlaylistDataById(
     error,
   } = PlaylistDataSchema.safeParse(playlistData);
   if (!success) {
-    throw createNotFoundError("Playlist", id, `/playlists/${id}`);
+    logger.error(
+      `Invalid playlist data for playlist id ${id}: ${JSON.stringify(error)}`
+    );
+    throw new Error("Failed to get playlist data");
   }
   return dataPlaylist;
 }

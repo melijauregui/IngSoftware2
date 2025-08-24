@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { ErrorResponseSchema } from "../../schemas/error";
-import { getPlaylistById } from "./functions";
+import { deletePlaylist, getPlaylistById } from "./functions";
 import { Context } from "hono";
 import { handlerError } from "../app";
 import logger from "../logger";
@@ -98,4 +98,58 @@ playlistsIdApp.openapi(getPlaylistByIdRoute, async (c) => {
   const { id } = c.req.valid("param");
   const response = await getPlaylistById(id);
   return c.json({ data: response }, 200);
+});
+
+// delete:
+// summary: Delete a playlist by ID
+// parameters:
+//   - in: path
+//     name: id
+//     required: true
+//     schema:
+//       type: integer
+// responses:
+//   '204':
+//     description: Playlist deleted successfully
+//   '404':
+//     description: Playlist not found
+//     content:
+//       application/json:
+//         schema:
+//           $ref: '#/components/schemas/ErrorResponse'
+const deletePlaylistByIdRoute = createRoute({
+  method: "delete",
+  path: "/",
+  request: {
+    required: true,
+    params: PlaylistIdSchema,
+  },
+  responses: {
+    204: {
+      description: "Playlist deleted successfully",
+    },
+    404: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Playlist not found",
+    },
+    500: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Internal server error",
+    },
+  },
+});
+
+playlistsIdApp.openapi(deletePlaylistByIdRoute, async (c) => {
+  logger.http(`DELETE /playlists/{id} - Deleting a playlist by ID`);
+  const { id } = c.req.valid("param");
+  await deletePlaylist(id);
+  return new Response(null, { status: 204 });
 });

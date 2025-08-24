@@ -224,6 +224,26 @@ curl -X GET http://localhost:3000/playlists/1 | jq
 }
 ```
 
+### 4. Eliminar una playlist por ID (DELETE /playlists/:id)
+```bash
+curl -X DELETE http://localhost:3000/playlists/1
+```
+
+**Respuesta esperada:**
+```
+(No content - Status 204)
+```
+
+**Respuesta cuando la playlist no existe (404):**
+```json
+{
+  "type": "about:blank",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Playlist not found with id: 999",
+  "instance": "/playlists/999"
+}
+```
 
 ### Notas importantes:
 - Todos los endpoints devuelven JSON
