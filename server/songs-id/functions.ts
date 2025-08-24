@@ -9,14 +9,17 @@ import { db } from "../db";
 import logger from "../logger";
 import { createNotFoundError } from "../../schemas/error";
 
-export async function getSongById(id: number): Promise<SongSchemaType> {
+export async function getSongById(
+  id: number,
+  instance: string
+): Promise<SongSchemaType> {
   const [result]: [ResultSetHeader[], FieldPacket[]] = await db.query(
     "SELECT * FROM songs WHERE id = ?",
     [id]
   );
   // Convert the result to the correct type
   if (result.length === 0) {
-    throw createNotFoundError("Song", id, `/songs/${id}`);
+    throw createNotFoundError("Song", id, instance);
   }
   const song = result[0];
   const { success, data, error } = SongSchema.safeParse(song);
@@ -24,7 +27,7 @@ export async function getSongById(id: number): Promise<SongSchemaType> {
     logger.error(
       `Invalid song data for song id ${id}: ${JSON.stringify(error)}`
     );
-    throw createNotFoundError("Song", id, `/songs/${id}`);
+    throw createNotFoundError("Song", id, instance);
   }
   logger.info(`Song found: ${JSON.stringify(data)}`);
   return data;
@@ -66,7 +69,7 @@ export async function updateSongById(
   if (result.affectedRows === 0) {
     throw createNotFoundError("Song", id, `/songs/${id}`);
   }
-  return getSongById(id);
+  return getSongById(id, `/songs/${id}`);
 }
 
 export async function deleteSongById(id: number): Promise<void> {

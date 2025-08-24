@@ -245,6 +245,56 @@ curl -X DELETE http://localhost:3000/playlists/1
 }
 ```
 
+### 5. Agregar una canción a una playlist (POST /playlists/:id/songs)
+```bash
+curl -X POST http://localhost:3000/playlists/1/songs \
+  -H "Content-Type: application/json" \
+  -d '{"songId": 1}' | jq
+```
+
+**Respuesta esperada:**
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Mis Canciones Favoritas",
+    "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día",
+    "isPublished": true,
+    "publishedAt": "2024-01-01T00:00:00.000Z",
+    "songs": [
+      {
+        "id": 1,
+        "title": "Bohemian Rhapsody",
+        "artist": "Queen",
+        "addedAt": "2024-01-02T00:00:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+**Respuesta cuando la playlist no existe (404):**
+```json
+{
+  "type": "about:blank",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Playlist not found with id: 999",
+  "instance": "/playlists/999/songs"
+}
+```
+
+**Respuesta cuando la canción no existe (404):**
+```json
+{
+  "type": "about:blank",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Song not found with id: 999",
+  "instance": "/playlists/1/songs"
+}
+```
+
 ### Notas importantes:
 - Todos los endpoints devuelven JSON
 - El parámetro `id` debe ser un número entero positivo

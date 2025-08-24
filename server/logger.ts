@@ -2,7 +2,6 @@ import winston, { level } from "winston";
 import path from "path";
 import { config } from "../config";
 
-// Define log levels
 const levels = {
   error: 0,
   warn: 1,
@@ -11,7 +10,6 @@ const levels = {
   debug: 4,
 };
 
-// Define colors for each level
 const colors = {
   error: "red",
   warn: "yellow",
@@ -19,10 +17,8 @@ const colors = {
   debug: "white",
 };
 
-// Tell winston that you want to link the colors
 winston.addColors(colors);
 
-// Define format for logs
 const format = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
   winston.format.colorize({ all: true }),
@@ -33,14 +29,11 @@ const format = winston.format.combine(
 
 // Define transports
 const transports = [
-  // Console transport
   new winston.transports.Console(),
-  // File transport for errors
   new winston.transports.File({
     filename: path.join(process.cwd(), "logs", "error.log"),
     level: "error",
   }),
-  // File transport for all logs
   new winston.transports.File({
     filename: path.join(process.cwd(), "logs", "combined.log"),
   }),

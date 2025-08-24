@@ -20,14 +20,15 @@ export async function createPlaylist(
     [name, description]
   );
 
-  const dataPlaylist = await getPlaylistDataById(result.insertId);
+  const dataPlaylist = await getPlaylistDataById(result.insertId, `/playlists`);
   logger.info(`Playlist created: ${JSON.stringify(dataPlaylist)}`);
   response = { ...dataPlaylist, songs: [] };
   return response;
 }
 
 export async function getPlaylistDataById(
-  id: number
+  id: number,
+  instance: string
 ): Promise<PlaylistDataSchemaType> {
   let response: PlaylistDataSchemaType;
   const [result]: [any[], FieldPacket[]] = await db.query(
@@ -35,7 +36,7 @@ export async function getPlaylistDataById(
     [id]
   );
   if (result.length === 0) {
-    throw createNotFoundError("Playlist", id, `/playlists/${id}`);
+    throw createNotFoundError("Playlist", id, instance);
   }
 
   const playlist = result[0];
@@ -64,7 +65,7 @@ export async function getPlaylistDataById(
 
 export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {
   let response: PlaylistSchemaType;
-  const dataPlaylist = await getPlaylistDataById(id);
+  const dataPlaylist = await getPlaylistDataById(id, `/playlists/${id}`);
   const songsResult = await getPlaylistSongsById(id);
   response = { ...dataPlaylist, ...songsResult };
   return response;
