@@ -204,6 +204,7 @@ describe("GET /playlists/:id", () => {
 
       expect(response.status).toBe(404);
       const responseBody = await response.json();
+      console.log("RESPONSEEEE", responseBody);
       expect(responseBody).toEqual({
         type: "about:blank",
         title: "Not Found",

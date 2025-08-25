@@ -100,7 +100,7 @@ const getSongByIdRoute = createRoute({
 songsIdApp.openapi(getSongByIdRoute, async (c) => {
   logger.http(`GET /songs/:id - Getting song by id`);
   const { id } = c.req.valid("param");
-  const response = await getSongById(id);
+  const response = await getSongById(id, `/songs/${id}`);
   return c.json({ data: response }, 200);
 });
 

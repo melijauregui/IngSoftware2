@@ -9,7 +9,7 @@ import { createNotFoundError } from "../../schemas/error";
 
 export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {
   let response: PlaylistSchemaType;
-  const dataPlaylist = await getPlaylistDataById(id);
+  const dataPlaylist = await getPlaylistDataById(id, `/playlists/${id}`);
   const songsResult = await getPlaylistSongsById(id);
   response = { ...dataPlaylist, ...songsResult };
   return response;
