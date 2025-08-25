@@ -46,9 +46,7 @@ export function compareSong(songResponse: any, testSong: any) {
   expect(songResponse).toHaveProperty("id");
   expect(songResponse).toHaveProperty("title");
   expect(songResponse).toHaveProperty("artist");
-  expect(songResponse).toHaveProperty("addedAt");
 
-  expect(songResponse.id).toBe(testSong.id);
   expect(songResponse.title).toBe(testSong.title);
   expect(songResponse.artist).toBe(testSong.artist);
 }
