@@ -16,11 +16,11 @@ export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {
 }
 
 export async function deletePlaylist(id: number): Promise<void> {
-  const [result]: [ResultSetHeader[], FieldPacket[]] = await db.query(
+  const [result]: [ResultSetHeader, FieldPacket[]] = await db.query(
     "DELETE FROM playlists WHERE id = ?",
     [id]
   );
-  if (result[0].affectedRows === 0) {
+  if (result.affectedRows === 0) {
     throw createNotFoundError("Playlist", id, `/playlists/${id}`);
   }
   return;
