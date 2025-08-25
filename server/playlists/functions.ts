@@ -1,5 +1,5 @@
 import { ResultSetHeader, FieldPacket } from "mysql2/promise";
-import { db } from "../db";
+import { db } from "../db.config";
 import logger from "../logger";
 import { createNotFoundError } from "../../schemas/error";
 import {
@@ -74,15 +74,27 @@ export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {
 export async function getPlaylistSongsById(
   id: number
 ): Promise<PlaylistSongsSchemaType> {
-  const [songs]: [any[], FieldPacket[]] = await db.query(
-    "SELECT * FROM playlist_songs WHERE playlist_id = ?",
+  const [songs_ids]: [any[], FieldPacket[]] = await db.query(
+    "SELECT * FROM playlists_songs WHERE playlist_id = ?",
     [id]
   );
-  if (songs.length === 0) {
+  if (songs_ids.length === 0) {
+    logger.info(`No songs found for playlist id ${id}`);
     return { songs: [] };
   }
 
-  const songsResult = songs
+  const [songs]: [any[], FieldPacket[]] = await db.query(
+    "SELECT * FROM songs WHERE id IN (?)",
+    [songs_ids.map((song) => song.song_id)]
+  );
+
+  //agrego a songs el added_at de songs_ids
+  const songsWithAddedAt = songs.map((song) => ({
+    ...song,
+    added_at: new Date(songs_ids.find((s) => s.song_id === song.id)?.added_at),
+  }));
+
+  const songsResult = songsWithAddedAt
     .map((song) => {
       const songData = {
         id: song.id,

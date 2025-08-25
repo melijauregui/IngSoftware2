@@ -11,7 +11,12 @@
     "docker:run": "docker run -p 3000:3000 ingsoft2-app",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:integration": "docker compose -f docker-compose.test.yml --env-file .env.test up -d && sleep 10 && vitest run tests-integracion/",
+    "test:integration:watch": "docker compose -f docker-compose.test.yml --env-file .env.test up -d && sleep 10 && vitest tests-integracion/",
+    "test:db:up": "docker compose -f docker-compose.test.yml --env-file .env.test up -d",
+    "test:db:down": "docker compose -f docker-compose.test.yml --env-file .env.test down",
+    "test:db:clean": "docker compose -f docker-compose.test.yml --env-file .env.test down -v"
   },
   "dependencies": {
     "@hono/node-server": "^1.8.2",

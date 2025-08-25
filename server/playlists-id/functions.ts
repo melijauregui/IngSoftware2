@@ -4,7 +4,7 @@ import {
   getPlaylistDataById,
   getPlaylistSongsById,
 } from "../playlists/functions";
-import { db } from "../db";
+import { db } from "../db.config";
 import { createNotFoundError } from "../../schemas/error";
 
 export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {

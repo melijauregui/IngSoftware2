@@ -1,12 +1,7 @@
-CREATE DATABASE IF NOT EXISTS melodia_db;
+-- This script will be executed in the database specified in the environment
+-- The database name is set via MYSQL_DATABASE environment variable
 
-USE melodia_db;
-
-DROP USER IF EXISTS 'melodia' @'%';
-
-CREATE USER 'melodia' @'%' IDENTIFIED BY 'password';
-
-GRANT ALL PRIVILEGES ON melodia_db.* TO 'melodia' @'%';
+-- Create tables in the current database (which should be melodia_db_test for testing)
 
 FLUSH PRIVILEGES;
 
@@ -24,7 +19,7 @@ CREATE TABLE IF NOT EXISTS playlists (
     published_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS playlist_songs (
+CREATE TABLE IF NOT EXISTS playlists_songs (
     playlist_id INT NOT NULL,
     song_id INT NOT NULL,
     added_at DATETIME DEFAULT CURRENT_TIMESTAMP,

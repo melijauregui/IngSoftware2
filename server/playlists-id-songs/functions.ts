@@ -1,7 +1,7 @@
 import { ResultSetHeader, FieldPacket } from "mysql2/promise";
 import { PlaylistSchemaType } from "../../schemas/playlists";
 import { getPlaylistById, getPlaylistDataById } from "../playlists/functions";
-import { db } from "../db";
+import { db } from "../db.config";
 import { getSongById } from "../songs-id/functions";
 
 export async function addSongToPlaylist(

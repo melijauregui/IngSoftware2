@@ -5,7 +5,7 @@ import {
   SongSchemaType,
 } from "../../schemas/songs";
 import { ResultSetHeader, FieldPacket } from "mysql2/promise";
-import { db } from "../db";
+import { db } from "../db.config";
 import logger from "../logger";
 import { createNotFoundError } from "../../schemas/error";
 

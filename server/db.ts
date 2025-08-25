@@ -3,7 +3,7 @@ import mysql from "mysql2/promise";
 import logger from "./logger";
 import { config } from "../config";
 
-export const db = mysql.createPool({
+export const dbProduction = mysql.createPool({
   host: config.DB_HOST,
   port: Number(config.DATABASE_PORT),
   user: config.DB_USER,
@@ -14,7 +14,8 @@ export const db = mysql.createPool({
 // Only test database connection if not in test mode
 if (process.env.NODE_ENV !== "test") {
   // Test database connection
-  db.getConnection()
+  dbProduction
+    .getConnection()
     .then((connection) => {
       logger.info("Database connection established successfully");
       connection.release();
