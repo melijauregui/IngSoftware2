@@ -13,7 +13,7 @@ import {
 } from "../server/db.test";
 import { comparePlaylistsData, comparePlaylistSongs } from "./tests-functions";
 
-describe("GET /playlists", () => {
+describe("GET /playlists/:id", () => {
   beforeEach(async () => {
     await cleanupTestDatabase();
   });

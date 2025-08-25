@@ -8,7 +8,7 @@ import {
   setupCompleteTestDatabase,
 } from "../server/db.test";
 
-describe("GET /playlists", () => {
+describe("DELETE /playlists/:id", () => {
   beforeEach(async () => {
     await cleanupTestDatabase();
   });
