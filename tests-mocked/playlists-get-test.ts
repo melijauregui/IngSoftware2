@@ -124,24 +124,32 @@ describe("GET /playlists", () => {
           id: 1,
           title: "Valid Song",
           artist: "Valid Artist",
-          added_at: new Date("2024-01-02T00:00:00.000Z"),
         },
         {
           id: 2,
           title: null, // Invalid: missing title
           artist: "Invalid Artist",
-          added_at: new Date("2024-01-03T00:00:00.000Z"),
         },
         {
           id: 3,
           title: "Another Valid Song",
           artist: "Another Valid Artist",
-          added_at: new Date("2024-01-04T00:00:00.000Z"),
         },
       ];
 
+      // Mock para obtener playlists
       mockQuery
         .mockResolvedValueOnce([mockPlaylists, []])
+        // Mock para obtener IDs de canciones de la playlist (tabla playlists_songs)
+        .mockResolvedValueOnce([
+          [
+            { song_id: 1, added_at: new Date("2024-01-02T00:00:00.000Z") },
+            { song_id: 2, added_at: new Date("2024-01-03T00:00:00.000Z") },
+            { song_id: 3, added_at: new Date("2024-01-04T00:00:00.000Z") },
+          ],
+          [],
+        ])
+        // Mock para obtener datos de las canciones
         .mockResolvedValueOnce([mockSongs, []]);
 
       const response = await app.request("/playlists", {
@@ -150,9 +158,17 @@ describe("GET /playlists", () => {
 
       expect(response.status).toBe(200);
       const responseBody = await response.json();
-      expect(responseBody.data[0].songs).toHaveLength(2); // Only valid songs
+
+      // Verificar que la playlist tiene canciones
+      expect(responseBody.data[0].songs).toHaveLength(2); // Solo canciones válidas
       expect(responseBody.data[0].songs[0].title).toBe("Valid Song");
       expect(responseBody.data[0].songs[1].title).toBe("Another Valid Song");
+
+      // Verificar que se filtraron las canciones inválidas
+      const invalidSong = responseBody.data[0].songs.find(
+        (song) => song.title === null
+      );
+      expect(invalidSong).toBeUndefined();
     });
   });
 });

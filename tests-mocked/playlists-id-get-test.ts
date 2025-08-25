@@ -154,24 +154,29 @@ describe("GET /playlists/:id", () => {
           id: 1,
           title: "Valid Song",
           artist: "Valid Artist",
-          added_at: new Date("2024-01-02T00:00:00.000Z"),
         },
         {
           id: 2,
           title: null, // Invalid: missing title
           artist: "Invalid Artist",
-          added_at: new Date("2024-01-03T00:00:00.000Z"),
         },
         {
           id: 3,
           title: "Another Valid Song",
           artist: "Another Valid Artist",
-          added_at: new Date("2024-01-04T00:00:00.000Z"),
         },
       ];
 
       mockQuery
         .mockResolvedValueOnce([mockPlaylist, []])
+        .mockResolvedValueOnce([
+          [
+            { song_id: 1, added_at: new Date("2024-01-02T00:00:00.000Z") },
+            { song_id: 2, added_at: new Date("2024-01-03T00:00:00.000Z") },
+            { song_id: 3, added_at: new Date("2024-01-04T00:00:00.000Z") },
+          ],
+          [],
+        ])
         .mockResolvedValueOnce([mockSongs, []]);
 
       const response = await app.request("/playlists/7", {

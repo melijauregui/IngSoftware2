@@ -4,9 +4,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    setupFiles: ["./tests/setup.ts"],
-    include: ["tests/**/*.ts"],
-    exclude: ["tests/setup.ts"],
+    setupFiles: ["./tests-mocked/setup.ts"],
+    include: ["tests-mocked/**/*.ts"],
+    exclude: ["tests-mocked/setup.ts"],
     env: {
       NODE_ENV: "test",
     },

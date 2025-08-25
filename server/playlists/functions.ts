@@ -91,7 +91,7 @@ export async function getPlaylistSongsById(
   //agrego a songs el added_at de songs_ids
   const songsWithAddedAt = songs.map((song) => ({
     ...song,
-    added_at: new Date(songs_ids.find((s) => s.song_id === song.id)?.added_at),
+    added_at: songs_ids.find((s) => s.song_id === song.id)?.added_at,
   }));
 
   const songsResult = songsWithAddedAt
