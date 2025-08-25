@@ -11,7 +11,7 @@ import {
   TEST_PLAYLISTS,
   TEST_PLAYLISTS_SONGS,
 } from "../server/db.test";
-import { comparePlaylistsData, comparePlaylistSongs } from "./tests-functions";
+import { comparePlaylistsData, compareSongs } from "./tests-functions";
 
 describe("GET /playlists/:id", () => {
   beforeEach(async () => {
@@ -37,7 +37,7 @@ describe("GET /playlists/:id", () => {
         TEST_PLAYLISTS_SONGS.PLAYLIST_1_SONG_1.song_id,
         TEST_PLAYLISTS_SONGS.PLAYLIST_1_SONG_2.song_id,
       ];
-      comparePlaylistSongs(playlistSongs, playlistExpectedSongIds);
+      compareSongs(playlistSongs, playlistExpectedSongIds);
     });
 
     it("should return playlist without songs when it exists", async () => {

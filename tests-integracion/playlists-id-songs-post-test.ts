@@ -10,7 +10,7 @@ import {
   TEST_PLAYLISTS_SONGS,
   TEST_SONGS,
 } from "../server/db.test";
-import { comparePlaylistsData, comparePlaylistSongs } from "./tests-functions";
+import { comparePlaylistsData, compareSongs } from "./tests-functions";
 
 describe("POST /playlists/:id/songs", () => {
   beforeEach(async () => {
@@ -43,7 +43,7 @@ describe("POST /playlists/:id/songs", () => {
         TEST_PLAYLISTS_SONGS.PLAYLIST_1_SONG_2.song_id,
         songId,
       ];
-      comparePlaylistSongs(playlistSongs, playlistExpectedSongIds);
+      compareSongs(playlistSongs, playlistExpectedSongIds);
     });
   });
 
