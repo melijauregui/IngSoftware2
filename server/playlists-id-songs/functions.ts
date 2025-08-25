@@ -13,12 +13,12 @@ export async function addSongToPlaylist(
   await getSongById(songId, `/playlists/${playlistId}/songs`);
 
   // Now insert the song into the playlist
-  const [result]: [ResultSetHeader[], FieldPacket[]] = await db.query(
+  const [result]: [ResultSetHeader, FieldPacket[]] = await db.query(
     "INSERT INTO playlists_songs (playlist_id, song_id) VALUES (?, ?)",
     [playlistId, songId]
   );
 
-  if (result[0].affectedRows === 0) {
+  if (result.affectedRows === 0) {
     throw new Error("Failed to add song to playlist");
   }
 
