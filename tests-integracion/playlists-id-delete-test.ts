@@ -5,13 +5,8 @@ import "../config.test";
 import app from "../server/app";
 import {
   cleanupTestDatabase,
-  getAllTestPlaylists,
   setupCompleteTestDatabase,
-  setupTestJustOnePlaylistDatabase,
-  TEST_PLAYLISTS,
-  TEST_PLAYLISTS_SONGS,
 } from "../server/db.test";
-import { comparePlaylistsData, comparePlaylistSongs } from "./tests-functions";
 
 describe("GET /playlists", () => {
   beforeEach(async () => {
