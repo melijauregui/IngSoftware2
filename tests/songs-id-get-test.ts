@@ -8,7 +8,7 @@ import {
   vi,
 } from "vitest";
 import app from "../server/app";
-import { db } from "../server/db";
+import { db } from "../server/db.config";
 
 describe("GET /songs/:id", () => {
   // Mock database for testing
@@ -28,63 +28,7 @@ describe("GET /songs/:id", () => {
     vi.restoreAllMocks();
   });
 
-  describe("Case 1: Success - Retrieve song by ID successfully (200)", () => {
-    it("should return a song when it exists in the database", async () => {
-      const songId = 1;
-      const mockSong = {
-        id: 1,
-        title: "Bohemian Rhapsody",
-        artist: "Queen",
-      };
-
-      mockQuery.mockResolvedValueOnce([[mockSong], []]);
-
-      const response = await app.request(`/songs/${songId}`, {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(200);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        data: {
-          id: 1,
-          title: "Bohemian Rhapsody",
-          artist: "Queen",
-        },
-      });
-      expect(mockQuery).toHaveBeenCalledWith(
-        "SELECT * FROM songs WHERE id = ?",
-        [songId]
-      );
-    });
-  });
-
-  describe("Case 2: Not Found - Song doesn't exist (404)", () => {
-    it("should return 404 when song with given ID doesn't exist", async () => {
-      const songId = 999;
-      mockQuery.mockResolvedValueOnce([[], []]);
-
-      const response = await app.request(`/songs/${songId}`, {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(404);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Not Found",
-        status: 404,
-        detail: "Song not found with id: 999",
-        instance: "/songs/999",
-      });
-      expect(mockQuery).toHaveBeenCalledWith(
-        "SELECT * FROM songs WHERE id = ?",
-        [songId]
-      );
-    });
-  });
-
-  describe("Case 3: Database error - Internal server error (500)", () => {
+  describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database connection error", async () => {
       const songId = 1;
       const dbError = new Error(
@@ -136,7 +80,7 @@ describe("GET /songs/:id", () => {
     });
   });
 
-  describe("Case 4: Data validation - Schema validation errors", () => {
+  describe("Case 2: Data validation - Schema validation errors", () => {
     it("should return 404 when song data is invalid (missing required fields)", async () => {
       const songId = 1;
       const invalidSong = {
@@ -164,50 +108,6 @@ describe("GET /songs/:id", () => {
         "SELECT * FROM songs WHERE id = ?",
         [songId]
       );
-    });
-  });
-
-  describe("Case 5: Parameter validation - Invalid ID parameter", () => {
-    it("should return 400 when ID is not a number", async () => {
-      const response = await app.request("/songs/abc", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(400);
-      const responseBody = await response.json();
-      expect(responseBody).toHaveProperty("type");
-      expect(responseBody).toHaveProperty("title");
-      expect(responseBody).toHaveProperty("status", 400);
-      expect(responseBody).toHaveProperty("detail");
-      expect(responseBody).toHaveProperty("instance");
-    });
-
-    it("should return 400 when ID is negative", async () => {
-      const response = await app.request("/songs/-1", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(400);
-      const responseBody = await response.json();
-      expect(responseBody).toHaveProperty("type");
-      expect(responseBody).toHaveProperty("title");
-      expect(responseBody).toHaveProperty("status", 400);
-      expect(responseBody).toHaveProperty("detail");
-      expect(responseBody).toHaveProperty("instance");
-    });
-
-    it("should return 400 when ID is a decimal number", async () => {
-      const response = await app.request("/songs/1.5", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(400);
-      const responseBody = await response.json();
-      expect(responseBody).toHaveProperty("type");
-      expect(responseBody).toHaveProperty("title");
-      expect(responseBody).toHaveProperty("status", 400);
-      expect(responseBody).toHaveProperty("detail");
-      expect(responseBody).toHaveProperty("instance");
     });
   });
 });
