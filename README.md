@@ -1,314 +1,196 @@
-# IngSoftware2
-Tp0 Individual
+# IngSoftware2 - TP0 Individual
 
 El repositorio debe incluir un archivo README.md (en español) con:
-+ Una tabla de contenido.
-+ Una introducción con no más de un párrafo pequeño y conciso sobre la solución planteada.
-+ Una sección sobre qué fue lo más desafiante del proyecto.
 + Un apartado de pre-requisitos listando lo necesario para levantar el entorno de desarrollo, especificando los lenguajes y versiones de los manejadores de paquetes necesarios.
 + Link al "user-guide" de la libreria que se uso para testear, o en su defecto link al repo. e.g: Junit, gin-gonic
 + Comandos para construir la imagen de Docker.
 + Comandos para correr la base de datos.
 + Comandos para correr la imagen del servicio.
-+ Fecha máxima de entrega: 28-08-2025
 
-npx ts-node server/index.ts
+## Tabla de Contenido
 
-## Endpoints y Comandos curl
+- [Introducción](#introducción)
+- [Desafíos del Proyecto](#desafíos-del-proyecto)
+- [Pre-requisitos](#pre-requisitos)
+- [Instalación](#instalación)
+- [Base de Datos](#base-de-datos)
+- [Docker](#docker)
+- [Testing](#testing)
+- [Estructura del Proyecto](#estructura-del-proyecto)
 
-### 1. Crear una nueva canción (POST /songs)
-```bash
-curl -X POST http://localhost:3000/songs \
-  -H "Content-Type: application/json" \
-  -d '{"title": "I Want To Break Free", "artist": "Queen"}' | jq
-```
+## Introducción
 
-**Respuesta esperada:**
-```json
-{
-  "data": {
-    "id": 1,
-    "title": "I Want To Break Free",
-    "artist": "Queen"
-  }
-}
-```
+Este proyecto implementa una API REST para gestionar playlists y canciones utilizando Node.js con TypeScript, Hono como framework web, y MySQL como base de datos. La solución incluye un sistema completo de testing con dos enfoques: tests unitarios con mocks para validar lógica de errores y tests de integración con base de datos real para verificar el flujo completo de la aplicación.
 
-### 2. Obtener todas las canciones (GET /songs)
-```bash
-curl -X GET http://localhost:3000/songs | jq
-```
+## Desafíos del Proyecto
 
-**Respuesta esperada:**
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "title": "I Want To Break Free",
-      "artist": "Queen"
-    }
-  ]
-}
-```
+El mayor desafío fue implementar un sistema de testing robusto que cubriera tanto los casos de éxito como los escenarios de error. Esto requirió:
 
-### 3. Obtener una canción por ID (GET /songs/:id)
-```bash
-curl -X GET http://localhost:3000/songs/1 | jq
-```
+- **Diseño de mocks** para simular fallos de base de datos y validaciones
+- **Configuración de tests de integración** con base de datos real en Docker
+- **Aislamiento de tests** para garantizar que no interfieran entre sí
+- **Documentación clara** de ambos tipos de tests para facilitar el mantenimiento
 
-**Respuesta esperada:**
-```json
-{
-  "data": {
-    "id": 1,
-    "title": "I Want To Break Free",
-    "artist": "Queen"
-  }
-}
-```
+Gracias a que ya trabajé con creación de endpoints y manejo de base de datos relacionales en mi proyecto de tesis y trabajos prácticos de materias como arquitectura de software, en sí la implementación de los mismos no fue un gran desafio. 
 
-### 4. Actualizar una canción por ID (PUT /songs/:id)
-```bash
-# Actualizar título y artista
-curl -X PUT http://localhost:3000/songs/1 \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Bohemian Rhapsody", "artist": "Queen 1975"}' | jq
-```
+## Pre-requisitos
 
-**Respuesta esperada:**
-```json
-{
-  "data": {
-    "id": 1,
-    "title": "Bohemian Rhapsody",
-    "artist": "Queen 1975"
-  }
-}
-```
+### Lenguajes y Versiones
+- **Node.js**: v18.0.0 o superior
+- **TypeScript**: v5.3.2
+- **MySQL**: v8.0 (via Docker)
+
+### Manejadores de Paquetes
+- **npm**: v9.0.0 o superior
+- **Docker**: v20.0.0 o superior
+- **Docker Compose**: v2.0.0 o superior
+
+### Dependencias Principales
+- **Hono**: v4.0.5 (Framework web)
+- **Vitest**: v3.2.4 (Framework de testing)
+- **Supertest**: v7.1.4 (Testing de APIs)
+- **MySQL2**: v3.9.7 (Driver de MySQL)
+- **Winston**: v3.17.0 (Logger)
+- **Zod**: v3.22.4 (Validación de esquemas)
+
+## Instalación
 
 ```bash
-# Actualizar solo el título
-curl -X PUT http://localhost:3000/songs/1 \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Another One Bites The Dust"}' | jq
+# Clonar el repositorio
+git clone git@github.com:melijauregui/IngSoftware2.git
+cd IngSoft2
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env_example .env
+cp .env.test_example .env.test
 ```
 
-**Respuesta esperada:**
-```json
-{
-  "data": {
-    "id": 1,
-    "title": "Another One Bites The Dust",
-    "artist": "Queen 1975"
-  }
-}
+## Base de Datos
+
+### Levantar Base de Datos de Desarrollo
+```bash
+# Levantar MySQL con Docker Compose
+docker compose up -d --build
+
+# Verificar que la BD esté corriendo
+docker ps | grep melodia-db
 ```
+
+### Levantar Base de Datos de Testing
+```bash
+# Levantar BD de testing
+npm run test:db:up
+
+# Verificar estado de la BD
+# Esperar unos segundos a que se levante bien la BD
+npm run test:db:status
+
+# Bajar BD de testing
+npm run test:db:down
+```
+
+## Docker
+
+### Comandos
+```bash
+# Construir imagen de la aplicación
+npm run docker:build
+# Ejecutar la aplicación en Docker (incluye levantar la BD)
+npm run docker:run
+# Parar servicios
+npm run docker:down
+# Ver logs
+npm run docker:logs
+```
+
+### Ejecutar con Docker Compose
+```bash
+# Levantar aplicación completa (app + BD)
+docker compose up -d
+
+# Ver logs
+docker compose logs -f
+
+# Parar servicios
+docker compose down
+```
+
+## Testing
+
+### Framework de Testing
+- **Vitest**: Framework principal para tests unitarios y de integración
+- **Supertest**: Para testing de APIs HTTP
+- **Referencia**: [Vitest User Guide](https://vitest.dev/guide/)
+
+### Tests Unitarios con Mocks
+
+Los tests unitarios utilizan mocks para simular errores y dependencias externas:
 
 ```bash
-# Actualizar solo el artista
-curl -X PUT http://localhost:3000/songs/1 \
-  -H "Content-Type: application/json" \
-  -d '{"artist": "Queen & David Bowie"}' | jq
+# Ejecutar todos los tests unitarios
+npm run test:mocked
+
+# Ejecutar tests específicos por categoría
+npm run test:mocked:playlists
+npm run test:mocked:songs
+
+# Ejecutar test específico
+npm run test:mocked:file playlists-get-test
 ```
 
-**Respuesta esperada:**
-```json
-{
-  "data": {
-    "id": 1,
-    "title": "Another One Bites The Dust",
-    "artist": "Queen & David Bowie"
-  }
-}
-```
+### Tests de Integración
 
-### 5. Eliminar una canción por ID (DELETE /songs/:id)
+Los tests de integración utilizan una base de datos real:
+
 ```bash
-curl -X DELETE http://localhost:3000/songs/1
+# Verificar estado de BD antes de ejecutar tests
+npm run test:db:status
+
+# Ejecutar todos los tests de integración
+npm run test:integration
+
+# Ejecutar tests específicos por categoría
+npm run test:integration:playlists
+npm run test:integration:songs
+
+# Ejecutar test específico
+npm run test:integration:file playlists-get-test
 ```
 
-**Respuesta esperada:**
-```
-(No content - Status 204)
-```
-
-## Endpoints de Playlists
-
-### 1. Crear una nueva playlist (POST /playlists)
+### Cobertura de Tests
 ```bash
-curl -X POST http://localhost:3000/playlists \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Mis Canciones Favoritas", "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día"}' | jq
+# Ejecutar tests con reporte de cobertura
+npm run test:run -- --coverage
 ```
 
-**Respuesta esperada:**
-```json
-{
-  "data": {
-    "id": 1,
-    "name": "Mis Canciones Favoritas",
-    "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día",
-    "isPublished": true,
-    "publishedAt": "2024-01-01T00:00:00.000Z",
-    "songs": []
-  }
-}
+## Estructura del Proyecto
+
+```
+IngSoft2/
+├── server/                # Código fuente de la aplicación
+│   ├── app.ts             # Configuración principal de Hono
+│   ├── db.ts              # Configuración de base de datos
+│   ├── playlists/              # Endpoints de playlists
+│   └── playlists-id/           # Endpoints de playlists-id
+│   ├── playlists-id-songs/     # Endpoints de playlists-id-songs
+│   └── songs/                  # Endpoints de songs
+│   └── songs-id/               # Endpoints de songs-id
+├── tests-mocked/          # Tests unitarios con mocks
+│   ├── README.md          # Documentación de tests mocked
+│   └── *.ts               # Archivos de tests
+├── tests-integracion/     # Tests de integración con BD real
+│   ├── README.md          # Documentación de tests de integración
+│   └── *.ts               # Archivos de tests 
+├── scripts/               # Scripts de utilidad
+├── schemas/               # Esquemas de validación Zod
+├── database/              # Scripts de inicialización de BD
+└── docker-compose.yml     # Configuración de Docker
 ```
 
-### 2. Obtener todas las playlists (GET /playlists)
-```bash
-curl -X GET http://localhost:3000/playlists | jq
-```
+## 📅 Fecha de Entrega
 
-**Respuesta esperada:**
-```json
-{
-  "data": [
-    {
-      "id": 2,
-      "name": "Nueva Playlist",
-      "description": "Una playlist más reciente creada después de la primera con algunas canciones geniales",
-      "isPublished": true,
-      "publishedAt": "2024-01-02T00:00:00.000Z",
-      "songs": [
-        {
-          "id": 3,
-          "title": "Nueva Canción",
-          "artist": "Nuevo Artista",
-          "addedAt": "2024-01-04T00:00:00.000Z"
-        }
-      ]
-    },
-    {
-      "id": 1,
-      "name": "Mis Canciones Favoritas",
-      "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día",
-      "isPublished": true,
-      "publishedAt": "2024-01-01T00:00:00.000Z",
-      "songs": []
-    }
-  ]
-}
-```
-
-### 3. Obtener una playlist por ID (GET /playlists/:id)
-```bash
-curl -X GET http://localhost:3000/playlists/1 | jq
-```
-
-**Respuesta esperada:**
-```json
-{
-  "data": {
-    "id": 1,
-    "name": "Mis Canciones Favoritas",
-    "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día",
-    "isPublished": true,
-    "publishedAt": "2024-01-01T00:00:00.000Z",
-    "songs": [
-      {
-        "id": 1,
-        "title": "Bohemian Rhapsody",
-        "artist": "Queen",
-        "addedAt": "2024-01-02T00:00:00.000Z"
-      },
-      {
-        "id": 2,
-        "title": "Stairway to Heaven",
-        "artist": "Led Zeppelin",
-        "addedAt": "2024-01-03T00:00:00.000Z"
-      }
-    ]
-  }
-}
-```
-
-### 4. Eliminar una playlist por ID (DELETE /playlists/:id)
-```bash
-curl -X DELETE http://localhost:3000/playlists/1
-```
-
-**Respuesta esperada:**
-```
-(No content - Status 204)
-```
-
-**Respuesta cuando la playlist no existe (404):**
-```json
-{
-  "type": "about:blank",
-  "title": "Not Found",
-  "status": 404,
-  "detail": "Playlist not found with id: 999",
-  "instance": "/playlists/999"
-}
-```
-
-### 5. Agregar una canción a una playlist (POST /playlists/:id/songs)
-```bash
-curl -X POST http://localhost:3000/playlists/1/songs \
-  -H "Content-Type: application/json" \
-  -d '{"songId": 1}' | jq
-```
-
-**Respuesta esperada:**
-```json
-{
-  "data": {
-    "id": 1,
-    "name": "Mis Canciones Favoritas",
-    "description": "Una colección de mis canciones favoritas que me encantan escuchar en cualquier momento del día",
-    "isPublished": true,
-    "publishedAt": "2024-01-01T00:00:00.000Z",
-    "songs": [
-      {
-        "id": 1,
-        "title": "Bohemian Rhapsody",
-        "artist": "Queen",
-        "addedAt": "2024-01-02T00:00:00.000Z"
-      }
-    ]
-  }
-}
-```
-
-**Respuesta cuando la playlist no existe (404):**
-```json
-{
-  "type": "about:blank",
-  "title": "Not Found",
-  "status": 404,
-  "detail": "Playlist not found with id: 999",
-  "instance": "/playlists/999/songs"
-}
-```
-
-**Respuesta cuando la canción no existe (404):**
-```json
-{
-  "type": "about:blank",
-  "title": "Not Found",
-  "status": 404,
-  "detail": "Song not found with id: 999",
-  "instance": "/playlists/1/songs"
-}
-```
-
-### Notas importantes:
-- Todos los endpoints devuelven JSON
-- El parámetro `id` debe ser un número entero positivo
-- Para las actualizaciones (PUT), al menos uno de los campos (`title` o `artist`) debe ser proporcionado
-- Los campos `title` y `artist` tienen un límite máximo de 50 caracteres
-- **Para playlists:**
-  - El campo `name` debe tener entre 1 y 50 caracteres
-  - El campo `description` debe tener entre 50 y 255 caracteres
-  - Las playlists se crean automáticamente como publicadas (`isPublished: true`)
-  - El campo `songs` siempre se inicializa como un array vacío
-- El comando `jq` al final es opcional, pero ayuda a formatear la salida JSON de manera legible
-
-
-
-
-//TODO AGREGAR TESTS CON BDD TESTING ESPECIALMENTE GET /playlists
+**Fecha máxima de entrega**: 28-08-2025
 
