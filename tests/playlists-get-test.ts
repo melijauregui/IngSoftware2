@@ -28,7 +28,7 @@ describe("GET /playlists", () => {
     vi.restoreAllMocks();
   });
 
-  describe("Case 2: Database error - Internal server error (500)", () => {
+  describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database error during playlist query", async () => {
       const dbError = new Error(
         "ER_CONNECTION_LOST: Connection lost to database"
@@ -107,7 +107,7 @@ describe("GET /playlists", () => {
     });
   });
 
-  describe("Case 3: Edge cases", () => {
+  describe("Case 2: Edge cases", () => {
     it("should handle playlist with invalid song data gracefully", async () => {
       const mockPlaylists = [
         {

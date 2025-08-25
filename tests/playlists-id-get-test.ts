@@ -109,7 +109,7 @@ describe("GET /playlists/:id", () => {
     });
   });
 
-  describe("Case 5: Edge cases", () => {
+  describe("Case 2: Edge cases", () => {
     it("should handle playlist with invalid playlist data gracefully", async () => {
       const mockPlaylist = [
         {

@@ -28,7 +28,7 @@ describe("POST /playlists", () => {
     vi.restoreAllMocks();
   });
 
-  describe("Case 3: Database error - Internal server error (500)", () => {
+  describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database error during insert", async () => {
       const playlistData = {
         name: "My Favorite Songs",
