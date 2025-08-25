@@ -40,7 +40,9 @@ export function handlerError(err: Error, c: Context) {
       title: "Validation Error",
       status: 400,
       detail: err.errors
-        .map((e) => `${e.path.join(".")}: ${e.message}`)
+        .map((e) =>
+          e.path.length > 0 ? `${e.path.join(".")}: ${e.message}` : e.message
+        )
         .join(", "),
       instance: c.req.path,
     };
