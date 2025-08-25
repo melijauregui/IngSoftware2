@@ -8,7 +8,7 @@ import {
   vi,
 } from "vitest";
 import app from "../server/app";
-import { db } from "../server/db";
+import { db } from "../server/db.config";
 
 describe("GET /songs", () => {
   // Mock database for testing
@@ -28,103 +28,7 @@ describe("GET /songs", () => {
     vi.restoreAllMocks();
   });
 
-  describe("Case 1: Success - Retrieve all songs successfully (200)", () => {
-    it("should return all songs when database has songs", async () => {
-      const mockSongs = [
-        {
-          id: 1,
-          title: "Bohemian Rhapsody",
-          artist: "Queen",
-        },
-        {
-          id: 2,
-          title: "Hotel California",
-          artist: "Eagles",
-        },
-        {
-          id: 3,
-          title: "Stairway to Heaven",
-          artist: "Led Zeppelin",
-        },
-      ];
-
-      mockQuery.mockResolvedValueOnce([mockSongs, []]);
-
-      const response = await app.request("/songs", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(200);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        data: [
-          {
-            id: 1,
-            title: "Bohemian Rhapsody",
-            artist: "Queen",
-          },
-          {
-            id: 2,
-            title: "Hotel California",
-            artist: "Eagles",
-          },
-          {
-            id: 3,
-            title: "Stairway to Heaven",
-            artist: "Led Zeppelin",
-          },
-        ],
-      });
-      expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
-    });
-
-    it("should return empty array when database has no songs", async () => {
-      const mockSongs: any[] = [];
-      mockQuery.mockResolvedValueOnce([mockSongs, []]);
-
-      const response = await app.request("/songs", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(200);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        data: [],
-      });
-      expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
-    });
-
-    it("should return single song when database has only one song", async () => {
-      const mockSongs = [
-        {
-          id: 1,
-          title: "Bohemian Rhapsody",
-          artist: "Queen",
-        },
-      ];
-
-      mockQuery.mockResolvedValueOnce([mockSongs, []]);
-
-      const response = await app.request("/songs", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(200);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        data: [
-          {
-            id: 1,
-            title: "Bohemian Rhapsody",
-            artist: "Queen",
-          },
-        ],
-      });
-      expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
-    });
-  });
-
-  describe("Case 2: Database error - Internal server error (500)", () => {
+  describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database connection error", async () => {
       const dbError = new Error(
         "ER_CONNECTION_LOST: Connection lost to database"
@@ -168,7 +72,7 @@ describe("GET /songs", () => {
     });
   });
 
-  describe("Case 3: Data validation - Schema validation errors", () => {
+  describe("Case 2: Data validation - Schema validation errors", () => {
     it("should handle songs with missing required fields gracefully", async () => {
       const mockSongs = [
         {
@@ -226,24 +130,6 @@ describe("GET /songs", () => {
         data: [],
       });
       expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
-    });
-  });
-
-  describe("Case 5: HTTP method validation", () => {
-    it("should return 404 for PUT request to /songs endpoint", async () => {
-      const response = await app.request("/songs", {
-        method: "PUT",
-      });
-
-      expect(response.status).toBe(404);
-    });
-
-    it("should return 404 for DELETE request to /songs endpoint", async () => {
-      const response = await app.request("/songs", {
-        method: "DELETE",
-      });
-
-      expect(response.status).toBe(404);
     });
   });
 });

@@ -106,6 +106,19 @@ export const setupTestJustOnePlaylistDatabase = async () => {
   }
 };
 
+export const setupTestJustOneSongDatabase = async () => {
+  try {
+    await cleanupTestDatabase();
+    await testDb.execute(
+      "INSERT INTO songs (id, title, artist) VALUES (?, ?, ?)",
+      [TEST_SONGS.SONG_1.id, TEST_SONGS.SONG_1.title, TEST_SONGS.SONG_1.artist]
+    );
+    console.log("Test database setup completed");
+  } catch (error) {
+    console.error("Error setting up test database:", error);
+  }
+};
+
 export const setupCompleteTestDatabase = async () => {
   try {
     await cleanupTestDatabase();

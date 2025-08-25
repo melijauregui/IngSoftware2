@@ -24,7 +24,7 @@ export function comparePlaylistsData(
   expect(playlistResponse.description).toBe(testPlaylist.description);
 }
 
-export function comparePlaylistSongs(
+export function compareSongs(
   playlistSongsResponse: any,
   expectedSongIds: number[]
 ) {
@@ -42,7 +42,7 @@ export function comparePlaylistSongs(
   });
 }
 
-export function compareSongs(songResponse: any, testSong: any) {
+export function compareSong(songResponse: any, testSong: any) {
   expect(songResponse).toHaveProperty("id");
   expect(songResponse).toHaveProperty("title");
   expect(songResponse).toHaveProperty("artist");
