@@ -8,7 +8,7 @@ import {
   TEST_SONGS,
 } from "../server/db.test";
 import app from "../server/app";
-import { compareSong, compareSongs } from "./tests-functions";
+import { compareSong } from "./tests-functions";
 
 describe("GET /songs/:id", () => {
   beforeEach(async () => {
@@ -44,9 +44,9 @@ describe("GET /songs/:id", () => {
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: "about:blank",
-        title: "Not Found",
+        title: "Song Not Found",
         status: 404,
-        detail: "Song not found with id: 999",
+        detail: `The Song with ID ${songId} was not found`,
         instance: "/songs/999",
       });
     });

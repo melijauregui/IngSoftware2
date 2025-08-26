@@ -6,6 +6,7 @@ import app from "../server/app";
 import {
   cleanupTestDatabase,
   setupCompleteTestDatabase,
+  TEST_PLAYLISTS,
 } from "../server/db.test";
 
 describe("DELETE /playlists/:id", () => {
@@ -17,7 +18,8 @@ describe("DELETE /playlists/:id", () => {
     it("should delete a playlist successfully and return 204", async () => {
       await setupCompleteTestDatabase();
 
-      const response = await app.request("/playlists/1", {
+      const playlistId = TEST_PLAYLISTS.PLAYLIST_1.id;
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });
 
@@ -28,8 +30,9 @@ describe("DELETE /playlists/:id", () => {
   });
 
   describe("Case 2: Validation error - Invalid ID (400)", () => {
-    it("should return 400 when ID is not a number", async () => {
-      const response = await app.request("/playlists/abc", {
+    it("should return 400 when ID is not a valid UUID", async () => {
+      const playlistId = 1;
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });
 
@@ -39,13 +42,14 @@ describe("DELETE /playlists/:id", () => {
         type: "about:blank",
         title: "Validation Error",
         status: 400,
-        detail: "id: Expected integer",
-        instance: "/playlists/abc",
+        detail: "id: Expected valid UUID v4",
+        instance: `/playlists/${playlistId}`,
       });
     });
 
     it("should return 400 when ID is negative", async () => {
-      const response = await app.request("/playlists/-1", {
+      const playlistId = -1;
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });
 
@@ -55,13 +59,14 @@ describe("DELETE /playlists/:id", () => {
         type: "about:blank",
         title: "Validation Error",
         status: 400,
-        detail: "id: Number must be greater than or equal to 0",
-        instance: "/playlists/-1",
+        detail: "id: Expected valid UUID v4",
+        instance: `/playlists/${playlistId}`,
       });
     });
 
     it("should return 400 when ID is a decimal number", async () => {
-      const response = await app.request("/playlists/1.5", {
+      const playlistId = 1.5;
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });
 
@@ -71,8 +76,8 @@ describe("DELETE /playlists/:id", () => {
         type: "about:blank",
         title: "Validation Error",
         status: 400,
-        detail: "id: Expected integer",
-        instance: "/playlists/1.5",
+        detail: "id: Expected valid UUID v4",
+        instance: `/playlists/${playlistId}`,
       });
     });
   });
@@ -81,7 +86,9 @@ describe("DELETE /playlists/:id", () => {
     it("should return 404 when playlist does not exist", async () => {
       await setupCompleteTestDatabase();
 
-      const response = await app.request("/playlists/999", {
+      //valid uuid v4 but not exists
+      const playlistId = "550e8400-e29b-41d4-a716-446655440003";
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });
 
@@ -89,10 +96,10 @@ describe("DELETE /playlists/:id", () => {
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: "about:blank",
-        title: "Not Found",
+        title: "Playlist Not Found",
         status: 404,
-        detail: "Playlist not found with id: 999",
-        instance: "/playlists/999",
+        detail: `The Playlist with ID ${playlistId} was not found`,
+        instance: `/playlists/${playlistId}`,
       });
     });
   });

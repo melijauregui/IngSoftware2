@@ -7,7 +7,7 @@ import {
   setupCompleteTestDatabase,
 } from "../server/db.test";
 import app from "../server/app";
-import { compareSong, compareSongs } from "./tests-functions";
+import { compareSong } from "./tests-functions";
 
 describe("POST /songs", () => {
   beforeEach(async () => {

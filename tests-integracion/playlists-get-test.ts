@@ -35,7 +35,7 @@ describe("GET /playlists", () => {
       comparePlaylistsData(firstPlaylist, TEST_PLAYLISTS.PLAYLIST_2, true);
       const firstPlaylistSongs = firstPlaylist.songs;
       const firstPlaylistExpectedSongIds = [
-        TEST_PLAYLISTS_SONGS.PLAYLIST_2_SONG_3.song_id,
+        TEST_PLAYLISTS_SONGS.PLAYLIST_2_SONG_3.songId,
       ];
       compareSongs(firstPlaylistSongs, firstPlaylistExpectedSongIds);
 
@@ -43,8 +43,8 @@ describe("GET /playlists", () => {
       comparePlaylistsData(secondPlaylist, TEST_PLAYLISTS.PLAYLIST_1, true);
       const secondPlaylistSongs = secondPlaylist.songs;
       const secondPlaylistExpectedSongIds = [
-        TEST_PLAYLISTS_SONGS.PLAYLIST_1_SONG_1.song_id,
-        TEST_PLAYLISTS_SONGS.PLAYLIST_1_SONG_2.song_id,
+        TEST_PLAYLISTS_SONGS.PLAYLIST_1_SONG_1.songId,
+        TEST_PLAYLISTS_SONGS.PLAYLIST_1_SONG_2.songId,
       ];
       compareSongs(secondPlaylistSongs, secondPlaylistExpectedSongIds);
     });
