@@ -4,24 +4,26 @@ dotenv.config();
 const {
   PORT,
   HOSTNAME,
-  MYSQL_ROOT_PASSWORD,
+  POSTGRES_ROOT_PASSWORD,
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
   ENVIRONMENT,
+  DATABASE_URL,
 } = process.env;
 const REQUIRED_VARS = {
   PORT,
   HOSTNAME,
-  MYSQL_ROOT_PASSWORD,
+  POSTGRES_ROOT_PASSWORD,
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
   ENVIRONMENT,
+  DATABASE_URL,
 };
 
 // Check if any required variable is missing
@@ -40,11 +42,12 @@ if (missingVars.length > 0) {
 export const config = {
   PORT,
   HOSTNAME,
-  MYSQL_ROOT_PASSWORD,
+  POSTGRES_ROOT_PASSWORD,
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
   ENVIRONMENT: ENVIRONMENT || "development",
+  DATABASE_URL,
 };

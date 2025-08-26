@@ -6,25 +6,27 @@ dotenv.config({ path: ".env.test", override: true });
 const {
   PORT,
   HOSTNAME,
-  MYSQL_ROOT_PASSWORD,
+  POSTGRES_ROOT_PASSWORD,
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
   ENVIRONMENT,
+  DATABASE_URL,
 } = process.env;
 
 const REQUIRED_VARS = {
   PORT,
   HOSTNAME,
-  MYSQL_ROOT_PASSWORD,
+  POSTGRES_ROOT_PASSWORD,
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
   ENVIRONMENT,
+  DATABASE_URL,
 };
 
 // Check if any required variable is missing
@@ -43,11 +45,12 @@ if (missingVars.length > 0) {
 export const testConfig = {
   PORT,
   HOSTNAME,
-  MYSQL_ROOT_PASSWORD,
+  POSTGRES_ROOT_PASSWORD,
   DB_USER,
   DB_PASSWORD,
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
   ENVIRONMENT: ENVIRONMENT || "test",
+  DATABASE_URL,
 };

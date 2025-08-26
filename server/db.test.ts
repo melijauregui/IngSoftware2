@@ -1,25 +1,24 @@
 // db.test.ts
-import mysql from "mysql2/promise";
+import { PrismaClient } from "@prisma/client";
 import { testConfig } from "../config.test";
 import logger from "./logger";
 
-export const testDb = mysql.createPool({
-  host: testConfig.DB_HOST,
-  port: Number(testConfig.DATABASE_PORT),
-  user: testConfig.DB_USER,
-  password: testConfig.DB_PASSWORD,
-  database: testConfig.DB_NAME,
-  multipleStatements: true, // Allow multiple statements for setup/teardown
+const testPrisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: testConfig.DATABASE_URL,
+    },
+  },
+  log: ["error"],
 });
 
-testDb
-  .getConnection()
-  .then((connection) => {
-    logger.info("Database connection established successfully");
-    connection.release();
+testPrisma
+  .$connect()
+  .then(() => {
+    logger.info("Test database connection established successfully");
   })
-  .catch((error) => {
-    logger.error(`Database connection failed: ${error.message}`);
+  .catch((error: Error) => {
+    logger.error(`Test database connection failed: ${error.message}`);
   });
 
 export const TEST_SONGS = {
@@ -42,33 +41,33 @@ export const TEST_SONGS = {
 
 export const TEST_PLAYLISTS = {
   PLAYLIST_1: {
-    id: 1,
+    id: "550e8400-e29b-41d4-a716-446655440001",
     name: "Test Playlist 1",
     description: "A".repeat(50),
-    published_at: new Date("2024-02-03"),
-    is_published: true,
+    publishedAt: new Date("2024-02-03"),
+    isPublished: true,
   },
   PLAYLIST_2: {
-    id: 2,
+    id: "550e8400-e29b-41d4-a716-446655440002",
     name: "Test Playlist 2",
     description: "B".repeat(50),
-    published_at: new Date("2025-02-03"),
-    is_published: true,
+    publishedAt: new Date("2025-02-03"),
+    isPublished: true,
   },
 };
 
 export const TEST_PLAYLISTS_SONGS = {
   PLAYLIST_1_SONG_1: {
-    playlist_id: 1,
-    song_id: 1,
+    playlistId: "550e8400-e29b-41d4-a716-446655440001",
+    songId: 1,
   },
   PLAYLIST_1_SONG_2: {
-    playlist_id: 1,
-    song_id: 2,
+    playlistId: "550e8400-e29b-41d4-a716-446655440001",
+    songId: 2,
   },
   PLAYLIST_2_SONG_3: {
-    playlist_id: 2,
-    song_id: 3,
+    playlistId: "550e8400-e29b-41d4-a716-446655440002",
+    songId: 3,
   },
 };
 
@@ -79,9 +78,9 @@ export const getAllTestPlaylistSongs = () =>
 
 export const cleanupTestDatabase = async () => {
   try {
-    await testDb.execute("DELETE FROM playlists_songs");
-    await testDb.execute("DELETE FROM playlists");
-    await testDb.execute("DELETE FROM songs");
+    await testPrisma.playlistsSongs.deleteMany();
+    await testPrisma.playlist.deleteMany();
+    await testPrisma.song.deleteMany();
     console.log("Test database cleaned up");
   } catch (error) {
     console.error("Error cleaning up test database:", error);
@@ -91,15 +90,15 @@ export const cleanupTestDatabase = async () => {
 export const setupTestJustOnePlaylistDatabase = async () => {
   try {
     await cleanupTestDatabase();
-    await testDb.execute(
-      "INSERT INTO playlists (id, name, description, published_at) VALUES (?, ?, ?, ?)",
-      [
-        TEST_PLAYLISTS.PLAYLIST_1.id,
-        TEST_PLAYLISTS.PLAYLIST_1.name,
-        TEST_PLAYLISTS.PLAYLIST_1.description,
-        TEST_PLAYLISTS.PLAYLIST_1.published_at,
-      ]
-    );
+    await testPrisma.playlist.create({
+      data: {
+        id: TEST_PLAYLISTS.PLAYLIST_1.id,
+        name: TEST_PLAYLISTS.PLAYLIST_1.name,
+        description: TEST_PLAYLISTS.PLAYLIST_1.description,
+        publishedAt: TEST_PLAYLISTS.PLAYLIST_1.publishedAt,
+        isPublished: TEST_PLAYLISTS.PLAYLIST_1.isPublished,
+      },
+    });
     console.log("Test database setup completed");
   } catch (error) {
     console.error("Error setting up test database:", error);
@@ -109,10 +108,17 @@ export const setupTestJustOnePlaylistDatabase = async () => {
 export const setupTestJustOneSongDatabase = async () => {
   try {
     await cleanupTestDatabase();
-    await testDb.execute(
-      "INSERT INTO songs (id, title, artist) VALUES (?, ?, ?)",
-      [TEST_SONGS.SONG_1.id, TEST_SONGS.SONG_1.title, TEST_SONGS.SONG_1.artist]
-    );
+    await testPrisma.song.create({
+      data: {
+        id: TEST_SONGS.SONG_1.id,
+        title: TEST_SONGS.SONG_1.title,
+        artist: TEST_SONGS.SONG_1.artist,
+      },
+    });
+
+    // Reset the sequence to the next available ID
+    await testPrisma.$executeRaw`SELECT setval('"Song_id_seq"', (SELECT MAX(id) FROM "Song"))`;
+
     console.log("Test database setup completed");
   } catch (error) {
     console.error("Error setting up test database:", error);
@@ -122,32 +128,45 @@ export const setupTestJustOneSongDatabase = async () => {
 export const setupCompleteTestDatabase = async () => {
   try {
     await cleanupTestDatabase();
+
+    // Insert songs
     const songs = getAllTestSongs();
     for (const song of songs) {
-      await testDb.execute(
-        "INSERT INTO songs (id, title, artist) VALUES (?, ?, ?)",
-        [song.id, song.title, song.artist]
-      );
-    }
-    const playlists = getAllTestPlaylists();
-    for (const playlist of playlists) {
-      await testDb.execute(
-        "INSERT INTO playlists (id, name, description, published_at) VALUES (?, ?, ?, ?)",
-        [
-          playlist.id,
-          playlist.name,
-          playlist.description,
-          playlist.published_at,
-        ]
-      );
+      await testPrisma.song.create({
+        data: {
+          id: song.id,
+          title: song.title,
+          artist: song.artist,
+        },
+      });
     }
 
+    // Reset the sequence to the next available ID
+    await testPrisma.$executeRaw`SELECT setval('"Song_id_seq"', (SELECT MAX(id) FROM "Song"))`;
+
+    // Insert playlists
+    const playlists = getAllTestPlaylists();
+    for (const playlist of playlists) {
+      await testPrisma.playlist.create({
+        data: {
+          id: playlist.id,
+          name: playlist.name,
+          description: playlist.description,
+          publishedAt: playlist.publishedAt,
+          isPublished: playlist.isPublished,
+        },
+      });
+    }
+
+    // Insert playlist songs
     const playlistSongs = getAllTestPlaylistSongs();
     for (const playlistSong of playlistSongs) {
-      await testDb.execute(
-        "INSERT INTO playlists_songs (playlist_id, song_id) VALUES (?, ?)",
-        [playlistSong.playlist_id, playlistSong.song_id]
-      );
+      await testPrisma.playlistsSongs.create({
+        data: {
+          playlistId: playlistSong.playlistId,
+          songId: playlistSong.songId,
+        },
+      });
     }
 
     console.log("Test database setup completed");
@@ -155,3 +174,6 @@ export const setupCompleteTestDatabase = async () => {
     console.error("Error setting up test database:", error);
   }
 };
+
+export { testPrisma };
+export default testPrisma;

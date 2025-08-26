@@ -1,24 +1,25 @@
 
 services:
-  mysql-test:
-    image: mysql:8.0
+  postgres-test:
+    image: postgres:15
     container_name: melodia-db-test
     env_file:
       - .env.test
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     restart: unless-stopped
     ports:
-      - "${DATABASE_PORT}:3306"
+      - "${DATABASE_PORT}:5432"
     volumes:
+      - postgres_test_data:/var/lib/postgresql/data
       - ./database:/docker-entrypoint-initdb.d
     networks:
       - melodia-test-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       timeout: 10s
       retries: 5
       interval: 5s
@@ -29,4 +30,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_test_data:
+  postgres_test_data:
