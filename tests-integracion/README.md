@@ -94,11 +94,13 @@ npm run test:integration:file songs-id-delete-test
 Los siguientes archivos de test están disponibles para ejecución:
 
 #### Tests de Playlists
-- `playlists-get-test.ts` - Tests para GET /playlists
+- `playlists-get-test.ts` - Tests para GET /playlists (incluye filtros `published` y `sort`)
 - `playlists-post-test.ts` - Tests para POST /playlists
 - `playlists-id-get-test.ts` - Tests para GET /playlists/:id
 - `playlists-id-delete-test.ts` - Tests para DELETE /playlists/:id
 - `playlists-id-songs-post-test.ts` - Tests para POST /playlists/:id/songs
+- `playlists-id-publish-test.ts` - Tests para POST /playlists/:id/publish
+- `integration-flows-test.ts` - Tests de flujos completos usando múltiples endpoints
 
 #### Tests de Songs
 - `songs-get-test.ts` - Tests para GET /songs
@@ -126,6 +128,40 @@ Cada endpoint se prueba en:
 - ❌ IDs inválidos (400)
 - ❌ Recursos no encontrados (404)
 - ❌ JSON inválido (400)
+
+## Parámetros de Ordenamiento (GET /playlists)
+
+El endpoint `GET /playlists` soporta los siguientes parámetros de consulta:
+
+### Parámetro `published`
+- **Valores**: `"true"` | `"false"`
+- **Por defecto**: `"true"` (solo playlists publicadas)
+- **Comportamiento**:
+  - `published=true`: Retorna solo playlists con `isPublished: true`
+  - `published=false`: Retorna todas las playlists (publicadas y no publicadas)
+
+### Parámetro `sort`
+- **Valores**: `"asc"` | `"desc"`
+- **Por defecto**: `"desc"` (más recientes primero)
+- **Comportamiento**:
+  - `sort=desc`: Ordena por `publishedAt` descendente (más recientes primero)
+  - `sort=asc`: Ordena por `publishedAt` ascendente (más antiguas primero)
+  - **Playlists no publicadas**: Siempre aparecen al final, independientemente del valor de `sort`
+
+### Ejemplos de Uso
+```bash
+# Obtener solo playlists publicadas, ordenadas por fecha descendente (por defecto)
+GET /playlists
+
+# Obtener solo playlists publicadas, ordenadas por fecha ascendente
+GET /playlists?sort=asc
+
+# Obtener todas las playlists (publicadas y no publicadas)
+GET /playlists?published=false
+
+# Obtener todas las playlists, ordenadas por fecha ascendente
+GET /playlists?published=false&sort=asc
+```
 
 ## Aislamiento de Tests
 

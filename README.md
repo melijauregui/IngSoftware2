@@ -160,12 +160,12 @@ npm run test:integration:songs
 # Ejecutar test específico
 npm run test:integration:file playlists-get-test
 ```
+### Documentación Adicional
 
-### Cobertura de Tests
-```bash
-# Ejecutar tests con reporte de cobertura
-npm run test:run -- --coverage
-```
+Para información más detallada sobre los tests, consulta:
+
+- **[README de Tests Mocked](tests-mocked/README.md)** - Documentación completa de tests unitarios con mocks
+- **[README de Tests de Integración](tests-integracion/README.md)** - Documentación completa de tests de integración
 
 ## Desafíos Opcionales
 
@@ -228,6 +228,34 @@ npm run test:run -- --coverage
 - **Aplicación**: Contenedor de la aplicación que apunta al Dockerfile
 - **Networking**: Comunicación automática entre contenedores
 - **Variables de entorno**: Configuración separada para desarrollo y testing
+
+
+### 7. Publicación Diferida de Playlists ✅
+
+**Implementado**: Sistema de publicación diferida donde las playlists recién creadas no son visibles hasta que se publiquen explícitamente.
+
+**Características**:
+- **Estado por defecto**: Las playlists se crean con `isPublished: false` y `publishedAt: null`
+- **Endpoint de publicación**: `POST /playlists/{id}/publish` (idempotente)
+- **Filtrado en listado**: `GET /playlists?published=true` (por defecto) vs `GET /playlists?published=false` (todas)
+- **Ordenamiento**: Las playlists se ordenan por `publishedAt` en orden descendente (más recientes primero)
+- **Integridad de datos**: Validación que `publishedAt` no puede ser null si `isPublished` es true
+
+**Tests de verificación**: 
+- Ubicados en `tests-integracion/playlists-get-test.ts` y `tests-integracion/playlists-id-publish-test.ts`
+- Verifican flujo completo de creación → publicación → visibilidad
+- Validan comportamiento idempotente del endpoint de publicación
+
+## Tests de Integración de Flujos Complejos 
+
+**Implementado**: Tests de integración que prueban flujos completos usando múltiples endpoints en secuencia.
+
+**Características**:
+- **Flujos de publicación**: Crear playlist → verificar oculta → publicar → verificar visible
+- **Flujos de eliminación**: Obtener playlist → eliminar → verificar desaparece
+- **Flujos de gestión de canciones**: Crear canción → agregar a playlist → verificar integridad
+- **Flujos de eliminación de canciones**: Eliminar canción → verificar desaparece de todas las playlists
+
 
 **Comandos disponibles**:
 ```bash

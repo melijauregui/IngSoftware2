@@ -26,11 +26,12 @@ Los tests en esta carpeta están diseñados para:
 ### Archivos de Test Disponibles
 
 #### Tests de Playlists
-- `playlists-get-test.ts` - Tests para GET /playlists con mocks
+- `playlists-get-test.ts` - Tests para GET /playlists con mocks (incluye filtros `published` y `sort`)
 - `playlists-post-test.ts` - Tests para POST /playlists con mocks
 - `playlists-id-get-test.ts` - Tests para GET /playlists/:id con mocks
 - `playlists-id-delete-test.ts` - Tests para DELETE /playlists/:id con mocks
 - `playlists-id-songs-post-test.ts` - Tests para POST /playlists/:id/songs con mocks
+- `playlists-id-publish-test.ts` - Tests para POST /playlists/:id/publish con mocks
 
 #### Tests de Songs
 - `songs-get-test.ts` - Tests para GET /songs con mocks
@@ -125,4 +126,24 @@ vi.spyOn(db, 'query').mockRejectedValue(new Error('Database error'));
 ### Casos de Error de Validación
 - ❌ Datos faltantes requeridos
 - ❌ Tipos de datos incorrectos
+
+## Parámetros de Ordenamiento (GET /playlists)
+
+Los tests mocked para `GET /playlists` verifican el comportamiento de los parámetros de consulta:
+
+### Parámetro `published`
+- **Valores válidos**: `"true"` | `"false"`
+- **Valores inválidos**: Cualquier otro string
+- **Comportamiento mockeado**: Simula filtrado de playlists por estado de publicación
+
+### Parámetro `sort`
+- **Valores válidos**: `"asc"` | `"desc"`
+- **Valores inválidos**: Cualquier otro string
+- **Comportamiento mockeado**: Simula ordenamiento por `publishedAt`
+- **Playlists no publicadas**: Siempre aparecen al final en los mocks
+
+### Casos de Error Verificados
+- ❌ Parámetro `published` con valor inválido (400)
+- ❌ Parámetro `sort` con valor inválido (400)
+- ❌ Combinaciones de parámetros inválidos
 
