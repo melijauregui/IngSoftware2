@@ -8,35 +8,14 @@ import songsIdApp from "./songs-id/routes";
 import playlistsApp from "./playlists/routes";
 import playlistsIdApp from "./playlists-id/routes";
 import playlistsIdSongsApp from "./playlists-id-songs/routes";
-
-// Function to handle Prisma not found errors and determine resource type
-function handlePrismaNotFoundError(err: any, path: string) {
-  // Extract ID from path
-  const pathParts = path.split("/");
-  const id = pathParts[pathParts.length - 1];
-
-  // Determine if it's a playlist or song based on path
-  let resourceType = "Resource";
-  if (path.includes("/playlists/")) {
-    resourceType = "Playlist";
-  } else if (path.includes("/songs/")) {
-    resourceType = "Song";
-  }
-
-  return {
-    type: "about:blank",
-    title: `${resourceType} Not Found`,
-    status: 404,
-    detail: `The ${resourceType} with ID ${id} was not found`,
-    instance: path,
-  };
-}
+import playlistsIdPublishApp from "./playslists-id-publish/routes";
 
 const app = new OpenAPIHono();
 
 // Mount songs routes
 app.route("/songs/:id", songsIdApp);
 app.route("/songs", songsApp);
+app.route("/playlists/:id/publish", playlistsIdPublishApp);
 app.route("/playlists/:id/songs", playlistsIdSongsApp);
 app.route("/playlists/:id", playlistsIdApp);
 app.route("/playlists", playlistsApp);
@@ -124,4 +103,27 @@ export function handlerError(err: Error, c: Context) {
 
   logger.error(`Internal server error on ${c.req.path}: ${err.message}`);
   return c.json(errorResponse, 500);
+}
+
+// Function to handle Prisma not found errors and determine resource type
+function handlePrismaNotFoundError(err: any, path: string) {
+  // Extract ID from path
+  const pathParts = path.split("/");
+  const id = pathParts[pathParts.length - 1];
+
+  // Determine if it's a playlist or song based on path
+  let resourceType = "Resource";
+  if (path.includes("/playlists/")) {
+    resourceType = "Playlist";
+  } else if (path.includes("/songs/")) {
+    resourceType = "Song";
+  }
+
+  return {
+    type: "about:blank",
+    title: `${resourceType} Not Found`,
+    status: 404,
+    detail: `The ${resourceType} with ID ${id} was not found`,
+    instance: path,
+  };
 }

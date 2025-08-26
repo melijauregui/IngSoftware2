@@ -57,6 +57,7 @@ export function compareSongs(
     expect(song.id).toBe(expectedSong.id);
     expect(song.title).toBe(expectedSong.title);
     expect(song.artist).toBe(expectedSong.artist);
+    expect(new Date(song.addedAt)).toBeInstanceOf(Date);
   });
 }
 
