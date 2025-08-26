@@ -60,6 +60,8 @@ describe("POST /playlists", () => {
 
       const createdPlaylist = body.data;
       comparePlaylistsData(createdPlaylist, newPlaylist, false);
+      expect(createdPlaylist.isPublished).toBe(false);
+      expect(createdPlaylist.publishedAt).toBe(null);
       expect(createdPlaylist.songs).toHaveLength(0);
     });
   });

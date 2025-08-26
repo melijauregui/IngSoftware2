@@ -54,6 +54,13 @@ export const TEST_PLAYLISTS = {
     publishedAt: new Date("2025-02-03"),
     isPublished: true,
   },
+  PLAYLIST_3: {
+    id: "550e8400-e29b-41d4-a716-446655440003",
+    name: "Unpublished Playlist",
+    description: "C".repeat(50),
+    publishedAt: null,
+    isPublished: false,
+  },
 };
 
 export const TEST_PLAYLISTS_SONGS = {
@@ -68,6 +75,10 @@ export const TEST_PLAYLISTS_SONGS = {
   PLAYLIST_2_SONG_3: {
     playlistId: "550e8400-e29b-41d4-a716-446655440002",
     songId: 3,
+  },
+  PLAYLIST_3_SONG_1: {
+    playlistId: "550e8400-e29b-41d4-a716-446655440003",
+    songId: 1,
   },
 };
 
@@ -147,12 +158,12 @@ export const setupCompleteTestDatabase = async () => {
     // Insert playlists
     const playlists = getAllTestPlaylists();
     for (const playlist of playlists) {
-      await testPrisma.playlist.create({
+      const createdPlaylist = await testPrisma.playlist.create({
         data: {
           id: playlist.id,
           name: playlist.name,
           description: playlist.description,
-          publishedAt: playlist.publishedAt,
+          publishedAt: playlist.publishedAt ?? undefined,
           isPublished: playlist.isPublished,
         },
       });

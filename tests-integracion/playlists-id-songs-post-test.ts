@@ -281,7 +281,7 @@ describe("POST /playlists/:id/songs", () => {
   describe("Case 4: Not found error - Playlist or song not found (404)", () => {
     it("should return 404 when playlist does not exist", async () => {
       await setupCompleteTestDatabase();
-      const playlistId = "550e8400-e29b-41d4-a716-446655440003";
+      const playlistId = "550e8400-e29b-41d4-a716-446655440004";
       const songId = 5;
       const requestBody = { songId };
 

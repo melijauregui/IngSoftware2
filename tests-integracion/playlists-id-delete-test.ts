@@ -87,7 +87,7 @@ describe("DELETE /playlists/:id", () => {
       await setupCompleteTestDatabase();
 
       //valid uuid v4 but not exists
-      const playlistId = "550e8400-e29b-41d4-a716-446655440003";
+      const playlistId = "550e8400-e29b-41d4-a716-446655440004";
       const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });

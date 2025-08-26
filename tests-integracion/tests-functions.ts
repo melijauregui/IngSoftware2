@@ -28,10 +28,15 @@ export function comparePlaylistsData(
 
   if (fullComparison) {
     expect(playlistResponse.id).toBe(testPlaylist.id);
-    expect(playlistResponse.publishedAt).toBe(
-      testPlaylist.publishedAt.toISOString()
-    );
-    expect(playlistResponse.isPublished).toBe(testPlaylist.isPublished);
+    if (testPlaylist.isPublished) {
+      expect(playlistResponse.isPublished).toBe(true);
+      expect(playlistResponse.publishedAt).toBe(
+        testPlaylist.publishedAt.toISOString()
+      );
+    } else {
+      expect(playlistResponse.isPublished).toBe(false);
+      expect(playlistResponse.publishedAt).toBeNull();
+    }
   }
   expect(playlistResponse.name).toBe(testPlaylist.name);
   expect(playlistResponse.description).toBe(testPlaylist.description);

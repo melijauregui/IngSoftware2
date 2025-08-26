@@ -55,24 +55,36 @@ export const PlaylistSongSchema = z
   })
   .strict();
 
-export const PlaylistDataSchema = z
+export type PlaylistSongSchemaType = z.infer<typeof PlaylistSongSchema>;
+
+export const PlaylistDataSchemaBase = z
   .object({
     id: z.string().uuid({ message: "Expected valid UUID v4" }),
     ...CreatePlaylistRequestSchema.shape,
     isPublished: z
       .boolean()
-      .default(true)
+      .default(false)
       .describe(
-        "Playlist visibility flag. In the base spec, playlists are created as published."
+        "Visibility flag. In the optional publish variant it starts as false until /publish is called."
       ),
     publishedAt: z
       .string()
       .datetime()
+      .nullable()
       .describe(
-        "Timestamp when the playlist became published. In the base spec, equals creation time."
+        "Publish timestamp. Omitted or null until the playlist is published."
       ),
   })
   .strict();
+
+export const PlaylistDataSchema = PlaylistDataSchemaBase.refine(
+  (data) =>
+    !data.isPublished || (data.isPublished && data.publishedAt !== null),
+  {
+    message: "Published playlists must have a publishedAt timestamp",
+    path: ["publishedAt"],
+  }
+);
 
 export type PlaylistDataSchemaType = z.infer<typeof PlaylistDataSchema>;
 
@@ -107,10 +119,19 @@ export type PlaylistSongsSchemaType = z.infer<typeof PlaylistSongsSchema>;
 //    items:
 //      $ref: '#/components/schemas/PlaylistSong'
 //    description: Songs ordered by addition date (most recent first)
-export const PlaylistSchema = z.object({
-  ...PlaylistDataSchema.shape,
-  ...PlaylistSongsSchema.shape,
-});
+export const PlaylistSchema = z
+  .object({
+    ...PlaylistDataSchemaBase.shape,
+    ...PlaylistSongsSchema.shape,
+  })
+  .refine(
+    (data) =>
+      !data.isPublished || (data.isPublished && data.publishedAt !== null),
+    {
+      message: "Published playlists must have a publishedAt timestamp",
+      path: ["publishedAt"],
+    }
+  );
 
 export type PlaylistSchemaType = z.infer<typeof PlaylistSchema>;
 
@@ -135,4 +156,16 @@ export const PlaylistResponseArraySchema = z.object({
 
 export type PlaylistResponseArraySchemaType = z.infer<
   typeof PlaylistResponseArraySchema
+>;
+
+// Query parameters for GET /playlists
+export const GetPlaylistsQuerySchema = z
+  .object({
+    published: z.enum(["true", "false"]).optional().default("true"),
+    sort: z.enum(["asc", "desc"]).optional().default("desc"),
+  })
+  .strict();
+
+export type GetPlaylistsQuerySchemaType = z.infer<
+  typeof GetPlaylistsQuerySchema
 >;

@@ -55,9 +55,11 @@ describe("GET /playlists", () => {
       });
 
       expect(mockFindMany).toHaveBeenCalledWith({
-        orderBy: {
-          publishedAt: "desc",
-        },
+        where: { isPublished: true },
+        orderBy: [
+          { isPublished: "desc" }, // Siempre true primero, false después
+          { publishedAt: "desc" }, // Luego ordena por fecha
+        ],
       });
     });
 

@@ -6,6 +6,7 @@ import {
   PlaylistDataSchemaType,
   PlaylistSchemaType,
   PlaylistSongSchema,
+  PlaylistSongSchemaType,
   PlaylistSongsSchemaType,
 } from "../../schemas/playlists";
 
@@ -22,9 +23,17 @@ export async function createPlaylist(
     },
   });
 
-  const dataPlaylist = await getPlaylistDataById(playlist.id, `/playlists`);
-  logger.info(`Playlist created: ${JSON.stringify(dataPlaylist)}`);
-  response = { ...dataPlaylist, songs: [] };
+  // const dataPlaylist = await getPlaylistDataById(playlist.id, `/playlists`);
+  const playlistData = {
+    ...playlist,
+    publishedAt: playlist.publishedAt
+      ? playlist.publishedAt.toISOString()
+      : null,
+  };
+  const parsed = PlaylistDataSchema.parse(playlistData);
+
+  logger.info(`Playlist created: ${JSON.stringify(parsed)}`);
+  response = { ...parsed, songs: [] };
   return response;
 }
 
@@ -47,7 +56,9 @@ export async function getPlaylistDataById(
     name: playlist.name,
     description: playlist.description,
     isPublished: playlist.isPublished,
-    publishedAt: playlist.publishedAt.toISOString(),
+    publishedAt: playlist.publishedAt
+      ? playlist.publishedAt.toISOString()
+      : null,
   };
 
   const {
@@ -106,7 +117,7 @@ export async function getPlaylistSongsById(
       }
       return data;
     })
-    .filter((song: any) => song !== null);
+    .filter((song: any) => song !== null) as PlaylistSongSchemaType[];
 
   logger.info(
     `Songs found for playlist id ${id}: ${JSON.stringify(songsResult)}`
@@ -114,13 +125,18 @@ export async function getPlaylistSongsById(
   return { songs: songsResult };
 }
 
-export async function getPlaylists(): Promise<PlaylistSchemaType[]> {
+export async function getPlaylists(
+  published: boolean = true,
+  sort: "asc" | "desc" = "desc"
+): Promise<PlaylistSchemaType[]> {
   let response: PlaylistSchemaType[];
 
   const playlists = await db.playlist.findMany({
-    orderBy: {
-      publishedAt: "desc",
-    },
+    where: published ? { isPublished: true } : {},
+    orderBy: [
+      { isPublished: "desc" }, // Siempre true primero, false después
+      { publishedAt: sort }, // Luego ordena por fecha
+    ],
   });
 
   const playlistsData = playlists
@@ -130,7 +146,9 @@ export async function getPlaylists(): Promise<PlaylistSchemaType[]> {
         name: playlist.name,
         description: playlist.description,
         isPublished: playlist.isPublished,
-        publishedAt: playlist.publishedAt.toISOString(),
+        publishedAt: playlist.publishedAt
+          ? playlist.publishedAt.toISOString()
+          : null,
       };
       const { success, data, error } =
         PlaylistDataSchema.safeParse(playlistData);

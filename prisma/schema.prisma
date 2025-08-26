@@ -21,8 +21,8 @@ model Playlist {
   id          String   @id @default(uuid())
   name        String
   description String
-  isPublished Boolean  @default(true)
-  publishedAt DateTime @default(now())
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
   songs       PlaylistsSongs[]
 }
 

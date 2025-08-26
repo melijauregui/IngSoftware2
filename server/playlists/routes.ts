@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { ErrorResponseSchema } from "../../schemas/error";
-import { createPlaylist, getPlaylists } from "./functions";
+import { createPlaylist, getPlaylists, publishPlaylist } from "./functions";
 import { Context } from "hono";
 import { handlerError } from "../app";
 import logger from "../logger";
@@ -8,7 +8,9 @@ import {
   CreatePlaylistRequestSchema,
   PlaylistResponseArraySchema,
   PlaylistResponseSchema,
+  GetPlaylistsQuerySchema,
 } from "../../schemas/playlists";
+import { PlaylistIdSchema } from "../../schemas/playlists-id";
 
 const playlistsApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -103,8 +105,23 @@ playlistsApp.openapi(postPlaylistRoute, async (c) => {
 });
 
 // get:
-// summary: Retrieve published playlists (most recent first)
-// description: Returns playlists ordered by publishedAt (desc). In the base spec, playlists are created already published.
+// summary: Retrieve playlists (filter by published)
+// description: By default returns only published playlists ordered by publishedAt desc.
+// parameters:
+//   - in: query
+//     name: published
+//     required: false
+//     schema:
+//       type: boolean
+//       default: true
+//     description: If true (default), only published playlists are returned. If false, returns all playlists.
+//   - in: query
+//     name: sort
+//     required: false
+//     schema:
+//       type: string
+//       default: -publishedAt
+//     description: Sort expression (e.g., -publishedAt).
 // responses:
 //   '200':
 //     description: A list of published playlists ordered by publishedAt desc (songs ordered by addedAt desc)
@@ -120,6 +137,9 @@ playlistsApp.openapi(postPlaylistRoute, async (c) => {
 const getPlaylistsRoute = createRoute({
   method: "get",
   path: "/",
+  request: {
+    query: GetPlaylistsQuerySchema,
+  },
   responses: {
     200: {
       content: {
@@ -142,7 +162,13 @@ const getPlaylistsRoute = createRoute({
 });
 
 playlistsApp.openapi(getPlaylistsRoute, async (c) => {
-  logger.http(`GET /playlists - Retrieving published playlists`);
-  const res = await getPlaylists();
+  logger.http(`GET /playlists - Retrieving playlists`);
+  const query = c.req.valid("query");
+  const published = query.published === "false" ? false : true; // Default to true if not specified
+  const sort = query.sort ?? "desc";
+
+  const res = await getPlaylists(published, sort);
   return c.json({ data: res }, 200);
 });
+
+

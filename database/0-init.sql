@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS "Playlist" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    "isPublished" BOOLEAN DEFAULT TRUE,
-    "publishedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    "isPublished" BOOLEAN DEFAULT FALSE NOT NULL,
+    "publishedAt" TIMESTAMP NULL
 );
 
 CREATE TABLE IF NOT EXISTS "PlaylistsSongs" (
