@@ -10,6 +10,21 @@ import {
   PlaylistSongsSchemaType,
 } from "../../schemas/playlists";
 
+/**
+ * Creates a new playlist in the database
+ *
+ * @param name - The name of the playlist (required, non-empty string)
+ * @param description - The description of the playlist (required, 50-255 characters)
+ * @returns Promise<PlaylistSchemaType> - The created playlist with default values (isPublished: false, publishedAt: null)
+ * @throws {Error} - If database operation fails
+ *
+ * @example
+ * ```typescript
+ * const playlist = await createPlaylist("My Playlist", "A collection of my favorite songs");
+ * console.log(playlist.isPublished); // false
+ * console.log(playlist.publishedAt); // null
+ * ```
+ */
 export async function createPlaylist(
   name: string,
   description: string
@@ -37,6 +52,22 @@ export async function createPlaylist(
   return response;
 }
 
+/**
+ * Retrieves playlist data by ID without songs
+ *
+ * @param id - The UUID of the playlist to retrieve
+ * @param instance - The API endpoint instance for error reporting
+ * @returns Promise<PlaylistDataSchemaType> - The playlist data (without songs)
+ * @throws {NotFoundError} - If playlist with the given ID doesn't exist
+ * @throws {Error} - If playlist data validation fails
+ *
+ * @example
+ * ```typescript
+ * const playlistData = await getPlaylistDataById("550e8400-e29b-41d4-a716-446655440001", "/playlists/550e8400-e29b-41d4-a716-446655440001");
+ * console.log(playlistData.name); // "My Playlist"
+ * console.log(playlistData.songs); // undefined (not included)
+ * ```
+ */
 export async function getPlaylistDataById(
   id: string,
   instance: string
@@ -75,6 +106,21 @@ export async function getPlaylistDataById(
   return dataPlaylist;
 }
 
+/**
+ * Retrieves a complete playlist by ID including its songs
+ *
+ * @param id - The UUID of the playlist to retrieve
+ * @returns Promise<PlaylistSchemaType> - The complete playlist with songs
+ * @throws {NotFoundError} - If playlist with the given ID doesn't exist
+ * @throws {Error} - If playlist data validation fails
+ *
+ * @example
+ * ```typescript
+ * const playlist = await getPlaylistById("550e8400-e29b-41d4-a716-446655440001");
+ * console.log(playlist.name); // "My Playlist"
+ * console.log(playlist.songs.length); // Number of songs in the playlist
+ * ```
+ */
 export async function getPlaylistById(id: string): Promise<PlaylistSchemaType> {
   let response: PlaylistSchemaType;
   const dataPlaylist = await getPlaylistDataById(id, `/playlists/${id}`);
@@ -83,6 +129,22 @@ export async function getPlaylistById(id: string): Promise<PlaylistSchemaType> {
   return response;
 }
 
+/**
+ * Retrieves all songs for a specific playlist
+ *
+ * @param id - The UUID of the playlist
+ * @returns Promise<PlaylistSongsSchemaType> - Object containing array of songs with their metadata
+ * @throws {Error} - If database operation fails
+ *
+ * @example
+ * ```typescript
+ * const songsResult = await getPlaylistSongsById("550e8400-e29b-41d4-a716-446655440001");
+ * console.log(songsResult.songs.length); // Number of songs
+ * songsResult.songs.forEach(song => {
+ *   console.log(`${song.title} by ${song.artist}`);
+ * });
+ * ```
+ */
 export async function getPlaylistSongsById(
   id: string
 ): Promise<PlaylistSongsSchemaType> {
@@ -125,6 +187,32 @@ export async function getPlaylistSongsById(
   return { songs: songsResult };
 }
 
+/**
+ * Retrieves a list of playlists with optional filtering and sorting
+ *
+ * @param published - Filter by publication status (default: true - only published playlists)
+ * @param sort - Sort order for publishedAt field (default: "desc" - most recent first)
+ * @returns Promise<PlaylistSchemaType[]> - Array of playlists with their songs
+ * @throws {Error} - If database operation fails
+ *
+ * @remarks
+ * - When published=true: Only returns playlists with isPublished=true
+ * - When published=false: Returns all playlists regardless of publication status
+ * - Unpublished playlists (isPublished=false) always appear at the end of the list
+ * - Sort order applies to publishedAt field, with null values (unpublished) always last
+ *
+ * @example
+ * ```typescript
+ * // Get only published playlists, most recent first
+ * const publishedPlaylists = await getPlaylists(true, "desc");
+ *
+ * // Get all playlists, oldest first
+ * const allPlaylists = await getPlaylists(false, "asc");
+ *
+ * // Get only published playlists, oldest first
+ * const oldPublishedPlaylists = await getPlaylists(true, "asc");
+ * ```
+ */
 export async function getPlaylists(
   published: boolean = true,
   sort: "asc" | "desc" = "desc"

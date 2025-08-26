@@ -2,6 +2,28 @@ import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { testConfig } from "../config.test";
 
+/**
+ * Checks the status of the test database and validates its configuration
+ *
+ * @returns Promise<boolean> - True if database is working correctly, false otherwise
+ *
+ * @remarks
+ * This function performs the following checks:
+ * - Connects to the test database using Prisma
+ * - Verifies that all required tables exist (Song, Playlist, PlaylistsSongs)
+ * - Validates table structure and naming
+ * - Provides detailed error messages and troubleshooting tips
+ *
+ * @example
+ * ```typescript
+ * const isDatabaseReady = await checkDatabaseStatus();
+ * if (isDatabaseReady) {
+ *   console.log("Database is ready for testing");
+ * } else {
+ *   console.log("Database needs to be set up");
+ * }
+ * ```
+ */
 export async function checkDatabaseStatus(): Promise<boolean> {
   try {
     console.log("Verificando estado de la base de datos de test...");
@@ -75,6 +97,25 @@ export async function checkDatabaseStatus(): Promise<boolean> {
   }
 }
 
+/**
+ * Checks if the test PostgreSQL Docker container is running
+ *
+ * @returns Promise<boolean> - True if container is running, false otherwise
+ *
+ * @remarks
+ * Uses the `docker ps` command to check for containers with "test" in the name.
+ * Specifically looks for a PostgreSQL container for testing.
+ *
+ * @example
+ * ```typescript
+ * const isDockerRunning = await checkDockerStatus();
+ * if (isDockerRunning) {
+ *   console.log("Docker container is running");
+ * } else {
+ *   console.log("Docker container is not running");
+ * }
+ * ```
+ */
 async function checkDockerStatus() {
   try {
     console.log("Verificando estado de contenedores Docker...");
@@ -97,6 +138,21 @@ async function checkDockerStatus() {
   }
 }
 
+/**
+ * Main function that orchestrates the database status check
+ *
+ * @remarks
+ * This function:
+ * 1. First checks if the Docker container is running
+ * 2. If Docker is running, checks the database status
+ * 3. Provides comprehensive feedback about the system state
+ *
+ * @example
+ * ```typescript
+ * // This function is called when the script is executed directly
+ * main();
+ * ```
+ */
 async function main() {
   const dockerOk = await checkDockerStatus();
   console.log("");

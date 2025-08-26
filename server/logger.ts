@@ -2,6 +2,34 @@ import winston, { level } from "winston";
 import path from "path";
 import { config } from "../config";
 
+/**
+ * Winston logger configuration
+ *
+ * Configures a Winston logger with multiple transports and custom formatting.
+ * The logger supports different log levels and outputs to both console and files.
+ *
+ * @remarks
+ * Log levels (in order of priority):
+ * - error: 0 - Critical errors that require immediate attention
+ * - warn: 1 - Warning messages for potential issues
+ * - info: 2 - General information messages
+ * - http: 3 - HTTP request/response logging
+ * - debug: 4 - Detailed debugging information
+ *
+ * Transports:
+ * - Console: Colored output for development
+ * - Error file: Only error level messages
+ * - Combined file: All log levels
+ *
+ * @example
+ * ```typescript
+ * import logger from './logger';
+ *
+ * logger.info('Application started');
+ * logger.error('Database connection failed');
+ * logger.debug('Processing request', { userId: 123 });
+ * ```
+ */
 const levels = {
   error: 0,
   warn: 1,
