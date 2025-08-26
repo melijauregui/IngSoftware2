@@ -16,6 +16,7 @@ El repositorio debe incluir un archivo README.md (en español) con:
 - [Base de Datos](#base-de-datos)
 - [Docker](#docker)
 - [Testing](#testing)
+- [Desafíos Opcionales](#desafíos-opcionales)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 
 ## Introducción
@@ -164,6 +165,83 @@ npm run test:integration:file playlists-get-test
 ```bash
 # Ejecutar tests con reporte de cobertura
 npm run test:run -- --coverage
+```
+
+## Desafíos Opcionales
+
+### 1. Validación de Longitud de Descripción ✅
+
+**Implementado**: Validación de longitud mínima (50 caracteres) y máxima (255 caracteres) para el campo `description` de las playlists.
+
+**Schema de validación**: `CreatePlaylistRequestSchema` en `schemas/playlists.ts` utiliza Zod para validar:
+- Mínimo: 50 caracteres
+- Máximo: 255 caracteres
+- Respuesta con código 400 si la validación falla
+
+**Tests de verificación**: Ubicados en `tests-integracion/playlists-post-test.ts`:
+- `"should create a playlist successfully and return 201"` - Test de descripción mínima válida (50 caracteres)
+- `"should handle maximum valid description length"` - Test de descripción máxima válida (255 caracteres)
+- `"should return 400 when the description is too short"` - Test de descripción muy corta (código 400)
+- `"should return 400 when the description is too long"` - Test de descripción muy larga (código 400)
+- `"should return 400 when the description only has spaces"` - Test de descripción con solo espacios (código 400)
+
+### 2. UUID v4 para Playlists ✅
+
+**Implementado**: Sistema completo de UUID v4 para playlists con verificación de 128 bits.
+
+**Características**:
+- **Generación automática**: PostgreSQL genera automáticamente UUIDs v4 usando `gen_random_uuid()` en la base de datos. [Referencia](https://www.postgresql.org/docs/current/functions-uuid.html)
+- **Formato estándar**: Los UUIDs se representan como strings en formato estándar en el contrato REST
+- **Reemplazo de IDs numéricos**: Se utilizan UUIDs como identificadores en todas las operaciones
+
+**Tests de verificación**: 
+- Ubicados en `tests-integracion/playlists-post-test.ts`
+- Incluyen validación de formato UUID v4 
+- Verifican unicidad de UUIDs generados
+
+### 3. Middleware para Manejo Centralizado de Errores ✅
+
+**Implementado**: Sistema de manejo centralizado de errores usando Hono.
+
+**Características**:
+- **defaultHook**: Configurado en OpenAPIHono para manejar errores de validación automáticamente
+- **onError middleware**: Manejo centralizado de errores con formato RFC 7807
+- **Referencias utilizadas**:
+  - [@hono/zod-openapi middleware](https://github.com/honojs/middleware/tree/main/packages/zod-openapi)
+  - [Hono error handling](https://hono.dev/docs/api/hono#error-handling)
+
+### 4. Mejoras a la Solución ✅
+
+**Mejoras implementadas**:
+- **Migración de MySQL a PostgreSQL**: Cambio de MySQL con queries manuales a PostgreSQL con Prisma ORM
+- **Código más mantenible**: Uso de Prisma simplifica el código y mejora la mantenibilidad
+- **Generación automática de UUIDs**: PostgreSQL genera UUIDs v4 nativamente, permitiendo implementar el desafío opcional #2
+- **Mejor estructura de código**: Separación clara entre lógica de negocio y acceso a datos
+
+### 5. Docker Compose ✅
+
+**Implementado**: Configuración completa con Docker Compose.
+
+**Características**:
+- **compose.yaml**: Define servicios de aplicación y base de datos
+- **Base de datos**: PostgreSQL configurado como servicio independiente
+- **Aplicación**: Contenedor de la aplicación que apunta al Dockerfile
+- **Networking**: Comunicación automática entre contenedores
+- **Variables de entorno**: Configuración separada para desarrollo y testing
+
+**Comandos disponibles**:
+```bash
+# Levantar servicios completos
+docker compose up -d
+
+# Construir y levantar
+docker compose up -d --build
+
+# Ver logs
+docker compose logs -f
+
+# Parar servicios
+docker compose down
 ```
 
 ## Estructura del Proyecto

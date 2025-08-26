@@ -7,11 +7,7 @@ import {
   cleanupTestDatabase,
   setupCompleteTestDatabase,
 } from "../server/db.test";
-import {
-  comparePlaylistsData,
-  isValidUUIDv4,
-  isUUID128Bits,
-} from "./tests-functions";
+import { comparePlaylistsData, isValidUUIDv4 } from "./tests-functions";
 
 describe("POST /playlists", () => {
   beforeEach(async () => {
@@ -99,36 +95,6 @@ describe("POST /playlists", () => {
       expect(createdPlaylist.songs).toHaveLength(0);
     });
 
-    it("should generate UUIDs that are exactly 128 bits", async () => {
-      await setupCompleteTestDatabase();
-      const newPlaylist = {
-        name: "128-bit UUID Test",
-        description: "A".repeat(50),
-      };
-
-      const response = await app.request("/playlists", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newPlaylist),
-      });
-
-      expect(response.status).toBe(201);
-      const body = await response.json();
-      const createdPlaylist = body.data;
-
-      // Verify UUID is exactly 128 bits
-      expect(isUUID128Bits(createdPlaylist.id)).toBe(true);
-
-      // Verify the hex string length (32 characters = 128 bits)
-      const hexString = createdPlaylist.id.replace(/-/g, "");
-      expect(hexString.length).toBe(32);
-
-      // Verify it's valid hexadecimal
-      expect(/^[0-9a-f]{32}$/i.test(hexString)).toBe(true);
-    });
-
     it("should generate unique UUIDs for different playlists", async () => {
       await setupCompleteTestDatabase();
       const playlist1 = {
@@ -169,8 +135,6 @@ describe("POST /playlists", () => {
       // Verify both are valid UUIDs and 128 bits
       expect(isValidUUIDv4(createdPlaylist1.id)).toBe(true);
       expect(isValidUUIDv4(createdPlaylist2.id)).toBe(true);
-      expect(isUUID128Bits(createdPlaylist1.id)).toBe(true);
-      expect(isUUID128Bits(createdPlaylist2.id)).toBe(true);
 
       // Verify they are different
       expect(createdPlaylist1.id).not.toBe(createdPlaylist2.id);

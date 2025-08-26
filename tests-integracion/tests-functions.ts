@@ -2,24 +2,12 @@ import { expect, describe, it } from "vitest";
 import { TEST_SONGS } from "../server/db.test";
 
 // UUID v4 validation regex
+// ref: https://stackoverflow.com/questions/7905929/how-to-test-valid-uuid-guid
 const UUID_V4_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export function isValidUUIDv4(uuid: string): boolean {
   return UUID_V4_REGEX.test(uuid);
-}
-
-export function isUUID128Bits(uuid: string): boolean {
-  // Remove hyphens and convert to binary
-  const hexString = uuid.replace(/-/g, "");
-
-  // Each hex character is 4 bits, so 32 hex characters = 128 bits
-  if (hexString.length !== 32) {
-    return false;
-  }
-
-  // Verify it's valid hexadecimal
-  return /^[0-9a-f]{32}$/i.test(hexString);
 }
 
 export function comparePlaylistsData(
@@ -37,7 +25,6 @@ export function comparePlaylistsData(
   // Validate that the ID is a valid UUID v4 and 128 bits
   expect(playlistResponse.id).toBeTypeOf("string");
   expect(isValidUUIDv4(playlistResponse.id)).toBe(true);
-  expect(isUUID128Bits(playlistResponse.id)).toBe(true);
 
   if (fullComparison) {
     expect(playlistResponse.id).toBe(testPlaylist.id);
