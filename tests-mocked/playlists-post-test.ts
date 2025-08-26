@@ -11,17 +11,17 @@ import app from "../server/app";
 import { db } from "../server/db.config";
 
 describe("POST /playlists", () => {
-  // Mock database for testing
-  const mockQuery = vi.fn();
+  // Mock Prisma functions for testing
+  const mockCreate = vi.fn();
 
   beforeAll(async () => {
-    // Mock the database query method
-    vi.spyOn(db, "query").mockImplementation(mockQuery);
+    // Mock the Prisma playlist.create function
+    vi.spyOn(db.playlist, "create").mockImplementation(mockCreate);
   });
 
   beforeEach(() => {
-    // Clear mock between tests
-    mockQuery.mockClear();
+    // Clear mocks between tests
+    mockCreate.mockClear();
   });
 
   afterAll(async () => {
@@ -36,10 +36,8 @@ describe("POST /playlists", () => {
           "A collection of my all-time favorite songs that I love to listen to on repeat",
       };
 
-      const dbError = new Error(
-        "ER_CONNECTION_LOST: Connection lost to database"
-      );
-      mockQuery.mockRejectedValueOnce(dbError);
+      const dbError = new Error("Connection lost to database");
+      mockCreate.mockRejectedValueOnce(dbError);
 
       const response = await app.request("/playlists", {
         method: "POST",
@@ -53,18 +51,18 @@ describe("POST /playlists", () => {
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: "about:blank",
-        title: "Database Error",
+        title: "Internal Server Error",
         status: 500,
-        detail: "ER_CONNECTION_LOST: Connection lost to database",
+        detail: "Connection lost to database",
         instance: "/playlists",
       });
-      expect(mockQuery).toHaveBeenCalledWith(
-        "INSERT INTO playlists (name, description) VALUES (?, ?)",
-        [
-          "My Favorite Songs",
-          "A collection of my all-time favorite songs that I love to listen to on repeat",
-        ]
-      );
+      expect(mockCreate).toHaveBeenCalledWith({
+        data: {
+          name: "My Favorite Songs",
+          description:
+            "A collection of my all-time favorite songs that I love to listen to on repeat",
+        },
+      });
     });
 
     it("should return 500 with a generic message when the error is not an instance of Error", async () => {
@@ -75,7 +73,7 @@ describe("POST /playlists", () => {
       };
 
       const dbError = new Error("Unknown database error");
-      mockQuery.mockRejectedValueOnce(dbError);
+      mockCreate.mockRejectedValueOnce(dbError);
 
       const response = await app.request("/playlists", {
         method: "POST",

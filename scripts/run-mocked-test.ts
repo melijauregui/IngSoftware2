@@ -1,6 +1,7 @@
 const { execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+import { checkDatabaseStatus } from "./check-db-status";
 
 const testFile = process.argv[2];
 
@@ -22,7 +23,12 @@ if (!fs.existsSync(testFilePath)) {
   process.exit(1);
 }
 
-function runTest() {
+async function runTest() {
+  const dbAvailable = await checkDatabaseStatus();
+  if (!dbAvailable) {
+    process.exit(1);
+  }
+
   console.log(`Ejecutando test mocked: ${testFilePath}`);
 
   try {

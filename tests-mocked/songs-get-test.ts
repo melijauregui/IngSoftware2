@@ -11,17 +11,17 @@ import app from "../server/app";
 import { db } from "../server/db.config";
 
 describe("GET /songs", () => {
-  // Mock database for testing
-  const mockQuery = vi.fn();
+  // Mock Prisma functions for testing
+  const mockFindMany = vi.fn();
 
   beforeAll(async () => {
-    // Mock the database query method
-    vi.spyOn(db, "query").mockImplementation(mockQuery);
+    // Mock the Prisma song.findMany function
+    vi.spyOn(db.song, "findMany").mockImplementation(mockFindMany);
   });
 
   beforeEach(() => {
     // Clear mock between tests
-    mockQuery.mockClear();
+    mockFindMany.mockClear();
   });
 
   afterAll(async () => {
@@ -30,30 +30,8 @@ describe("GET /songs", () => {
 
   describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database connection error", async () => {
-      const dbError = new Error(
-        "ER_CONNECTION_LOST: Connection lost to database"
-      );
-      mockQuery.mockRejectedValueOnce(dbError);
-
-      const response = await app.request("/songs", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(500);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Database Error",
-        status: 500,
-        detail: "ER_CONNECTION_LOST: Connection lost to database",
-        instance: "/songs",
-      });
-      expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
-    });
-
-    it("should return 500 with a generic message when the error is not a database error", async () => {
-      const dbError = new Error("Internal Server Error");
-      mockQuery.mockRejectedValueOnce(dbError);
+      const dbError = new Error("Connection lost to database");
+      mockFindMany.mockRejectedValueOnce(dbError);
 
       const response = await app.request("/songs", {
         method: "GET",
@@ -65,10 +43,10 @@ describe("GET /songs", () => {
         type: "about:blank",
         title: "Internal Server Error",
         status: 500,
-        detail: "Internal Server Error",
+        detail: "Connection lost to database",
         instance: "/songs",
       });
-      expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
+      expect(mockFindMany).toHaveBeenCalledWith();
     });
   });
 
@@ -83,11 +61,11 @@ describe("GET /songs", () => {
         {
           id: 2,
           title: "Hotel California",
-          // Missing artist field
+          artist: "",
         },
       ];
 
-      mockQuery.mockResolvedValueOnce([mockSongs, []]);
+      mockFindMany.mockResolvedValueOnce(mockSongs);
 
       const response = await app.request("/songs", {
         method: "GET",
@@ -105,19 +83,19 @@ describe("GET /songs", () => {
           },
         ],
       });
-      expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
+      expect(mockFindMany).toHaveBeenCalledWith();
     });
 
     it("should handle songs with invalid data types", async () => {
       const mockSongs = [
         {
-          id: "invalid_id", // Should be number
+          id: "invalid_id",
           title: "Bohemian Rhapsody",
           artist: "Queen",
         },
       ];
 
-      mockQuery.mockResolvedValueOnce([mockSongs, []]);
+      mockFindMany.mockResolvedValueOnce(mockSongs);
 
       const response = await app.request("/songs", {
         method: "GET",
@@ -129,7 +107,7 @@ describe("GET /songs", () => {
       expect(responseBody).toEqual({
         data: [],
       });
-      expect(mockQuery).toHaveBeenCalledWith("SELECT * FROM songs");
+      expect(mockFindMany).toHaveBeenCalledWith();
     });
   });
 });

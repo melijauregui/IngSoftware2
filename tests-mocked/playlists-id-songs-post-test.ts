@@ -11,17 +11,27 @@ import app from "../server/app";
 import { db } from "../server/db.config";
 
 describe("POST /playlists/{id}/songs", () => {
-  // Mock database for testing
-  const mockQuery = vi.fn();
+  // Mock Prisma functions for testing
+  const mockFindUniquePlaylist = vi.fn();
+  const mockFindUniqueSong = vi.fn();
+  const mockCreate = vi.fn();
 
   beforeAll(async () => {
-    // Mock the database query method
-    vi.spyOn(db, "query").mockImplementation(mockQuery);
+    // Mock the Prisma playlist.findUnique function
+    vi.spyOn(db.playlist, "findUnique").mockImplementation(
+      mockFindUniquePlaylist
+    );
+    // Mock the Prisma song.findUnique function
+    vi.spyOn(db.song, "findUnique").mockImplementation(mockFindUniqueSong);
+    // Mock the Prisma playlistsSongs.create function
+    vi.spyOn(db.playlistsSongs, "create").mockImplementation(mockCreate);
   });
 
   beforeEach(() => {
-    // Clear mock between tests
-    mockQuery.mockClear();
+    // Clear mocks between tests
+    mockFindUniquePlaylist.mockClear();
+    mockFindUniqueSong.mockClear();
+    mockCreate.mockClear();
   });
 
   afterAll(async () => {
@@ -30,14 +40,12 @@ describe("POST /playlists/{id}/songs", () => {
 
   describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database error", async () => {
-      const playlistId = 1;
+      const playlistId = "550e8400-e29b-41d4-a716-446655440001";
       const songId = 5;
       const requestBody = { songId };
 
-      const dbError = new Error(
-        "ER_CONNECTION_LOST: Connection lost to database"
-      );
-      mockQuery.mockRejectedValueOnce(dbError);
+      const dbError = new Error("Connection lost to database");
+      mockFindUniquePlaylist.mockRejectedValueOnce(dbError);
 
       const response = await app.request(`/playlists/${playlistId}/songs`, {
         method: "POST",
@@ -51,25 +59,24 @@ describe("POST /playlists/{id}/songs", () => {
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: "about:blank",
-        title: "Database Error",
+        title: "Internal Server Error",
         status: 500,
-        detail: "ER_CONNECTION_LOST: Connection lost to database",
+        detail: "Connection lost to database",
         instance: `/playlists/${playlistId}/songs`,
       });
 
-      expect(mockQuery).toHaveBeenCalledWith(
-        "SELECT * FROM playlists WHERE id = ?",
-        [playlistId]
-      );
+      expect(mockFindUniquePlaylist).toHaveBeenCalledWith({
+        where: { id: playlistId },
+      });
     });
 
     it("should return 500 with a generic message when the error is not an instance of Error", async () => {
-      const playlistId = 1;
+      const playlistId = "550e8400-e29b-41d4-a716-446655440001";
       const songId = 5;
       const requestBody = { songId };
 
       const dbError = new Error("Unknown database error");
-      mockQuery.mockRejectedValueOnce(dbError);
+      mockFindUniquePlaylist.mockRejectedValueOnce(dbError);
 
       const response = await app.request(`/playlists/${playlistId}/songs`, {
         method: "POST",

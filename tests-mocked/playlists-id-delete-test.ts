@@ -11,17 +11,17 @@ import app from "../server/app";
 import { db } from "../server/db.config";
 
 describe("DELETE /playlists/:id", () => {
-  // Mock database for testing
-  const mockQuery = vi.fn();
+  // Mock Prisma functions for testing
+  const mockDelete = vi.fn();
 
   beforeAll(async () => {
-    // Mock the database query method
-    vi.spyOn(db, "query").mockImplementation(mockQuery);
+    // Mock the Prisma playlist.delete function
+    vi.spyOn(db.playlist, "delete").mockImplementation(mockDelete);
   });
 
   beforeEach(() => {
     // Clear mock between tests
-    mockQuery.mockClear();
+    mockDelete.mockClear();
   });
 
   afterAll(async () => {
@@ -30,12 +30,11 @@ describe("DELETE /playlists/:id", () => {
 
   describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database error", async () => {
-      const dbError = new Error(
-        "ER_CONNECTION_LOST: Connection lost to database"
-      );
-      mockQuery.mockRejectedValueOnce(dbError);
+      const dbError = new Error("Connection lost to database");
+      mockDelete.mockRejectedValueOnce(dbError);
 
-      const response = await app.request("/playlists/1", {
+      const playlistId = "550e8400-e29b-41d4-a716-446655440001";
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });
 
@@ -43,24 +42,24 @@ describe("DELETE /playlists/:id", () => {
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: "about:blank",
-        title: "Database Error",
+        title: "Internal Server Error",
         status: 500,
-        detail: "ER_CONNECTION_LOST: Connection lost to database",
-        instance: "/playlists/1",
+        detail: "Connection lost to database",
+        instance: `/playlists/${playlistId}`,
       });
-      expect(mockQuery).toHaveBeenCalledWith(
-        "DELETE FROM playlists WHERE id = ?",
-        [1]
-      );
+      expect(mockDelete).toHaveBeenCalledWith({
+        where: { id: playlistId },
+      });
     });
 
     it("should return 500 when there is a table not found error", async () => {
       const dbError = new Error(
         "ER_NO_SUCH_TABLE: Table 'playlists' doesn't exist"
       );
-      mockQuery.mockRejectedValueOnce(dbError);
+      mockDelete.mockRejectedValueOnce(dbError);
 
-      const response = await app.request("/playlists/1", {
+      const playlistId = "550e8400-e29b-41d4-a716-446655440001";
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });
 
@@ -68,18 +67,19 @@ describe("DELETE /playlists/:id", () => {
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: "about:blank",
-        title: "Database Error",
+        title: "Internal Server Error",
         status: 500,
         detail: "ER_NO_SUCH_TABLE: Table 'playlists' doesn't exist",
-        instance: "/playlists/1",
+        instance: `/playlists/${playlistId}`,
       });
     });
 
     it("should return 500 with a generic message when the error is not an instance of Error", async () => {
       const dbError = new Error("Unknown database error");
-      mockQuery.mockRejectedValueOnce(dbError);
+      mockDelete.mockRejectedValueOnce(dbError);
 
-      const response = await app.request("/playlists/1", {
+      const playlistId = "550e8400-e29b-41d4-a716-446655440001";
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "DELETE",
       });
 
@@ -90,7 +90,7 @@ describe("DELETE /playlists/:id", () => {
         title: "Internal Server Error",
         status: 500,
         detail: "Unknown database error",
-        instance: "/playlists/1",
+        instance: `/playlists/${playlistId}`,
       });
     });
   });

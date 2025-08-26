@@ -11,17 +11,17 @@ import app from "../server/app";
 import { db } from "../server/db.config";
 
 describe("DELETE /songs/:id", () => {
-  // Mock database for testing
-  const mockQuery = vi.fn();
+  // Mock Prisma functions for testing
+  const mockDelete = vi.fn();
 
   beforeAll(async () => {
-    // Mock the database query method
-    vi.spyOn(db, "query").mockImplementation(mockQuery);
+    // Mock the Prisma song.delete function
+    vi.spyOn(db.song, "delete").mockImplementation(mockDelete);
   });
 
   beforeEach(() => {
     // Clear mock between tests
-    mockQuery.mockClear();
+    mockDelete.mockClear();
   });
 
   afterAll(async () => {
@@ -31,30 +31,8 @@ describe("DELETE /songs/:id", () => {
   describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database connection error", async () => {
       const songId = 1;
-      const dbError = new Error(
-        "ER_CONNECTION_LOST: Connection lost to database"
-      );
-      mockQuery.mockRejectedValueOnce(dbError);
-
-      const response = await app.request(`/songs/${songId}`, {
-        method: "DELETE",
-      });
-
-      expect(response.status).toBe(500);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Database Error",
-        status: 500,
-        detail: "ER_CONNECTION_LOST: Connection lost to database",
-        instance: `/songs/${songId}`,
-      });
-    });
-
-    it("should return 500 with a generic message when the error is not a database error", async () => {
-      const songId = 1;
-      const dbError = new Error("Internal Server Error");
-      mockQuery.mockRejectedValueOnce(dbError);
+      const dbError = new Error("Connection lost to database");
+      mockDelete.mockRejectedValueOnce(dbError);
 
       const response = await app.request(`/songs/${songId}`, {
         method: "DELETE",
@@ -66,8 +44,11 @@ describe("DELETE /songs/:id", () => {
         type: "about:blank",
         title: "Internal Server Error",
         status: 500,
-        detail: "Internal Server Error",
+        detail: "Connection lost to database",
         instance: `/songs/${songId}`,
+      });
+      expect(mockDelete).toHaveBeenCalledWith({
+        where: { id: songId },
       });
     });
   });

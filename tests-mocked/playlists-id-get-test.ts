@@ -11,17 +11,23 @@ import app from "../server/app";
 import { db } from "../server/db.config";
 
 describe("GET /playlists/:id", () => {
-  // Mock database for testing
-  const mockQuery = vi.fn();
+  // Mock Prisma functions for testing
+  const mockFindUnique = vi.fn();
+  const mockFindManyPlaylistsSongs = vi.fn();
 
   beforeAll(async () => {
-    // Mock the database query method
-    vi.spyOn(db, "query").mockImplementation(mockQuery);
+    // Mock the Prisma playlist.findUnique function
+    vi.spyOn(db.playlist, "findUnique").mockImplementation(mockFindUnique);
+    // Mock the Prisma playlistsSongs.findMany function
+    vi.spyOn(db.playlistsSongs, "findMany").mockImplementation(
+      mockFindManyPlaylistsSongs
+    );
   });
 
   beforeEach(() => {
-    // Clear mock between tests
-    mockQuery.mockClear();
+    // Clear mocks between tests
+    mockFindUnique.mockClear();
+    mockFindManyPlaylistsSongs.mockClear();
   });
 
   afterAll(async () => {
@@ -30,70 +36,11 @@ describe("GET /playlists/:id", () => {
 
   describe("Case 1: Database error - Internal server error (500)", () => {
     it("should return 500 when there is a database error during playlist query", async () => {
-      const dbError = new Error(
-        "ER_CONNECTION_LOST: Connection lost to database"
-      );
-      mockQuery.mockRejectedValueOnce(dbError);
+      const dbError = new Error("Connection lost to database");
+      mockFindUnique.mockRejectedValueOnce(dbError);
 
-      const response = await app.request("/playlists/1", {
-        method: "GET",
-      });
-
-      expect(response.status).toBe(500);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Database Error",
-        status: 500,
-        detail: "ER_CONNECTION_LOST: Connection lost to database",
-        instance: "/playlists/1",
-      });
-      expect(mockQuery).toHaveBeenCalledWith(
-        "SELECT * FROM playlists WHERE id = ?",
-        [1]
-      );
-    });
-
-    it("should return 500 when there is a database error during songs query", async () => {
-      const mockPlaylist = [
-        {
-          id: 1,
-          name: "My Playlist",
-          description: "A".repeat(50),
-          is_published: 1,
-          published_at: new Date("2024-01-01T00:00:00.000Z"),
-        },
-      ];
-
-      const dbError = new Error(
-        "ER_NO_SUCH_TABLE: Table 'playlists_songs' doesn't exist"
-      );
-
-      mockQuery
-        .mockResolvedValueOnce([mockPlaylist, []]) // First call for playlist succeeds
-        .mockRejectedValueOnce(dbError); // Second call for songs fails
-
-      const response = await app.request("/playlists/1", {
-        method: "GET",
-      });
-
-      // The error should be handled as a database error (500)
-      expect(response.status).toBe(500);
-      const responseBody = await response.json();
-      expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Database Error",
-        status: 500,
-        detail: "ER_NO_SUCH_TABLE: Table 'playlists_songs' doesn't exist",
-        instance: "/playlists/1",
-      });
-    });
-
-    it("should return 500 with a generic message when the error is not an instance of Error", async () => {
-      const dbError = new Error("Unknown database error");
-      mockQuery.mockRejectedValueOnce(dbError);
-
-      const response = await app.request("/playlists/1", {
+      const playlistId = "550e8400-e29b-41d4-a716-446655440001";
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "GET",
       });
 
@@ -103,27 +50,61 @@ describe("GET /playlists/:id", () => {
         type: "about:blank",
         title: "Internal Server Error",
         status: 500,
-        detail: "Unknown database error",
-        instance: "/playlists/1",
+        detail: "Connection lost to database",
+        instance: `/playlists/${playlistId}`,
+      });
+      expect(mockFindUnique).toHaveBeenCalledWith({
+        where: { id: playlistId },
+      });
+    });
+
+    it("should return 500 when there is a database error during songs query", async () => {
+      const mockPlaylist = {
+        id: "550e8400-e29b-41d4-a716-446655440001",
+        name: "My Playlist",
+        description: "A".repeat(50),
+        isPublished: true,
+        publishedAt: new Date("2024-01-01T00:00:00.000Z"),
+      };
+
+      const dbError = new Error("Table 'playlists_songs' doesn't exist");
+
+      const playlistId = "550e8400-e29b-41d4-a716-446655440001";
+      // First call for playlist succeeds, second call for songs fails
+      mockFindUnique.mockResolvedValueOnce(mockPlaylist);
+      mockFindManyPlaylistsSongs.mockRejectedValueOnce(dbError);
+
+      const response = await app.request(`/playlists/${playlistId}`, {
+        method: "GET",
+      });
+
+      // The error should be handled as a database error (500)
+      expect(response.status).toBe(500);
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        type: "about:blank",
+        title: "Internal Server Error",
+        status: 500,
+        detail: "Table 'playlists_songs' doesn't exist",
+        instance: `/playlists/${playlistId}`,
       });
     });
   });
 
   describe("Case 2: Edge cases", () => {
     it("should handle playlist with invalid playlist data gracefully", async () => {
-      const mockPlaylist = [
-        {
-          id: 7,
-          name: "Test Playlist",
-          description: "A".repeat(20), // 20 characters is too short
-          is_published: 1,
-          published_at: new Date("2024-01-01T00:00:00.000Z"),
-        },
-      ];
+      const mockPlaylist = {
+        id: "550e8400-e29b-41d4-a716-446655440002",
+        name: "Test Playlist",
+        description: "A".repeat(20), // 20 characters is too short
+        isPublished: true,
+        publishedAt: new Date("2024-01-01T00:00:00.000Z"),
+      };
 
-      mockQuery.mockResolvedValueOnce([mockPlaylist, []]);
+      mockFindUnique.mockResolvedValueOnce(mockPlaylist);
 
-      const response = await app.request("/playlists/7", {
+      const playlistId = "550e8400-e29b-41d4-a716-446655440002";
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "GET",
       });
 
@@ -134,52 +115,59 @@ describe("GET /playlists/:id", () => {
         title: "Internal Server Error",
         status: 500,
         detail: "Failed to get playlist data",
-        instance: "/playlists/7",
+        instance: `/playlists/${playlistId}`,
       });
     });
 
     it("should handle playlist with invalid song data gracefully", async () => {
-      const mockPlaylist = [
+      const mockPlaylist = {
+        id: "550e8400-e29b-41d4-a716-446655440003",
+        name: "Test Playlist",
+        description: "A".repeat(50),
+        isPublished: true,
+        publishedAt: new Date("2024-01-01T00:00:00.000Z"),
+      };
+
+      const mockPlaylistSongs = [
         {
-          id: 7,
-          name: "Test Playlist",
-          description: "A".repeat(50),
-          is_published: 1,
-          published_at: new Date("2024-01-01T00:00:00.000Z"),
+          playlistId: "550e8400-e29b-41d4-a716-446655440003",
+          songId: 1,
+          addedAt: new Date("2024-01-02T00:00:00.000Z"),
+          song: {
+            id: 1,
+            title: "Valid Song",
+            artist: "Valid Artist",
+          },
+        },
+        {
+          playlistId: "550e8400-e29b-41d4-a716-446655440003",
+          songId: 2,
+          addedAt: new Date("2024-01-03T00:00:00.000Z"),
+          song: {
+            id: 2,
+            title: "", // Invalid title
+            artist: "Invalid Artist",
+          },
+        },
+        {
+          playlistId: "550e8400-e29b-41d4-a716-446655440003",
+          songId: 3,
+          addedAt: new Date("2024-01-04T00:00:00.000Z"),
+          song: {
+            id: 3,
+            title: "Another Valid Song",
+            artist: "Another Valid Artist",
+          },
         },
       ];
 
-      const mockSongs = [
-        {
-          id: 1,
-          title: "Valid Song",
-          artist: "Valid Artist",
-        },
-        {
-          id: 2,
-          title: null, // Invalid: missing title
-          artist: "Invalid Artist",
-        },
-        {
-          id: 3,
-          title: "Another Valid Song",
-          artist: "Another Valid Artist",
-        },
-      ];
+      const playlistId = "550e8400-e29b-41d4-a716-446655440003";
+      // Mock para obtener playlist
+      mockFindUnique.mockResolvedValueOnce(mockPlaylist);
+      // Mock para obtener canciones de la playlist (incluyendo una inválida)
+      mockFindManyPlaylistsSongs.mockResolvedValueOnce(mockPlaylistSongs);
 
-      mockQuery
-        .mockResolvedValueOnce([mockPlaylist, []])
-        .mockResolvedValueOnce([
-          [
-            { song_id: 1, added_at: new Date("2024-01-02T00:00:00.000Z") },
-            { song_id: 2, added_at: new Date("2024-01-03T00:00:00.000Z") },
-            { song_id: 3, added_at: new Date("2024-01-04T00:00:00.000Z") },
-          ],
-          [],
-        ])
-        .mockResolvedValueOnce([mockSongs, []]);
-
-      const response = await app.request("/playlists/7", {
+      const response = await app.request(`/playlists/${playlistId}`, {
         method: "GET",
       });
 
