@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const PlaylistIdSchema = z.object({
-  id: z.coerce.number({ message: "Expected integer" }).int().min(0),
+  id: z.string().uuid({ message: "Expected valid UUID v4" }),
 });
 
 export type PlaylistIdSchemaType = z.infer<typeof PlaylistIdSchema>;

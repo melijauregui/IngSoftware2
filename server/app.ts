@@ -9,6 +9,29 @@ import playlistsApp from "./playlists/routes";
 import playlistsIdApp from "./playlists-id/routes";
 import playlistsIdSongsApp from "./playlists-id-songs/routes";
 
+// Function to handle Prisma not found errors and determine resource type
+function handlePrismaNotFoundError(err: any, path: string) {
+  // Extract ID from path
+  const pathParts = path.split("/");
+  const id = pathParts[pathParts.length - 1];
+
+  // Determine if it's a playlist or song based on path
+  let resourceType = "Resource";
+  if (path.includes("/playlists/")) {
+    resourceType = "Playlist";
+  } else if (path.includes("/songs/")) {
+    resourceType = "Song";
+  }
+
+  return {
+    type: "about:blank",
+    title: `${resourceType} Not Found`,
+    status: 404,
+    detail: `The ${resourceType} with ID ${id} was not found`,
+    instance: path,
+  };
+}
+
 const app = new OpenAPIHono();
 
 // Mount songs routes
@@ -65,19 +88,28 @@ export function handlerError(err: Error, c: Context) {
     return c.json(errorResponse, 404);
   }
 
-  // Handle database errors
-  if (err instanceof Error && err.message && err.message.includes("ER_")) {
+  // Handle Prisma errors
+  if (err.constructor.name === "PrismaClientKnownRequestError") {
+    // P2025: Record to delete does not exist
+    if ((err as any).code === "P2025") {
+      const errorResponse = handlePrismaNotFoundError(err, c.req.path);
+
+      logger.warn(
+        `Prisma record not found error on ${c.req.path}: ${err.message}`
+      );
+      return c.json(errorResponse, 404);
+    }
+
+    // Handle other Prisma errors
     const errorResponse = {
       type: "about:blank",
       title: "Database Error",
       status: 500,
-      detail:
-        err.message ||
-        "A database error occurred while processing your request",
+      detail: err.message,
       instance: c.req.path,
     };
 
-    logger.error(`Database error on ${c.req.path}: ${err.message}`);
+    logger.error(`Prisma error on ${c.req.path}: ${err.message}`);
     return c.json(errorResponse, 500);
   }
 

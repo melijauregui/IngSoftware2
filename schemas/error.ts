@@ -28,14 +28,16 @@ export class NotFoundError extends Error {
   public status: number;
   public type: string;
   public title: string;
+  public detail: string;
   public instance: string;
 
-  constructor(message: string, instance: string) {
+  constructor(message: string, instance: string, title: string) {
     super(message);
     this.name = "NotFoundError";
     this.status = 404;
     this.type = "about:blank";
-    this.title = "Not Found";
+    this.title = title;
+    this.detail = message;
     this.instance = instance;
   }
 }
@@ -46,5 +48,10 @@ export function createNotFoundError(
   id: string | number,
   path: string
 ): NotFoundError {
-  return new NotFoundError(`${resource} not found with id: ${id}`, path);
+  const error = new NotFoundError(
+    `The ${resource} with ID ${id} was not found`,
+    path,
+    `${resource} Not Found`
+  );
+  return error;
 }

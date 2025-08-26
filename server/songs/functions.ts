@@ -5,7 +5,6 @@ import {
   SongSchemaType,
   SongsResponseSchemaType,
 } from "../../schemas/songs";
-import { ResultSetHeader, FieldPacket } from "mysql2/promise";
 import { db } from "../db.config";
 import logger from "../logger";
 
@@ -14,18 +13,21 @@ export async function createSong(
   artist: string
 ): Promise<CreateSongResponseSchemaType> {
   let response: CreateSongResponseSchemaType;
-  const [result]: [ResultSetHeader, FieldPacket[]] = await db.query(
-    "INSERT INTO songs (title, artist) VALUES (?, ?)",
-    [title, artist]
-  );
+
+  const song = await db.song.create({
+    data: {
+      title: title.trim(),
+      artist: artist.trim(),
+    },
+  });
 
   logger.info(`Song created: ${title} by ${artist}`);
 
   response = {
     data: {
-      id: result.insertId,
-      title: title.trim(),
-      artist: artist.trim(),
+      id: song.id,
+      title: song.title,
+      artist: song.artist,
     },
   };
 
@@ -33,12 +35,11 @@ export async function createSong(
 }
 
 export async function getAllSongs(): Promise<SongsResponseSchemaType> {
-  const [result]: [ResultSetHeader[], FieldPacket[]] = await db.query(
-    "SELECT * FROM songs"
-  );
+  const songs = await db.song.findMany();
+
   // Convert the result to the correct type
-  const songs = result
-    .map((row) => {
+  const validatedSongs = songs
+    .map((row: any) => {
       const { success, data, error } = SongSchema.safeParse(row);
       if (!success) {
         logger.error(
@@ -50,7 +51,8 @@ export async function getAllSongs(): Promise<SongsResponseSchemaType> {
       }
       return data;
     })
-    .filter((song) => song !== null);
-  logger.info(`Songs found: ${JSON.stringify(songs)}`);
-  return songs;
+    .filter((song: any) => song !== null);
+
+  logger.info(`Songs found: ${JSON.stringify(validatedSongs)}`);
+  return validatedSongs;
 }

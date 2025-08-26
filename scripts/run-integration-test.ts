@@ -1,8 +1,22 @@
 const { execSync } = require("child_process");
 const path = require("path");
 import { checkDatabaseStatus } from "./check-db-status";
-import { getAvailableTests } from "./run-mocked-test";
 const fs = require("fs");
+
+function getAvailableTests(dir: string) {
+  console.log(`Archivos disponibles en ${dir}/:`);
+  const testDir = path.join(process.cwd(), dir);
+  if (fs.existsSync(testDir)) {
+    const files = fs
+      .readdirSync(testDir)
+      .filter((file: string) => file.endsWith(".ts") && file !== "setup.ts")
+      .map((file: string) => file.replace(".ts", ""));
+
+    files.forEach((file: string) => {
+      console.log(`   - ${file}`);
+    });
+  }
+}
 
 const testFile = process.argv[2];
 

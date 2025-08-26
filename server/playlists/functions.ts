@@ -1,4 +1,3 @@
-import { ResultSetHeader, FieldPacket } from "mysql2/promise";
 import { db } from "../db.config";
 import logger from "../logger";
 import { createNotFoundError } from "../../schemas/error";
@@ -15,38 +14,40 @@ export async function createPlaylist(
   description: string
 ): Promise<PlaylistSchemaType> {
   let response: PlaylistSchemaType;
-  const [result] = await db.query<ResultSetHeader>(
-    "INSERT INTO playlists (name, description) VALUES (?, ?)",
-    [name, description]
-  );
 
-  const dataPlaylist = await getPlaylistDataById(result.insertId, `/playlists`);
+  const playlist = await db.playlist.create({
+    data: {
+      name,
+      description,
+    },
+  });
+
+  const dataPlaylist = await getPlaylistDataById(playlist.id, `/playlists`);
   logger.info(`Playlist created: ${JSON.stringify(dataPlaylist)}`);
   response = { ...dataPlaylist, songs: [] };
   return response;
 }
 
 export async function getPlaylistDataById(
-  id: number,
+  id: string,
   instance: string
 ): Promise<PlaylistDataSchemaType> {
   let response: PlaylistDataSchemaType;
-  const [result]: [any[], FieldPacket[]] = await db.query(
-    "SELECT * FROM playlists WHERE id = ?",
-    [id]
-  );
-  if (result.length === 0) {
+
+  const playlist = await db.playlist.findUnique({
+    where: { id },
+  });
+
+  if (!playlist) {
     throw createNotFoundError("Playlist", id, instance);
   }
-
-  const playlist = result[0];
 
   const playlistData = {
     id: playlist.id,
     name: playlist.name,
     description: playlist.description,
-    isPublished: Boolean(playlist.is_published),
-    publishedAt: playlist.published_at.toISOString(),
+    isPublished: playlist.isPublished,
+    publishedAt: playlist.publishedAt.toISOString(),
   };
 
   const {
@@ -63,7 +64,7 @@ export async function getPlaylistDataById(
   return dataPlaylist;
 }
 
-export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {
+export async function getPlaylistById(id: string): Promise<PlaylistSchemaType> {
   let response: PlaylistSchemaType;
   const dataPlaylist = await getPlaylistDataById(id, `/playlists/${id}`);
   const songsResult = await getPlaylistSongsById(id);
@@ -72,35 +73,27 @@ export async function getPlaylistById(id: number): Promise<PlaylistSchemaType> {
 }
 
 export async function getPlaylistSongsById(
-  id: number
+  id: string
 ): Promise<PlaylistSongsSchemaType> {
-  const [songs_ids]: [any[], FieldPacket[]] = await db.query(
-    "SELECT * FROM playlists_songs WHERE playlist_id = ?",
-    [id]
-  );
-  if (songs_ids.length === 0) {
+  const playlistSongs = await db.playlistsSongs.findMany({
+    where: { playlistId: id },
+    include: {
+      song: true,
+    },
+  });
+
+  if (playlistSongs.length === 0) {
     logger.info(`No songs found for playlist id ${id}`);
     return { songs: [] };
   }
 
-  const [songs]: [any[], FieldPacket[]] = await db.query(
-    "SELECT * FROM songs WHERE id IN (?)",
-    [songs_ids.map((song) => song.song_id)]
-  );
-
-  //agrego a songs el added_at de songs_ids
-  const songsWithAddedAt = songs.map((song) => ({
-    ...song,
-    added_at: songs_ids.find((s) => s.song_id === song.id)?.added_at,
-  }));
-
-  const songsResult = songsWithAddedAt
-    .map((song) => {
+  const songsResult = playlistSongs
+    .map((playlistSong: any) => {
       const songData = {
-        id: song.id,
-        title: song.title,
-        artist: song.artist,
-        addedAt: song.added_at.toISOString(),
+        id: playlistSong.song.id,
+        title: playlistSong.song.title,
+        artist: playlistSong.song.artist,
+        addedAt: playlistSong.addedAt.toISOString(),
       };
       const { success, data, error } = PlaylistSongSchema.safeParse(songData);
       if (!success) {
@@ -113,7 +106,8 @@ export async function getPlaylistSongsById(
       }
       return data;
     })
-    .filter((song) => song !== null);
+    .filter((song: any) => song !== null);
+
   logger.info(
     `Songs found for playlist id ${id}: ${JSON.stringify(songsResult)}`
   );
@@ -122,17 +116,21 @@ export async function getPlaylistSongsById(
 
 export async function getPlaylists(): Promise<PlaylistSchemaType[]> {
   let response: PlaylistSchemaType[];
-  const [playlists]: [any[], FieldPacket[]] = await db.query(
-    "SELECT * FROM playlists ORDER BY published_at DESC"
-  );
+
+  const playlists = await db.playlist.findMany({
+    orderBy: {
+      publishedAt: "desc",
+    },
+  });
+
   const playlistsData = playlists
-    .map((playlist) => {
+    .map((playlist: any) => {
       const playlistData = {
         id: playlist.id,
         name: playlist.name,
         description: playlist.description,
-        isPublished: Boolean(playlist.is_published),
-        publishedAt: playlist.published_at.toISOString(),
+        isPublished: playlist.isPublished,
+        publishedAt: playlist.publishedAt.toISOString(),
       };
       const { success, data, error } =
         PlaylistDataSchema.safeParse(playlistData);
@@ -146,9 +144,9 @@ export async function getPlaylists(): Promise<PlaylistSchemaType[]> {
       }
       return data;
     })
-    .filter((playlist) => playlist !== null);
+    .filter((playlist: any) => playlist !== null);
 
-  const playlistsWithSongs = playlistsData.map(async (playlist) => {
+  const playlistsWithSongs = playlistsData.map(async (playlist: any) => {
     const songsResult = await getPlaylistSongsById(playlist.id);
     return { ...playlist, ...songsResult };
   });

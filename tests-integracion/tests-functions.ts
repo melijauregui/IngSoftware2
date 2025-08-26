@@ -16,9 +16,9 @@ export function comparePlaylistsData(
   if (fullComparison) {
     expect(playlistResponse.id).toBe(testPlaylist.id);
     expect(playlistResponse.publishedAt).toBe(
-      testPlaylist.published_at.toISOString()
+      testPlaylist.publishedAt.toISOString()
     );
-    expect(playlistResponse.isPublished).toBe(testPlaylist.is_published);
+    expect(playlistResponse.isPublished).toBe(testPlaylist.isPublished);
   }
   expect(playlistResponse.name).toBe(testPlaylist.name);
   expect(playlistResponse.description).toBe(testPlaylist.description);

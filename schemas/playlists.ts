@@ -52,7 +52,7 @@ export const PlaylistSongSchema = z.object({
 });
 
 export const PlaylistDataSchema = z.object({
-  id: z.number().int().min(0),
+  id: z.string().uuid({ message: "Expected valid UUID v4" }),
   ...CreatePlaylistRequestSchema.shape,
   isPublished: z
     .boolean()
