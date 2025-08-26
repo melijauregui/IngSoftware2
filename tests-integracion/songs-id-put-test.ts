@@ -38,7 +38,7 @@ describe("PUT /songs/:id", () => {
       compareSong(song, updateData);
     });
 
-    it("should update only title when only title is provided", async () => {
+    it("should return 400 when only title is provided", async () => {
       await setupCompleteTestDatabase();
       const updateData = {
         title: "Only Title Updated",
@@ -52,18 +52,18 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(400);
       const responseBody = await response.json();
-      expect(responseBody).toHaveProperty("data");
-      const song = responseBody.data;
-      const songUpdated = {
-        ...TEST_SONGS.SONG_1,
-        title: updateData.title,
-      };
-      compareSong(song, songUpdated);
+      expect(responseBody).toEqual({
+        type: "about:blank",
+        title: "Validation Error",
+        status: 400,
+        detail: "artist: Required",
+        instance: "/songs/1",
+      });
     });
 
-    it("should update only artist when only artist is provided", async () => {
+    it("should return 400 when only artist is provided", async () => {
       await setupCompleteTestDatabase();
       const songId = 1;
       const updateData = {
@@ -78,15 +78,15 @@ describe("PUT /songs/:id", () => {
         body: JSON.stringify(updateData),
       });
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(400);
       const responseBody = await response.json();
-      expect(responseBody).toHaveProperty("data");
-      const song = responseBody.data;
-      const songUpdated = {
-        ...TEST_SONGS.SONG_1,
-        artist: updateData.artist,
-      };
-      compareSong(song, songUpdated);
+      expect(responseBody).toEqual({
+        type: "about:blank",
+        title: "Validation Error",
+        status: 400,
+        detail: "title: Required",
+        instance: "/songs/1",
+      });
     });
   });
 
@@ -137,7 +137,7 @@ describe("PUT /songs/:id", () => {
         type: "about:blank",
         title: "Validation Error",
         status: 400,
-        detail: "At least one field (title or artist) must be provided",
+        detail: "title: Required, artist: Required",
         instance: "/songs/1",
       });
     });

@@ -33,30 +33,12 @@ export async function getSongById(
 
 export async function updateSongById(
   id: number,
-  title?: string,
-  artist?: string
+  title: string,
+  artist: string
 ): Promise<SongSchemaType> {
-  // Build dynamic update data based on provided fields
-  const updateData: any = {};
-
-  if (title !== undefined) {
-    updateData.title = title;
-  }
-
-  if (artist !== undefined) {
-    updateData.artist = artist;
-  }
-
-  // This should never happen due to schema validation, but keeping as safety check
-  if (Object.keys(updateData).length === 0) {
-    throw new Error(
-      "At least one field (title or artist) must be provided for update"
-    );
-  }
-
   const song = await db.song.update({
     where: { id },
-    data: updateData,
+    data: { title, artist },
   });
 
   if (!song) {

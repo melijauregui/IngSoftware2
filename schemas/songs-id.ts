@@ -31,19 +31,14 @@ export const UpdateSongRequestSchema = z
       .string()
       .trim()
       .min(1, "Title is required")
-      .max(50, "Title is too long")
-      .optional(),
+      .max(50, "Title is too long"),
     artist: z
       .string()
       .trim()
       .min(1, "Artist is required")
-      .max(50, "Artist is too long")
-      .optional(),
+      .max(50, "Artist is too long"),
   })
-  .refine((data) => data.title !== undefined || data.artist !== undefined, {
-    message: "At least one field (title or artist) must be provided",
-    path: [], // This will apply to the whole object
-  });
+  .strict();
 
 export type UpdateSongRequestSchemaType = z.infer<
   typeof UpdateSongRequestSchema
