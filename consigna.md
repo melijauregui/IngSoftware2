@@ -103,7 +103,6 @@ Criterio de Aceptación: Cuando ingrese a la lista de playlists, se deben mostra
 1. Longitud minima y maxima de la descripcion de una playlist:
     + Requiere que el campo description tenga al menos 50 caracteres y máximo 255 caracteres al crear una playlist.
     + Responde con código 400 si la validación falla.
-
 2. Agrega un test para este caso.
     + UUID para playlists:
     + Asegura que cada playlist tenga un UUID v4.

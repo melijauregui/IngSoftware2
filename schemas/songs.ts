@@ -11,18 +11,20 @@ import { z } from "zod";
 //         artist:
 //           type: string
 
-export const SongRequestSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, "Title is required")
-    .max(50, "Title is too long"),
-  artist: z
-    .string()
-    .trim()
-    .min(1, "Artist is required")
-    .max(50, "Artist is too long"),
-});
+export const SongRequestSchema = z
+  .object({
+    title: z
+      .string()
+      .trim()
+      .min(1, "Title is required")
+      .max(50, "Title is too long"),
+    artist: z
+      .string()
+      .trim()
+      .min(1, "Artist is required")
+      .max(50, "Artist is too long"),
+  })
+  .strict();
 
 export type CreateSongRequestSchemaType = z.infer<typeof SongRequestSchema>;
 
@@ -36,10 +38,12 @@ export type CreateSongRequestSchemaType = z.infer<typeof SongRequestSchema>;
 //   artist:
 //     type: string
 
-export const SongSchema = z.object({
-  id: z.number().int().min(0),
-  ...SongRequestSchema.shape,
-});
+export const SongSchema = z
+  .object({
+    id: z.number().int().min(0),
+    ...SongRequestSchema.shape,
+  })
+  .strict();
 
 export type SongSchemaType = z.infer<typeof SongSchema>;
 
@@ -49,9 +53,11 @@ export type SongSchemaType = z.infer<typeof SongSchema>;
 //   data:
 //     $ref: '#/components/schemas/Song'
 
-export const SongResponseSchema = z.object({
-  data: SongSchema,
-});
+export const SongResponseSchema = z
+  .object({
+    data: SongSchema,
+  })
+  .strict();
 
 export type CreateSongResponseSchemaType = z.infer<typeof SongResponseSchema>;
 
@@ -64,8 +70,10 @@ export type SongsResponseSchemaType = z.infer<typeof SongsResponseSchema>;
 //    type: array
 //    items:
 //      $ref: '#/components/schemas/Song'
-export const AllSongsResponseSchema = z.object({
-  data: SongsResponseSchema,
-});
+export const AllSongsResponseSchema = z
+  .object({
+    data: SongsResponseSchema,
+  })
+  .strict();
 
 export type AllSongsResponseSchemaType = z.infer<typeof AllSongsResponseSchema>;

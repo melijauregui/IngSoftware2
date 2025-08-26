@@ -1,18 +1,20 @@
 import { z } from "zod";
 import { SongRequestSchema } from "./songs";
 
-export const SongIdSchema = z.object({
-  id: z.coerce
-    .number({
-      invalid_type_error: "Invalid song ID, must be a number",
-    })
-    .int({
-      message: "Invalid song ID, must be an integer",
-    })
-    .min(0, {
-      message: "Invalid song ID, must be greater than 0",
-    }),
-});
+export const SongIdSchema = z
+  .object({
+    id: z.coerce
+      .number({
+        invalid_type_error: "Invalid song ID, must be a number",
+      })
+      .int({
+        message: "Invalid song ID, must be an integer",
+      })
+      .min(0, {
+        message: "Invalid song ID, must be greater than 0",
+      }),
+  })
+  .strict();
 
 export type SongIdSchemaType = z.infer<typeof SongIdSchema>;
 
