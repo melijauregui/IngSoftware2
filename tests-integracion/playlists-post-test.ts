@@ -7,7 +7,11 @@ import {
   cleanupTestDatabase,
   setupCompleteTestDatabase,
 } from "../server/db.test";
-import { comparePlaylistsData } from "./tests-functions";
+import {
+  comparePlaylistsData,
+  isValidUUIDv4,
+  isUUID128Bits,
+} from "./tests-functions";
 
 describe("POST /playlists", () => {
   beforeEach(async () => {
@@ -61,6 +65,115 @@ describe("POST /playlists", () => {
       const createdPlaylist = body.data;
       comparePlaylistsData(createdPlaylist, newPlaylist, false);
       expect(createdPlaylist.songs).toHaveLength(0);
+    });
+  });
+
+  describe("UUID v4 validation", () => {
+    it("should generate a valid UUID v4 for each playlist", async () => {
+      await setupCompleteTestDatabase();
+      const newPlaylist = {
+        name: "UUID Test Playlist",
+        description: "A".repeat(50),
+      };
+
+      const response = await app.request("/playlists", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPlaylist),
+      });
+
+      expect(response.status).toBe(201);
+      const body = await response.json();
+      expect(body).toHaveProperty("data");
+
+      const createdPlaylist = body.data;
+
+      // Verify UUID v4 format
+      expect(createdPlaylist.id).toBeTypeOf("string");
+      expect(isValidUUIDv4(createdPlaylist.id)).toBe(true);
+
+      // Verify other properties
+      comparePlaylistsData(createdPlaylist, newPlaylist, false);
+      expect(createdPlaylist.songs).toHaveLength(0);
+    });
+
+    it("should generate UUIDs that are exactly 128 bits", async () => {
+      await setupCompleteTestDatabase();
+      const newPlaylist = {
+        name: "128-bit UUID Test",
+        description: "A".repeat(50),
+      };
+
+      const response = await app.request("/playlists", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPlaylist),
+      });
+
+      expect(response.status).toBe(201);
+      const body = await response.json();
+      const createdPlaylist = body.data;
+
+      // Verify UUID is exactly 128 bits
+      expect(isUUID128Bits(createdPlaylist.id)).toBe(true);
+
+      // Verify the hex string length (32 characters = 128 bits)
+      const hexString = createdPlaylist.id.replace(/-/g, "");
+      expect(hexString.length).toBe(32);
+
+      // Verify it's valid hexadecimal
+      expect(/^[0-9a-f]{32}$/i.test(hexString)).toBe(true);
+    });
+
+    it("should generate unique UUIDs for different playlists", async () => {
+      await setupCompleteTestDatabase();
+      const playlist1 = {
+        name: "First Playlist",
+        description: "A".repeat(50),
+      };
+      const playlist2 = {
+        name: "Second Playlist",
+        description: "A".repeat(50),
+      };
+
+      // Create first playlist
+      const response1 = await app.request("/playlists", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(playlist1),
+      });
+
+      expect(response1.status).toBe(201);
+      const body1 = await response1.json();
+      const createdPlaylist1 = body1.data;
+
+      // Create second playlist
+      const response2 = await app.request("/playlists", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(playlist2),
+      });
+
+      expect(response2.status).toBe(201);
+      const body2 = await response2.json();
+      const createdPlaylist2 = body2.data;
+
+      // Verify both are valid UUIDs and 128 bits
+      expect(isValidUUIDv4(createdPlaylist1.id)).toBe(true);
+      expect(isValidUUIDv4(createdPlaylist2.id)).toBe(true);
+      expect(isUUID128Bits(createdPlaylist1.id)).toBe(true);
+      expect(isUUID128Bits(createdPlaylist2.id)).toBe(true);
+
+      // Verify they are different
+      expect(createdPlaylist1.id).not.toBe(createdPlaylist2.id);
     });
   });
 
