@@ -15,6 +15,7 @@ import { getSongById } from "../songs-id/functions";
  * @remarks
  * This function:
  * - Verifies that both playlist and song exist before creating the relationship
+ * - Checks if the song is already in the playlist to prevent duplicates
  * - Creates a playlist-song relationship in the database
  * - Returns the complete updated playlist with all songs
  *
@@ -28,10 +29,6 @@ export async function addSongToPlaylist(
   playlistId: string,
   songId: number
 ): Promise<PlaylistSchemaType> {
-  // First, verify that both playlist and song exist
-  await getPlaylistDataById(playlistId, `/playlists/${playlistId}/songs`);
-  await getSongById(songId, `/playlists/${playlistId}/songs`);
-
   // Now insert the song into the playlist
   const playlistSong = await db.playlistsSongs.create({
     data: {

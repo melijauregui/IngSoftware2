@@ -102,6 +102,14 @@ const addSongToPlaylistRoute = createRoute({
       },
       description: "Playlist or song not found",
     },
+    409: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Song already exists in playlist",
+    },
     500: {
       content: {
         "application/json": {
