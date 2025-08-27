@@ -1,6 +1,6 @@
 // db.test.ts
-import { PrismaClient } from "@prisma/client";
 import { testConfig } from "../config.test";
+import { PrismaClient } from "./generated/prisma";
 import logger from "./logger";
 
 const testPrisma = new PrismaClient({

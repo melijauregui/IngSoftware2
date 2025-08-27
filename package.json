@@ -26,7 +26,8 @@
     "test:db:down": "docker compose -f docker-compose.test.yml --env-file .env.test down",
     "test:db:status": "tsx scripts/check-db-status.ts",
     "logs:clear": "node scripts/clear-logs.js",
-    "logs:view": "tail -f logs/combined.log"
+    "logs:view": "tail -f logs/combined.log",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@hono/node-server": "^1.8.2",

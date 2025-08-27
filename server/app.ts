@@ -3,12 +3,13 @@ import songsApp from "./songs/routes";
 import { Context } from "hono";
 import { ZodError } from "zod";
 import logger from "./logger";
-import { NotFoundError } from "../schemas/error";
 import songsIdApp from "./songs-id/routes";
 import playlistsApp from "./playlists/routes";
 import playlistsIdApp from "./playlists-id/routes";
 import playlistsIdSongsApp from "./playlists-id-songs/routes";
 import playlistsIdPublishApp from "./playslists-id-publish/routes";
+import { NotFoundError } from "../schemas/error";
+import { Prisma } from "./generated/prisma";
 
 const app = new OpenAPIHono();
 
@@ -68,11 +69,28 @@ export function handlerError(err: Error, c: Context) {
   }
 
   // Handle Prisma errors
-  if (err.constructor.name === "PrismaClientKnownRequestError") {
-    // P2025: Record to delete does not exist
-    if ((err as any).code === "P2025") {
-      const errorResponse = handlePrismaNotFoundError(err, c.req.path);
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    // Handle 409 Duplicate Song errors (unique constraint violation)
+    if (err.code === "P2002") {
+      const errorResponse = handlePrismaDuplicateError(err, c.req.path);
+      logger.warn(`Prisma duplicate error on ${c.req.path}: ${err.message}`);
+      return c.json(errorResponse, 409);
+    }
 
+    // Handle 404 Not Found errors (foreign key constraint violation)
+    if (err.code === "P2003") {
+      const errorResponse = handlePrismaNotFoundError2(
+        err,
+        c.req.path,
+        err.meta?.constraint as string
+      );
+      logger.warn(`Prisma foreign key error on ${c.req.path}: ${err.message}`);
+      return c.json(errorResponse, 404);
+    }
+
+    // P2025: Record to delete does not exist
+    if (err.code === "P2025") {
+      const errorResponse = handlePrismaNotFoundError(err, c.req.path);
       logger.warn(
         `Prisma record not found error on ${c.req.path}: ${err.message}`
       );
@@ -107,7 +125,6 @@ export function handlerError(err: Error, c: Context) {
 
 // Function to handle Prisma not found errors and determine resource type
 function handlePrismaNotFoundError(err: any, path: string) {
-  // Extract ID from path
   const pathParts = path.split("/");
   const id = pathParts[pathParts.length - 1];
 
@@ -124,6 +141,38 @@ function handlePrismaNotFoundError(err: any, path: string) {
     title: `${resourceType} Not Found`,
     status: 404,
     detail: `The ${resourceType} with ID ${id} was not found`,
+    instance: path,
+  };
+}
+
+// Function to handle Prisma not found errors and determine resource type
+function handlePrismaNotFoundError2(err: any, path: string, meta: string) {
+  const pathParts = path.split("/");
+  const id = pathParts[pathParts.length - 2];
+
+  // Determine if it's a playlist or song based on path
+  let resourceType = "Resource";
+  if (meta === "PlaylistsSongs_songId_fkey") {
+    resourceType = "Song";
+  } else if (meta === "PlaylistsSongs_playlistId_fkey") {
+    resourceType = "Playlist";
+  }
+
+  return {
+    type: "about:blank",
+    title: `${resourceType} Not Found`,
+    status: 404,
+    detail: `The ${resourceType} was not found`,
+    instance: path,
+  };
+}
+
+function handlePrismaDuplicateError(err: any, path: string) {
+  return {
+    type: "about:blank",
+    title: "Duplicate Error",
+    status: 409,
+    detail: `The song is already in the playlist`,
     instance: path,
   };
 }

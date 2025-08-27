@@ -21,7 +21,7 @@ El repositorio debe incluir un archivo README.md (en español) con:
 
 ## Introducción
 
-Este proyecto implementa una API REST para gestionar playlists y canciones utilizando Node.js con TypeScript, Hono como framework web, y MySQL como base de datos. La solución incluye un sistema completo de testing con dos enfoques: tests unitarios con mocks para validar lógica de errores y tests de integración con base de datos real para verificar el flujo completo de la aplicación.
+Este proyecto implementa una API REST para gestionar playlists y canciones utilizando Node.js con TypeScript, Hono como framework web, y Postgres como base de datos. La solución incluye un sistema completo de testing con dos enfoques: tests unitarios con mocks para validar lógica de errores y tests de integración con base de datos real para verificar el flujo completo de la aplicación.
 
 ## Desafíos del Proyecto
 

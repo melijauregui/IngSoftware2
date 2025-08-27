@@ -299,7 +299,7 @@ describe("POST /playlists/:id/songs", () => {
         type: "about:blank",
         title: "Playlist Not Found",
         status: 404,
-        detail: `The Playlist with ID ${playlistId} was not found`,
+        detail: `The Playlist was not found`,
         instance: `/playlists/${playlistId}/songs`,
       });
     });
@@ -324,9 +324,130 @@ describe("POST /playlists/:id/songs", () => {
         type: "about:blank",
         title: "Song Not Found",
         status: 404,
-        detail: `The Song with ID ${songId} was not found`,
+        detail: `The Song was not found`,
         instance: `/playlists/${playlistId}/songs`,
       });
+    });
+  });
+
+  describe("Case 5: Duplicate prevention - Song already exists in playlist", () => {
+    it("should prevent adding a song that already exists in the playlist", async () => {
+      await setupCompleteTestDatabase();
+      const playlistId = TEST_PLAYLISTS.PLAYLIST_1.id;
+
+      // Get the current songs in the playlist
+      const getPlaylistResponse = await app.request(
+        `/playlists/${playlistId}`,
+        {
+          method: "GET",
+        }
+      );
+      expect(getPlaylistResponse.status).toBe(200);
+      const getPlaylistBody = await getPlaylistResponse.json();
+      const initialPlaylist = getPlaylistBody.data;
+      const initialSongCount = initialPlaylist.songs.length;
+
+      // Verify the playlist has songs initially
+      expect(initialSongCount).toBeGreaterThan(0);
+
+      // Try to add the first song that already exists in the playlist
+      const existingSongId = initialPlaylist.songs[0].id;
+      const requestBody = { songId: existingSongId };
+
+      const response = await app.request(`/playlists/${playlistId}/songs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      // Should return an error (409 Conflict or 400 Bad Request)
+      expect(response.status).toBe(409);
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        type: "about:blank",
+        title: "Duplicate Error",
+        status: 409,
+        detail: `The song is already in the playlist`,
+        instance: `/playlists/${playlistId}/songs`,
+      });
+
+      // Verify the playlist still has the same number of songs
+      const getPlaylistAfterResponse = await app.request(
+        `/playlists/${playlistId}`,
+        {
+          method: "GET",
+        }
+      );
+      expect(getPlaylistAfterResponse.status).toBe(200);
+      const getPlaylistAfterBody = await getPlaylistAfterResponse.json();
+      const playlistAfter = getPlaylistAfterBody.data;
+
+      expect(playlistAfter.songs.length).toBe(initialSongCount);
+
+      // Verify the song still appears only once
+      const songOccurrences = playlistAfter.songs.filter(
+        (song: any) => song.id === existingSongId
+      );
+      expect(songOccurrences.length).toBe(1);
+    });
+
+    it("should prevent adding multiple songs that already exist in the playlist", async () => {
+      await setupCompleteTestDatabase();
+      const playlistId = TEST_PLAYLISTS.PLAYLIST_1.id;
+
+      // Get the current songs in the playlist
+      const getPlaylistResponse = await app.request(
+        `/playlists/${playlistId}`,
+        {
+          method: "GET",
+        }
+      );
+      expect(getPlaylistResponse.status).toBe(200);
+      const getPlaylistBody = await getPlaylistResponse.json();
+      const initialPlaylist = getPlaylistBody.data;
+      const initialSongCount = initialPlaylist.songs.length;
+
+      // Verify the playlist has multiple songs initially
+      expect(initialSongCount).toBeGreaterThan(1);
+
+      // Try to add each existing song again
+      for (const existingSong of initialPlaylist.songs) {
+        const requestBody = { songId: existingSong.id };
+
+        const response = await app.request(`/playlists/${playlistId}/songs`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        // Should return an error for each duplicate
+        expect(response.status).toBe(409);
+        const responseBody = await response.json();
+        expect(responseBody).toEqual({
+          type: "about:blank",
+          title: "Duplicate Error",
+          status: 409,
+          detail: `The song is already in the playlist`,
+          instance: `/playlists/${playlistId}/songs`,
+        });
+      }
+
+      // Verify the playlist still has the same number of songs
+      const getPlaylistAfterResponse = await app.request(
+        `/playlists/${playlistId}`,
+        {
+          method: "GET",
+        }
+      );
+      expect(getPlaylistAfterResponse.status).toBe(200);
+      const getPlaylistAfterBody = await getPlaylistAfterResponse.json();
+      const playlistAfter = getPlaylistAfterBody.data;
+
+      expect(playlistAfter.songs.length).toBe(initialSongCount);
     });
   });
 });

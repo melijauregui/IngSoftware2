@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../server/generated/prisma";
 import { execSync } from "child_process";
 import { testConfig } from "../config.test";
 
@@ -42,13 +42,13 @@ export async function checkDatabaseStatus(): Promise<boolean> {
     await prisma.$connect();
 
     // Verificar que las tablas existan usando Prisma
-    const tables = await prisma.$queryRaw`
+    const tables = (await prisma.$queryRaw`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
       AND table_name IN ('Song', 'Playlist', 'PlaylistsSongs')
       ORDER BY table_name
-    `;
+    `) as any;
 
     await prisma.$disconnect();
 
