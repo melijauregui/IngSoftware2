@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { ErrorResponseSchema } from "../../schemas/error";
-import { createPlaylist, getPlaylists, publishPlaylist } from "./functions";
+import { createPlaylist, getPlaylists } from "./functions";
 import { Context } from "hono";
 import { handlerError } from "../app";
 import logger from "../logger";
@@ -170,5 +170,3 @@ playlistsApp.openapi(getPlaylistsRoute, async (c) => {
   const res = await getPlaylists(published, sort);
   return c.json({ data: res }, 200);
 });
-
-

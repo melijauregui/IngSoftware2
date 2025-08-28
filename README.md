@@ -2,16 +2,16 @@
 
 El repositorio debe incluir un archivo README.md (en español) con:
 + Un apartado de pre-requisitos listando lo necesario para levantar el entorno de desarrollo, especificando los lenguajes y versiones de los manejadores de paquetes necesarios.
-+ Link al "user-guide" de la libreria que se uso para testear, o en su defecto link al repo. e.g: Junit, gin-gonic
-+ Comandos para construir la imagen de Docker.
-+ Comandos para correr la base de datos.
-+ Comandos para correr la imagen del servicio.
 
 ## Tabla de Contenido
 
 - [Introducción](#introducción)
 - [Desafíos del Proyecto](#desafíos-del-proyecto)
 - [Pre-requisitos](#pre-requisitos)
+- [Configuración de Entornos](#configuración-de-entornos)
+  - [Entorno de Desarrollo](#entorno-de-desarrollo)
+  - [Entorno de Producción](#entorno-de-producción)
+  - [Entorno de Testing](#entorno-de-testing)
 - [Instalación](#instalación)
 - [Base de Datos](#base-de-datos)
 - [Docker](#docker)
@@ -21,7 +21,7 @@ El repositorio debe incluir un archivo README.md (en español) con:
 
 ## Introducción
 
-Este proyecto implementa una API REST para gestionar playlists y canciones utilizando Node.js con TypeScript, Hono como framework web, y Postgres como base de datos. La solución incluye un sistema completo de testing con dos enfoques: tests unitarios con mocks para validar lógica de errores y tests de integración con base de datos real para verificar el flujo completo de la aplicación.
+Este proyecto implementa una API REST para gestionar playlists y canciones utilizando Node.js con TypeScript, Hono como framework web, y PostgreSQL como base de datos con Prisma ORM. La solución incluye un sistema completo de testing con dos enfoques: tests unitarios con mocks para validar lógica de errores y tests de integración con base de datos real para verificar el flujo completo de la aplicación.
 
 ## Desafíos del Proyecto
 
@@ -30,7 +30,6 @@ El mayor desafío fue implementar un sistema de testing robusto que cubriera tan
 - **Diseño de mocks** para simular fallos de base de datos y validaciones
 - **Configuración de tests de integración** con base de datos real en Docker
 - **Aislamiento de tests** para garantizar que no interfieran entre sí
-- **Documentación clara** de ambos tipos de tests para facilitar el mantenimiento
 
 Gracias a que ya trabajé con creación de endpoints y manejo de base de datos relacionales en mi proyecto de tesis y trabajos prácticos de materias como arquitectura de software, en sí la implementación de los mismos no fue un gran desafio. 
 
@@ -39,7 +38,7 @@ Gracias a que ya trabajé con creación de endpoints y manejo de base de datos r
 ### Lenguajes y Versiones
 - **Node.js**: v18.0.0 o superior
 - **TypeScript**: v5.3.2
-- **MySQL**: v8.0 (via Docker)
+- **PostgreSQL**: v15 (via Docker)
 
 ### Manejadores de Paquetes
 - **npm**: v9.0.0 o superior
@@ -48,54 +47,115 @@ Gracias a que ya trabajé con creación de endpoints y manejo de base de datos r
 
 ### Dependencias Principales
 - **Hono**: v4.0.5 (Framework web)
+- **Prisma**: v6.14.0 (ORM para PostgreSQL)
 - **Vitest**: v3.2.4 (Framework de testing)
 - **Supertest**: v7.1.4 (Testing de APIs)
-- **MySQL2**: v3.9.7 (Driver de MySQL)
+- **PostgreSQL**: v15 (Base de datos)
 - **Winston**: v3.17.0 (Logger)
 - **Zod**: v3.22.4 (Validación de esquemas)
 
-## Instalación
+## Configuración de Entornos
+
+### Entorno de Desarrollo
 
 ```bash
-# Clonar el repositorio
+# 1. Clonar el repositorio
 git clone git@github.com:melijauregui/IngSoftware2.git
 cd IngSoft2
 
-# Instalar dependencias
+# 2. Instalar dependencias
 npm install
 
-# Configurar variables de entorno
-cp .env_example .env
+# 3. Configurar variables de entorno
 cp .env.test_example .env.test
+# Editar .env con las configuraciones de desarrollo (ENVIRONMENT=development)
+
+# 4. Levantar base de datos en Docker
+npm run dev:db:up
+
+# 5. Verificar estado de la base de datos
+npm run dev:db:status
+
+# 6. Iniciar servidor en modo desarrollo (local)
+npm run dev
+
+# 7. Bajar base de datos
+npm run dev:db:down
+
 ```
 
-## Base de Datos
+### Entorno de Producción
 
-### Levantar Base de Datos de Desarrollo
 ```bash
-# Levantar MySQL con Docker Compose
-docker compose up -d --build
+# 1. Clonar el repositorio
+git clone git@github.com:melijauregui/IngSoftware2.git
+cd IngSoft2
 
-# Verificar que la BD esté corriendo
-docker ps | grep melodia-db
+# 2. Instalar dependencias
+npm install
+
+# 3. Configurar variables de entorno de producción
+cp .env_example .env
+# Editar .env con las configuraciones de producción
+
+# 4. Levantar servicios de producción
+npm run prod:up
+
+# 5. Verificar que los servicios estén corriendo
+npm run prod:status
+
+# 6. Bajar servicios de producción
+npm run prod:down
 ```
 
-### Levantar Base de Datos de Testing
+### Entorno de Testing
+
 ```bash
 # Levantar BD de testing
 npm run test:db:up
 
 # Verificar estado de la BD
-# Esperar unos segundos a que se levante bien la BD
 npm run test:db:status
+
+# Ejecutar tests de integración
+npm run test:integration
+
+# Ejecutar tests con mocks
+npm run test:mocked
+
+# Ejecutar tests específicos
+npm run test:integration:playlists
+npm run test:integration:songs
+npm run test:integration:file filename
+
+npm run test:mocked:playlists
+npm run test:mocked:songs
+npm run test:mocked:file filename
 
 # Bajar BD de testing
 npm run test:db:down
 ```
 
+## Base de Datos
+
+### Configuración con Prisma
+
+El proyecto utiliza **Prisma ORM** con **PostgreSQL** como base de datos:
+
+- **Prisma Schema**: `prisma/schema.prisma` - Define los modelos de datos
+- **Migraciones**: Manejo automático de esquemas de base de datos
+
+**Optimizado para Docker**: Los archivos de Prisma se generan automáticamente dentro del contenedor Docker para Linux, por lo que funcionan en cualquier sistema operativo.
+**Para desarrollo local** (si ejecutas `npm run dev` en tu máquina), regenera el cliente:
+
+```bash
+npm run db:generate
+```
+
+
 ## Docker
 
-### Comandos
+**Comandos**
 ```bash
 # Construir imagen de la aplicación
 npm run docker:build
@@ -105,18 +165,6 @@ npm run docker:run
 npm run docker:down
 # Ver logs
 npm run docker:logs
-```
-
-### Ejecutar con Docker Compose
-```bash
-# Levantar aplicación completa (app + BD)
-docker compose up -d
-
-# Ver logs
-docker compose logs -f
-
-# Parar servicios
-docker compose down
 ```
 
 ## Testing
@@ -229,7 +277,6 @@ Para información más detallada sobre los tests, consulta:
 - **Networking**: Comunicación automática entre contenedores
 - **Variables de entorno**: Configuración separada para desarrollo y testing
 
-
 ### 7. Publicación Diferida de Playlists ✅
 
 **Implementado**: Sistema de publicación diferida donde las playlists recién creadas no son visibles hasta que se publiquen explícitamente.
@@ -241,36 +288,35 @@ Para información más detallada sobre los tests, consulta:
 - **Ordenamiento**: Las playlists se ordenan por `publishedAt` en orden descendente (más recientes primero)
 - **Integridad de datos**: Validación que `publishedAt` no puede ser null si `isPublished` es true
 
-**Tests de verificación**: 
-- Ubicados en `tests-integracion/playlists-get-test.ts` y `tests-integracion/playlists-id-publish-test.ts`
-- Verifican flujo completo de creación → publicación → visibilidad
-- Validan comportamiento idempotente del endpoint de publicación
+**Endpoints implementados**:
+- `POST /playlists/{id}/publish` - Publica una playlist (idempotente)
+- `GET /playlists?published=true&sort=desc` - Lista solo playlists publicadas (por defecto)
+- `GET /playlists?published=false&sort=desc` - Lista todas las playlists (publicadas y no publicadas)
 
-## Tests de Integración de Flujos Complejos 
+**Parámetros de consulta para GET /playlists**:
+- `published`: `"true"` | `"false"` (por defecto: `"true"`)
+  - `published=true`: Solo playlists publicadas
+  - `published=false`: Todas las playlists (publicadas y no publicadas)
+- `sort`: `"asc"` | `"desc"` (por defecto: `"desc"`)
+  - `sort=desc`: Ordena por `publishedAt` descendente (más recientes primero)
+  - `sort=asc`: Ordena por `publishedAt` ascendente (más antiguas primero)
+  - Las playlists no publicadas siempre aparecen al final
 
-**Implementado**: Tests de integración que prueban flujos completos usando múltiples endpoints en secuencia.
-
-**Características**:
-- **Flujos de publicación**: Crear playlist → verificar oculta → publicar → verificar visible
-- **Flujos de eliminación**: Obtener playlist → eliminar → verificar desaparece
-- **Flujos de gestión de canciones**: Crear canción → agregar a playlist → verificar integridad
-- **Flujos de eliminación de canciones**: Eliminar canción → verificar desaparece de todas las playlists
-
-
-**Comandos disponibles**:
+**Ejemplos de uso**:
 ```bash
-# Levantar servicios completos
-docker compose up -d
+# Obtener solo playlists publicadas, ordenadas por fecha descendente (por defecto)
+GET /playlists
 
-# Construir y levantar
-docker compose up -d --build
+# Obtener solo playlists publicadas, ordenadas por fecha ascendente
+GET /playlists?sort=asc
 
-# Ver logs
-docker compose logs -f
+# Obtener todas las playlists (publicadas y no publicadas)
+GET /playlists?published=false
 
-# Parar servicios
-docker compose down
+# Obtener todas las playlists, ordenadas por fecha ascendente
+GET /playlists?published=false&sort=asc
 ```
+
 
 ## Estructura del Proyecto
 
@@ -278,12 +324,16 @@ docker compose down
 IngSoft2/
 ├── server/                # Código fuente de la aplicación
 │   ├── app.ts             # Configuración principal de Hono
-│   ├── db.ts              # Configuración de base de datos
-│   ├── playlists/              # Endpoints de playlists
-│   └── playlists-id/           # Endpoints de playlists-id
-│   ├── playlists-id-songs/     # Endpoints de playlists-id-songs
-│   └── songs/                  # Endpoints de songs
-│   └── songs-id/               # Endpoints de songs-id
+│   ├── db.ts              # Configuración de base de datos con Prisma
+│   ├── generated/         # Cliente de Prisma generado automáticamente
+│   ├── playlists/         # Endpoints de playlists
+│   ├── playlists-id/      # Endpoints de playlists-id
+│   ├── playlists-id-songs/ # Endpoints de playlists-id-songs
+│   ├── playslists-id-publish/ # Endpoints de publicación de playlists
+│   ├── songs/             # Endpoints de songs
+│   └── songs-id/          # Endpoints de songs-id
+├── prisma/                # Configuración de Prisma ORM
+│   └── schema.prisma      # Esquema de base de datos
 ├── tests-mocked/          # Tests unitarios con mocks
 │   ├── README.md          # Documentación de tests mocked
 │   └── *.ts               # Archivos de tests
@@ -293,7 +343,9 @@ IngSoft2/
 ├── scripts/               # Scripts de utilidad
 ├── schemas/               # Esquemas de validación Zod
 ├── database/              # Scripts de inicialización de BD
-└── docker-compose.yml     # Configuración de Docker
+├── docker-compose.yml     # Configuración de Docker para desarrollo/producción
+├── docker-compose.test.yml # Configuración de Docker para testing
+└── Dockerfile             # Imagen de Docker para la aplicación
 ```
 
 ## 📅 Fecha de Entrega

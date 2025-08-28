@@ -93,7 +93,10 @@ export async function getAllSongs(): Promise<SongsResponseSchemaType> {
       }
       return data;
     })
-    .filter((song: any) => song !== null);
+    .filter(
+      (song): song is { title: string; artist: string; id: number } =>
+        song !== null
+    );
 
   logger.info(`Songs found: ${JSON.stringify(validatedSongs)}`);
   return validatedSongs;

@@ -1,27 +1,38 @@
+# Dependencias
 node_modules
-npm-debug.log
+npm-debug.log*
+
+# Archivos generados
+dist
+
+# Logs
+logs
+*.log
+
+# Archivos de entorno
+.env
+.env.test
+.env.local
+
+# Archivos de testing
+coverage
+tests-integracion
+tests-mocked
+
+# Archivos de Docker
+Dockerfile
+docker-compose.yml
+docker-compose.test.yml
+.dockerignore
+
+# Archivos de Git
 .git
 .gitignore
-README.md
-.env
-.nyc_output
-coverage
-.nyc_output
-.coverage
-.cache
+
+# Archivos del sistema
 .DS_Store
-*.log
-dist
-build
-.next
-.nuxt
-.vuepress/dist
-.serverless
-.fusebox/
-.dynamodb/
-.tern-port
-.vscode
-.idea
-*.swp
-*.swo
-*~
+Thumbs.db
+
+# Archivos temporales
+*.tmp
+*.temp

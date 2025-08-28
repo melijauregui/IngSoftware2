@@ -1,13 +1,13 @@
-import "../config";
 import { serve } from "@hono/node-server";
 import app from "./app";
 import logger from "./logger";
-import { config } from "../config";
 
 serve({
   fetch: app.fetch,
-  port: Number(config.PORT),
-  hostname: config.HOSTNAME,
+  port: Number(process.env.PORT),
+  hostname: process.env.HOSTNAME,
 });
 
-logger.info(`Server running on http://${config.HOSTNAME}:${config.PORT}`);
+logger.info(
+  `Server running on http://${process.env.HOSTNAME}:${process.env.PORT}`
+);

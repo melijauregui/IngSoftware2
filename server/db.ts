@@ -1,13 +1,14 @@
 // db.ts
 import logger from "./logger";
 import { PrismaClient } from "./generated/prisma";
+import { config } from "../config";
 
 const prisma = new PrismaClient({
   log: ["error"],
 });
 
-// Only test database connection if not in test mode
-if (process.env.NODE_ENV !== "test") {
+// Only test database connection if mode is production
+if (config.ENVIRONMENT === "production") {
   // Test database connection
   prisma
     .$connect()

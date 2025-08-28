@@ -11,13 +11,24 @@ COPY package*.json ./
 RUN npm install
 
 # Copiar el código fuente
-COPY . .
+COPY prisma ./prisma
+COPY server ./server
+COPY schemas ./schemas
+COPY scripts ./scripts
+COPY config*.ts ./
+COPY tsconfig.json ./
+COPY vitest.config.ts ./
+COPY vitest.integration.config.ts ./
+
+# Generar cliente de Prisma para Linux
+RUN npm run db:generate
 
 # Compilar TypeScript
 RUN npm run build
 
-# Exponer puerto
-EXPOSE 3000
+# Copiar el directorio generated al directorio dist
+RUN cp -r server/generated dist/server/
+
 
 # Comando para ejecutar la aplicación
 CMD ["npm", "start"]
