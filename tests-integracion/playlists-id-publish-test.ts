@@ -1,28 +1,28 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from 'vitest';
 
-import "../config.test";
+import '../config.test';
 
-import app from "../server/app";
+import app from '../server/app';
 import {
   cleanupTestDatabase,
   setupCompleteTestDatabase,
   TEST_PLAYLISTS,
-} from "../server/db.test";
+} from '../server/db.test';
 
-describe("POST /playlists/{id}/publish", () => {
+describe('POST /playlists/{id}/publish', () => {
   beforeEach(async () => {
     await cleanupTestDatabase();
   });
 
-  describe("Case 1: Successful playlist publication", () => {
-    it("should publish an unpublished playlist successfully", async () => {
+  describe('Case 1: Successful playlist publication', () => {
+    it('should publish an unpublished playlist successfully', async () => {
       await setupCompleteTestDatabase();
 
       // Now publish it
       const publishResponse = await app.request(
         `/playlists/${TEST_PLAYLISTS.PLAYLIST_3.id}/publish`,
         {
-          method: "POST",
+          method: 'POST',
         }
       );
 
@@ -43,13 +43,13 @@ describe("POST /playlists/{id}/publish", () => {
       );
     });
 
-    it("should be idempotent - calling publish twice should not change the publishedAt", async () => {
+    it('should be idempotent - calling publish twice should not change the publishedAt', async () => {
       await setupCompleteTestDatabase();
       // First publish
       const publishResponse1 = await app.request(
         `/playlists/${TEST_PLAYLISTS.PLAYLIST_3.id}/publish`,
         {
-          method: "POST",
+          method: 'POST',
         }
       );
 
@@ -61,13 +61,13 @@ describe("POST /playlists/{id}/publish", () => {
       const firstPublishedAt = publishedPlaylist1.publishedAt;
 
       // Wait a bit to ensure time difference
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Second publish (should be idempotent)
       const publishResponse2 = await app.request(
         `/playlists/${TEST_PLAYLISTS.PLAYLIST_3.id}/publish`,
         {
-          method: "POST",
+          method: 'POST',
         }
       );
 
@@ -80,14 +80,14 @@ describe("POST /playlists/{id}/publish", () => {
       expect(publishedPlaylist2.publishedAt).toBe(firstPublishedAt);
     });
 
-    it("should publish an already published playlist without changing publishedAt", async () => {
+    it('should publish an already published playlist without changing publishedAt', async () => {
       await setupCompleteTestDatabase();
 
       // Publish it again
       const publishResponse = await app.request(
         `/playlists/${TEST_PLAYLISTS.PLAYLIST_1.id}/publish`,
         {
-          method: "POST",
+          method: 'POST',
         }
       );
 
@@ -103,48 +103,48 @@ describe("POST /playlists/{id}/publish", () => {
     });
   });
 
-  describe("Case 2: Error handling", () => {
-    it("should return 404 when playlist does not exist", async () => {
+  describe('Case 2: Error handling', () => {
+    it('should return 404 when playlist does not exist', async () => {
       await setupCompleteTestDatabase();
 
-      const nonExistentId = "550e8400-e29b-41d4-a716-446655440999";
+      const nonExistentId = '550e8400-e29b-41d4-a716-446655440999';
 
       const response = await app.request(
         `/playlists/${nonExistentId}/publish`,
         {
-          method: "POST",
+          method: 'POST',
         }
       );
 
       expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Playlist Not Found",
+        type: 'about:blank',
+        title: 'Playlist Not Found',
         status: 404,
         detail:
-          "The Playlist with ID 550e8400-e29b-41d4-a716-446655440999 was not found",
-        instance: "/playlists/550e8400-e29b-41d4-a716-446655440999/publish",
+          'The Playlist with ID 550e8400-e29b-41d4-a716-446655440999 was not found',
+        instance: '/playlists/550e8400-e29b-41d4-a716-446655440999/publish',
       });
     });
 
-    it("should return 400 for invalid UUID format", async () => {
+    it('should return 400 for invalid UUID format', async () => {
       await setupCompleteTestDatabase();
 
-      const invalidId = "invalid-uuid";
+      const invalidId = 'invalid-uuid';
 
       const response = await app.request(`/playlists/${invalidId}/publish`, {
-        method: "POST",
+        method: 'POST',
       });
 
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Validation Error",
+        type: 'about:blank',
+        title: 'Validation Error',
         status: 400,
-        detail: "id: Expected valid UUID v4",
-        instance: "/playlists/invalid-uuid/publish",
+        detail: 'id: Expected valid UUID v4',
+        instance: '/playlists/invalid-uuid/publish',
       });
     });
   });

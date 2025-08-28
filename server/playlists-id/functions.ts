@@ -1,9 +1,9 @@
-import { db } from "../db.config";
-import { PlaylistSchemaType } from "../../schemas/playlists";
+import { db } from '../db.config';
+import { PlaylistSchemaType } from '../../schemas/playlists';
 import {
   getPlaylistDataById,
   getPlaylistSongsById,
-} from "../playlists/functions";
+} from '../playlists/functions';
 
 /**
  * Retrieves a complete playlist by ID including its songs

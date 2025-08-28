@@ -1,11 +1,11 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { ErrorResponseSchema } from "../../schemas/error";
-import { deletePlaylist, getPlaylistById } from "./functions";
-import { Context } from "hono";
-import { handlerError } from "../app";
-import logger from "../logger";
-import { PlaylistResponseSchema } from "../../schemas/playlists";
-import { PlaylistIdSchema } from "../../schemas/playlists-id";
+import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
+import { ErrorResponseSchema } from '../../schemas/error';
+import { deletePlaylist, getPlaylistById } from './functions';
+import { Context } from 'hono';
+import { handlerError } from '../app';
+import logger from '../logger';
+import { PlaylistResponseSchema } from '../../schemas/playlists';
+import { PlaylistIdSchema } from '../../schemas/playlists-id';
 
 const playlistsIdApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -51,8 +51,8 @@ export default playlistsIdApp;
 
 // post playlist endpoint
 const getPlaylistByIdRoute = createRoute({
-  method: "get",
-  path: "/",
+  method: 'get',
+  path: '/',
   request: {
     required: true,
     params: PlaylistIdSchema,
@@ -60,42 +60,42 @@ const getPlaylistByIdRoute = createRoute({
   responses: {
     200: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: PlaylistResponseSchema,
         },
       },
-      description: "Playlist retrieved successfully",
+      description: 'Playlist retrieved successfully',
     },
     400: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Bad request error",
+      description: 'Bad request error',
     },
     404: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Playlist not found",
+      description: 'Playlist not found',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-playlistsIdApp.openapi(getPlaylistByIdRoute, async (c) => {
+playlistsIdApp.openapi(getPlaylistByIdRoute, async c => {
   logger.http(`GET /playlists/{id} - Retrieving a playlist by ID`);
-  const { id } = c.req.valid("param");
+  const { id } = c.req.valid('param');
   const response = await getPlaylistById(id);
   return c.json({ data: response }, 200);
 });
@@ -118,38 +118,38 @@ playlistsIdApp.openapi(getPlaylistByIdRoute, async (c) => {
 //         schema:
 //           $ref: '#/components/schemas/ErrorResponse'
 const deletePlaylistByIdRoute = createRoute({
-  method: "delete",
-  path: "/",
+  method: 'delete',
+  path: '/',
   request: {
     required: true,
     params: PlaylistIdSchema,
   },
   responses: {
     204: {
-      description: "Playlist deleted successfully",
+      description: 'Playlist deleted successfully',
     },
     404: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Playlist not found",
+      description: 'Playlist not found',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-playlistsIdApp.openapi(deletePlaylistByIdRoute, async (c) => {
+playlistsIdApp.openapi(deletePlaylistByIdRoute, async c => {
   logger.http(`DELETE /playlists/{id} - Deleting a playlist by ID`);
-  const { id } = c.req.valid("param");
+  const { id } = c.req.valid('param');
   await deletePlaylist(id);
   return new Response(null, { status: 204 });
 });

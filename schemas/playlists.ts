@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { SongSchema } from "./songs";
+import { z } from 'zod';
+import { SongSchema } from './songs';
 
 // CreatePlaylistRequest:
 // type: object
@@ -17,13 +17,13 @@ export const CreatePlaylistRequestSchema = z
     name: z
       .string()
       .trim()
-      .min(1, "Name is required")
-      .max(50, "Name is too long"),
+      .min(1, 'Name is required')
+      .max(50, 'Name is too long'),
     description: z
       .string()
       .trim()
-      .min(50, "Description of 50 characters is required")
-      .max(255, "Description of 255 characters is too long"),
+      .min(50, 'Description of 50 characters is required')
+      .max(255, 'Description of 255 characters is too long'),
   })
   .strict();
 
@@ -51,7 +51,7 @@ export const PlaylistSongSchema = z
     addedAt: z
       .string()
       .datetime()
-      .describe("Timestamp when the song was added to the playlist"),
+      .describe('Timestamp when the song was added to the playlist'),
   })
   .strict();
 
@@ -59,30 +59,29 @@ export type PlaylistSongSchemaType = z.infer<typeof PlaylistSongSchema>;
 
 export const PlaylistDataSchemaBase = z
   .object({
-    id: z.string().uuid({ message: "Expected valid UUID v4" }),
+    id: z.string().uuid({ message: 'Expected valid UUID v4' }),
     ...CreatePlaylistRequestSchema.shape,
     isPublished: z
       .boolean()
       .default(false)
       .describe(
-        "Visibility flag. In the optional publish variant it starts as false until /publish is called."
+        'Visibility flag. In the optional publish variant it starts as false until /publish is called.'
       ),
     publishedAt: z
       .string()
       .datetime()
       .nullable()
       .describe(
-        "Publish timestamp. Omitted or null until the playlist is published."
+        'Publish timestamp. Omitted or null until the playlist is published.'
       ),
   })
   .strict();
 
 export const PlaylistDataSchema = PlaylistDataSchemaBase.refine(
-  (data) =>
-    !data.isPublished || (data.isPublished && data.publishedAt !== null),
+  data => !data.isPublished || (data.isPublished && data.publishedAt !== null),
   {
-    message: "Published playlists must have a publishedAt timestamp",
-    path: ["publishedAt"],
+    message: 'Published playlists must have a publishedAt timestamp',
+    path: ['publishedAt'],
   }
 );
 
@@ -92,7 +91,7 @@ export const PlaylistSongsSchema = z
   .object({
     songs: z
       .array(PlaylistSongSchema)
-      .describe("Songs ordered by addition date (most recent first)"),
+      .describe('Songs ordered by addition date (most recent first)'),
   })
   .strict();
 
@@ -125,11 +124,11 @@ export const PlaylistSchema = z
     ...PlaylistSongsSchema.shape,
   })
   .refine(
-    (data) =>
+    data =>
       !data.isPublished || (data.isPublished && data.publishedAt !== null),
     {
-      message: "Published playlists must have a publishedAt timestamp",
-      path: ["publishedAt"],
+      message: 'Published playlists must have a publishedAt timestamp',
+      path: ['publishedAt'],
     }
   );
 
@@ -161,8 +160,8 @@ export type PlaylistResponseArraySchemaType = z.infer<
 // Query parameters for GET /playlists
 export const GetPlaylistsQuerySchema = z
   .object({
-    published: z.enum(["true", "false"]).optional().default("true"),
-    sort: z.enum(["asc", "desc"]).optional().default("desc"),
+    published: z.enum(['true', 'false']).optional().default('true'),
+    sort: z.enum(['asc', 'desc']).optional().default('desc'),
   })
   .strict();
 

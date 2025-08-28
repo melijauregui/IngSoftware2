@@ -1,7 +1,7 @@
-import { PlaylistSchemaType } from "../../schemas/playlists";
-import { getPlaylistById, getPlaylistDataById } from "../playlists/functions";
-import { db } from "../db.config";
-import { getSongById } from "../songs-id/functions";
+import { PlaylistSchemaType } from '../../schemas/playlists';
+import { getPlaylistById, getPlaylistDataById } from '../playlists/functions';
+import { db } from '../db.config';
+import { getSongById } from '../songs-id/functions';
 
 /**
  * Adds a song to a playlist by creating a relationship between them
@@ -38,7 +38,7 @@ export async function addSongToPlaylist(
   });
 
   if (!playlistSong) {
-    throw new Error("Failed to add song to playlist");
+    throw new Error('Failed to add song to playlist');
   }
 
   const response = await getPlaylistById(playlistId);

@@ -1,4 +1,4 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 const {
@@ -34,7 +34,7 @@ if (missingVars.length > 0) {
   throw new Error(
     `❌ Missing environment variables: ${missingVars
       .map(([key]) => key)
-      .join(", ")}`
+      .join(', ')}`
   );
 }
 
@@ -48,6 +48,6 @@ export const config = {
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
-  ENVIRONMENT: ENVIRONMENT || "development",
+  ENVIRONMENT: ENVIRONMENT || 'development',
   DATABASE_URL,
 };

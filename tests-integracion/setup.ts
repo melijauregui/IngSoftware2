@@ -1,9 +1,9 @@
-import { afterAll, beforeAll } from "vitest";
+import { afterAll, beforeAll } from 'vitest';
 
 // Import test configuration first to load .env.test
-import "../config.test";
+import '../config.test';
 
-import { cleanupTestDatabase } from "../server/db.test";
+import { cleanupTestDatabase } from '../server/db.test';
 
 // Global test setup
 beforeAll(async () => {
@@ -11,6 +11,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  console.log("Integration tests completed");
+  console.log('Integration tests completed');
   await cleanupTestDatabase();
 });

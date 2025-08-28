@@ -1,14 +1,14 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
 import {
   AllSongsResponseSchema,
   SongRequestSchema,
   SongResponseSchema,
-} from "../../schemas/songs";
-import { ErrorResponseSchema } from "../../schemas/error";
-import { createSong, getAllSongs } from "./functions";
-import { Context } from "hono";
-import { handlerError } from "../app";
-import logger from "../logger";
+} from '../../schemas/songs';
+import { ErrorResponseSchema } from '../../schemas/error';
+import { createSong, getAllSongs } from './functions';
+import { Context } from 'hono';
+import { handlerError } from '../app';
+import logger from '../logger';
 
 const songsApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -54,13 +54,13 @@ export default songsApp;
 
 // post song endpoint
 const createSongRoute = createRoute({
-  method: "post",
-  path: "/",
+  method: 'post',
+  path: '/',
   request: {
     body: {
       required: true,
       content: {
-        "application/json": {
+        'application/json': {
           schema: SongRequestSchema,
         },
       },
@@ -69,34 +69,34 @@ const createSongRoute = createRoute({
   responses: {
     201: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: SongResponseSchema,
         },
       },
-      description: "Song created successfully",
+      description: 'Song created successfully',
     },
     400: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Bad request error",
+      description: 'Bad request error',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-songsApp.openapi(createSongRoute, async (c) => {
+songsApp.openapi(createSongRoute, async c => {
   logger.http(`POST /songs - Creating new song`);
-  const { title, artist } = c.req.valid("json");
+  const { title, artist } = c.req.valid('json');
   const response = await createSong(title, artist);
   return c.json(response, 201);
 });
@@ -118,29 +118,29 @@ songsApp.openapi(createSongRoute, async (c) => {
 
 // get all songs endpoint
 const getAllSongsRoute = createRoute({
-  method: "get",
-  path: "/",
+  method: 'get',
+  path: '/',
   responses: {
     200: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: AllSongsResponseSchema,
         },
       },
-      description: "A list of songs",
+      description: 'A list of songs',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-songsApp.openapi(getAllSongsRoute, async (c) => {
+songsApp.openapi(getAllSongsRoute, async c => {
   logger.http(`GET /songs - Getting all songs`);
   const response = await getAllSongs();
   return c.json({ data: response }, 200);

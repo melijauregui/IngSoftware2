@@ -1,6 +1,6 @@
-import { serve } from "@hono/node-server";
-import app from "./app";
-import logger from "./logger";
+import { serve } from '@hono/node-server';
+import app from './app';
+import logger from './logger';
 
 serve({
   fetch: app.fetch,

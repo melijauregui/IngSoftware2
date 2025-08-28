@@ -1,5 +1,5 @@
-import prisma from "./db";
-import { testPrisma } from "./db.test";
+import prisma from './db';
+import { testPrisma } from './db.test';
 
 /**
  * Database connection configuration
@@ -19,4 +19,4 @@ import { testPrisma } from "./db.test";
  * ```
  */
 export const db =
-  process.env.ENVIRONMENT === "production" ? prisma : testPrisma;
+  process.env.ENVIRONMENT === 'production' ? prisma : testPrisma;

@@ -3,10 +3,10 @@ import {
   CreateSongResponseSchemaType,
   SongSchema,
   SongSchemaType,
-} from "../../schemas/songs";
-import { db } from "../db.config";
-import logger from "../logger";
-import { createNotFoundError } from "../../schemas/error";
+} from '../../schemas/songs';
+import { db } from '../db.config';
+import logger from '../logger';
+import { createNotFoundError } from '../../schemas/error';
 
 /**
  * Retrieves a song by its ID
@@ -38,7 +38,7 @@ export async function getSongById(
   });
 
   if (!song) {
-    throw createNotFoundError("Song", id, instance);
+    throw createNotFoundError('Song', id, instance);
   }
 
   const { success, data, error } = SongSchema.safeParse(song);
@@ -46,7 +46,7 @@ export async function getSongById(
     logger.error(
       `Invalid song data for song id ${id}: ${JSON.stringify(error)}`
     );
-    throw createNotFoundError("Song", id, instance);
+    throw createNotFoundError('Song', id, instance);
   }
   logger.info(`Song found: ${JSON.stringify(data)}`);
   return data;
@@ -86,7 +86,7 @@ export async function updateSongById(
   });
 
   if (!song) {
-    throw createNotFoundError("Song", id, `/songs/${id}`);
+    throw createNotFoundError('Song', id, `/songs/${id}`);
   }
 
   return getSongById(id, `/songs/${id}`);

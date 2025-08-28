@@ -13,19 +13,20 @@ Los tests en esta carpeta están diseñados para:
 
 ## Diferencias con Tests de Integración
 
-| Aspecto | Tests Mocked | Tests de Integración |
-|---------|-------------|---------------------|
-| **Base de Datos** | Mockeada | Real (MySQL) |
-| **Velocidad** | Muy rápida | Más lenta |
-| **Escenarios** | Errores controlados | Flujo completo |
-| **Dependencias** | Aisladas | Reales |
-| **Propósito** | Validar lógica de error | Validar integración |
+| Aspecto           | Tests Mocked            | Tests de Integración |
+| ----------------- | ----------------------- | -------------------- |
+| **Base de Datos** | Mockeada                | Real (MySQL)         |
+| **Velocidad**     | Muy rápida              | Más lenta            |
+| **Escenarios**    | Errores controlados     | Flujo completo       |
+| **Dependencias**  | Aisladas                | Reales               |
+| **Propósito**     | Validar lógica de error | Validar integración  |
 
 ## Estructura de los Tests
 
 ### Archivos de Test Disponibles
 
 #### Tests de Playlists
+
 - `playlists-get-test.ts` - Tests para GET /playlists con mocks (incluye filtros `published` y `sort`)
 - `playlists-post-test.ts` - Tests para POST /playlists con mocks
 - `playlists-id-get-test.ts` - Tests para GET /playlists/:id con mocks
@@ -34,6 +35,7 @@ Los tests en esta carpeta están diseñados para:
 - `playlists-id-publish-test.ts` - Tests para POST /playlists/:id/publish con mocks
 
 #### Tests de Songs
+
 - `songs-get-test.ts` - Tests para GET /songs con mocks
 - `songs-post-test.ts` - Tests para POST /songs con mocks
 - `songs-id-get-test.ts` - Tests para GET /songs/:id con mocks
@@ -41,11 +43,13 @@ Los tests en esta carpeta están diseñados para:
 - `songs-id-delete-test.ts` - Tests para DELETE /songs/:id con mocks
 
 #### Archivos de Soporte
+
 - `setup.ts` - Configuración de mocks y setup de tests
 
 ## Ejecutar Tests
 
 ### Todos los Tests Unitarios
+
 ```bash
 npm run test:mocked
 ```
@@ -82,7 +86,6 @@ npm run test:mocked:file songs-id-delete-test
 npx vitest tests-mocked/ --watch
 ```
 
-
 ## Cómo Funcionan los Mocks
 
 Los mocks en Vitest son herramientas que permiten **interceptar y reemplazar** el comportamiento de funciones, métodos y módulos durante la ejecución de tests.
@@ -96,6 +99,7 @@ Los mocks funcionan como **interceptores inteligentes** que se colocan el códig
 ### Tipos de Mocks Utilizados
 
 #### 1. **Spy (Espía)**
+
 ```typescript
 // Solo observa las llamadas sin cambiar el comportamiento
 const spy = vi.spyOn(db, 'query');
@@ -103,6 +107,7 @@ const spy = vi.spyOn(db, 'query');
 ```
 
 #### 2. **Mock Implementation (Implementación Mock)**
+
 ```typescript
 // Reemplaza completamente la función
 vi.spyOn(db, 'query').mockImplementation(() => {
@@ -111,19 +116,23 @@ vi.spyOn(db, 'query').mockImplementation(() => {
 ```
 
 #### 3. **Mock Return Value (Valor de Retorno Mock)**
+
 ```typescript
 // Simplemente retorna un valor específico
 vi.spyOn(db, 'query').mockResolvedValue([{ id: 1, name: 'Mocked Playlist' }]);
 vi.spyOn(db, 'query').mockRejectedValue(new Error('Database error'));
 ```
+
 ## Casos de Prueba Cubiertos
 
 ### Casos de Error de Base de Datos
+
 - ❌ Conexión fallida
 - ❌ Base de datos no disponible
 - ❌ Datos corruptos retornados
 
 ### Casos de Error de Validación
+
 - ❌ Datos faltantes requeridos
 - ❌ Tipos de datos incorrectos
 
@@ -132,18 +141,20 @@ vi.spyOn(db, 'query').mockRejectedValue(new Error('Database error'));
 Los tests mocked para `GET /playlists` verifican el comportamiento de los parámetros de consulta:
 
 ### Parámetro `published`
+
 - **Valores válidos**: `"true"` | `"false"`
 - **Valores inválidos**: Cualquier otro string
 - **Comportamiento mockeado**: Simula filtrado de playlists por estado de publicación
 
 ### Parámetro `sort`
+
 - **Valores válidos**: `"asc"` | `"desc"`
 - **Valores inválidos**: Cualquier otro string
 - **Comportamiento mockeado**: Simula ordenamiento por `publishedAt`
 - **Playlists no publicadas**: Siempre aparecen al final en los mocks
 
 ### Casos de Error Verificados
+
 - ❌ Parámetro `published` con valor inválido (400)
 - ❌ Parámetro `sort` con valor inválido (400)
 - ❌ Combinaciones de parámetros inválidos
-

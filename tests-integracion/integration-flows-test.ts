@@ -1,34 +1,34 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from 'vitest';
 
-import "../config.test";
+import '../config.test';
 
-import app from "../server/app";
+import app from '../server/app';
 import {
   cleanupTestDatabase,
   setupCompleteTestDatabase,
   TEST_PLAYLISTS,
   TEST_SONGS,
-} from "../server/db.test";
+} from '../server/db.test';
 
-describe("Integration Flows - Multiple Endpoints", () => {
+describe('Integration Flows - Multiple Endpoints', () => {
   beforeEach(async () => {
     await cleanupTestDatabase();
   });
 
-  describe("Flow 1: Playlist Publication Flow", () => {
+  describe('Flow 1: Playlist Publication Flow', () => {
     it("should create unpublished playlist, verify it's hidden, publish it, and verify it's visible", async () => {
       await setupCompleteTestDatabase();
 
       // Step 1: Create a new playlist (should be unpublished by default)
       const newPlaylist = {
-        name: "My New Playlist",
-        description: "A".repeat(50),
+        name: 'My New Playlist',
+        description: 'A'.repeat(50),
       };
 
-      const createResponse = await app.request("/playlists", {
-        method: "POST",
+      const createResponse = await app.request('/playlists', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(newPlaylist),
       });
@@ -42,8 +42,8 @@ describe("Integration Flows - Multiple Endpoints", () => {
       expect(createdPlaylist.publishedAt).toBe(null);
 
       // Step 2: Get published playlists (should not include the new one)
-      const getPublishedResponse = await app.request("/playlists", {
-        method: "GET",
+      const getPublishedResponse = await app.request('/playlists', {
+        method: 'GET',
       });
 
       expect(getPublishedResponse.status).toBe(200);
@@ -57,8 +57,8 @@ describe("Integration Flows - Multiple Endpoints", () => {
       expect(foundInPublished).toBeUndefined();
 
       // Step 3: Get all playlists (should include the new one)
-      const getAllResponse = await app.request("/playlists?published=false", {
-        method: "GET",
+      const getAllResponse = await app.request('/playlists?published=false', {
+        method: 'GET',
       });
 
       expect(getAllResponse.status).toBe(200);
@@ -77,7 +77,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const publishResponse = await app.request(
         `/playlists/${createdPlaylist.id}/publish`,
         {
-          method: "POST",
+          method: 'POST',
         }
       );
 
@@ -91,9 +91,9 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       // Step 5: Get published playlists again (should now include the published one)
       const getPublishedAfterResponse = await app.request(
-        "/playlists?published=true",
+        '/playlists?published=true',
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
@@ -111,7 +111,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
     });
   });
 
-  describe("Flow 2: Playlist Deletion Flow", () => {
+  describe('Flow 2: Playlist Deletion Flow', () => {
     it("should get playlist, delete it, and verify it's gone", async () => {
       await setupCompleteTestDatabase();
 
@@ -119,7 +119,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const playlistId = TEST_PLAYLISTS.PLAYLIST_1.id;
 
       const getResponse = await app.request(`/playlists/${playlistId}`, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(getResponse.status).toBe(200);
@@ -127,25 +127,25 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const playlist = getBody.data;
 
       expect(playlist.id).toBe(playlistId);
-      expect(playlist.name).toBe("Test Playlist 1");
+      expect(playlist.name).toBe('Test Playlist 1');
 
       // Step 2: Delete the playlist
       const deleteResponse = await app.request(`/playlists/${playlistId}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
 
       expect(deleteResponse.status).toBe(204);
 
       // Step 3: Try to get the deleted playlist (should return 404)
       const getDeletedResponse = await app.request(`/playlists/${playlistId}`, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(getDeletedResponse.status).toBe(404);
 
       // Step 4: Get all playlists and verify the deleted one is not there
-      const getAllResponse = await app.request("/playlists?published=false", {
-        method: "GET",
+      const getAllResponse = await app.request('/playlists?published=false', {
+        method: 'GET',
       });
 
       expect(getAllResponse.status).toBe(200);
@@ -157,20 +157,20 @@ describe("Integration Flows - Multiple Endpoints", () => {
     });
   });
 
-  describe("Flow 3: Song Management Flow", () => {
+  describe('Flow 3: Song Management Flow', () => {
     it("should create song, add to playlist, verify it's there, and remove it", async () => {
       await setupCompleteTestDatabase();
 
       // Step 1: Create a new song
       const newSong = {
-        title: "Integration Test Song",
-        artist: "Integration Test Artist",
+        title: 'Integration Test Song',
+        artist: 'Integration Test Artist',
       };
 
-      const createSongResponse = await app.request("/songs", {
-        method: "POST",
+      const createSongResponse = await app.request('/songs', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(newSong),
       });
@@ -188,7 +188,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const getPlaylistResponse = await app.request(
         `/playlists/${playlistId}`,
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
@@ -207,9 +207,9 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const addSongResponse = await app.request(
         `/playlists/${playlistId}/songs`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({ songId: createdSong.id }),
         }
@@ -221,7 +221,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const getPlaylistAfterResponse = await app.request(
         `/playlists/${playlistId}`,
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
@@ -240,15 +240,15 @@ describe("Integration Flows - Multiple Endpoints", () => {
     });
   });
 
-  describe("Flow 4: Song Update and Deletion Flow", () => {
-    it("should get song, update it, verify changes, and delete it", async () => {
+  describe('Flow 4: Song Update and Deletion Flow', () => {
+    it('should get song, update it, verify changes, and delete it', async () => {
       await setupCompleteTestDatabase();
 
       // Step 1: Get a specific song
       const songId = TEST_SONGS.SONG_1.id;
 
       const getResponse = await app.request(`/songs/${songId}`, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(getResponse.status).toBe(200);
@@ -261,14 +261,14 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       // Step 2: Update the song
       const updatedSong = {
-        title: "Updated Integration Song",
-        artist: "Updated Integration Artist",
+        title: 'Updated Integration Song',
+        artist: 'Updated Integration Artist',
       };
 
       const updateResponse = await app.request(`/songs/${songId}`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedSong),
       });
@@ -284,7 +284,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       // Step 3: Get the song again and verify the changes persisted
       const getAfterResponse = await app.request(`/songs/${songId}`, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(getAfterResponse.status).toBe(200);
@@ -296,34 +296,34 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       // Step 4: Delete the song
       const deleteResponse = await app.request(`/songs/${songId}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
 
       expect(deleteResponse.status).toBe(204);
 
       // Step 5: Try to get the deleted song (should return 404)
       const getDeletedResponse = await app.request(`/songs/${songId}`, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(getDeletedResponse.status).toBe(404);
     });
   });
 
-  describe("Flow 5: Complex Playlist Management Flow", () => {
-    it("should create playlist, add songs, publish, verify in listings, then delete", async () => {
+  describe('Flow 5: Complex Playlist Management Flow', () => {
+    it('should create playlist, add songs, publish, verify in listings, then delete', async () => {
       await setupCompleteTestDatabase();
 
       // Step 1: Create a new playlist
       const newPlaylist = {
-        name: "Complex Test Playlist",
-        description: "A".repeat(50),
+        name: 'Complex Test Playlist',
+        description: 'A'.repeat(50),
       };
 
-      const createPlaylistResponse = await app.request("/playlists", {
-        method: "POST",
+      const createPlaylistResponse = await app.request('/playlists', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(newPlaylist),
       });
@@ -334,14 +334,14 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       // Step 2: Create a new song
       const newSong = {
-        title: "Complex Test Song",
-        artist: "Complex Test Artist",
+        title: 'Complex Test Song',
+        artist: 'Complex Test Artist',
       };
 
-      const createSongResponse = await app.request("/songs", {
-        method: "POST",
+      const createSongResponse = await app.request('/songs', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(newSong),
       });
@@ -354,9 +354,9 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const addSongResponse = await app.request(
         `/playlists/${createdPlaylist.id}/songs`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({ songId: createdSong.id }),
         }
@@ -368,7 +368,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const getPlaylistResponse = await app.request(
         `/playlists/${createdPlaylist.id}`,
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
@@ -381,8 +381,8 @@ describe("Integration Flows - Multiple Endpoints", () => {
       expect(playlist.songs[0].id).toBe(createdSong.id);
 
       // Step 5: Verify it's not in published playlists
-      const getPublishedResponse = await app.request("/playlists", {
-        method: "GET",
+      const getPublishedResponse = await app.request('/playlists', {
+        method: 'GET',
       });
 
       expect(getPublishedResponse.status).toBe(200);
@@ -398,15 +398,15 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const publishResponse = await app.request(
         `/playlists/${createdPlaylist.id}/publish`,
         {
-          method: "POST",
+          method: 'POST',
         }
       );
 
       expect(publishResponse.status).toBe(200);
 
       // Step 7: Verify it's now in published playlists
-      const getPublishedAfterResponse = await app.request("/playlists", {
-        method: "GET",
+      const getPublishedAfterResponse = await app.request('/playlists', {
+        method: 'GET',
       });
 
       expect(getPublishedAfterResponse.status).toBe(200);
@@ -423,7 +423,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const deleteResponse = await app.request(
         `/playlists/${createdPlaylist.id}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
         }
       );
 
@@ -433,14 +433,14 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const getDeletedResponse = await app.request(
         `/playlists/${createdPlaylist.id}`,
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
       expect(getDeletedResponse.status).toBe(404);
 
-      const getAllResponse = await app.request("/playlists?published=false", {
-        method: "GET",
+      const getAllResponse = await app.request('/playlists?published=false', {
+        method: 'GET',
       });
 
       expect(getAllResponse.status).toBe(200);
@@ -454,7 +454,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       //verifico que si exista el song en el listado de songs
       const getSongResponse = await app.request(`/songs/${createdSong.id}`, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(getSongResponse.status).toBe(200);
@@ -467,7 +467,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
     });
   });
 
-  describe("Flow 6: Song Deletion from System Flow", () => {
+  describe('Flow 6: Song Deletion from System Flow', () => {
     it("should delete a song and verify it's removed from all playlists", async () => {
       await setupCompleteTestDatabase();
 
@@ -477,7 +477,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const getPlaylistResponse = await app.request(
         `/playlists/${playlistId}`,
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
@@ -490,14 +490,14 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       // Get the first song to delete
       const songToDelete = playlist.songs[0];
-      console.log("songToDelete", songToDelete);
+      console.log('songToDelete', songToDelete);
       expect(songToDelete).toBeDefined();
 
       // Step 2: Delete the song from the system
       const deleteSongResponse = await app.request(
         `/songs/${songToDelete.id}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
         }
       );
 
@@ -507,7 +507,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const getPlaylistAfterResponse = await app.request(
         `/playlists/${playlistId}`,
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
@@ -530,8 +530,8 @@ describe("Integration Flows - Multiple Endpoints", () => {
       expect(foundDeletedSong).toBeUndefined();
 
       // Step 4: Verify this is reflected in the playlists listing
-      const getPlaylistsResponse = await app.request("/playlists", {
-        method: "GET",
+      const getPlaylistsResponse = await app.request('/playlists', {
+        method: 'GET',
       });
 
       expect(getPlaylistsResponse.status).toBe(200);
@@ -552,7 +552,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       // Step 5: Verify the song no longer exists independently
       const getSongResponse = await app.request(`/songs/${songToDelete.id}`, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(getSongResponse.status).toBe(404);
@@ -566,7 +566,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
       const deleteSongResponse = await app.request(
         `/songs/${songToDelete.id}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
         }
       );
 
@@ -581,7 +581,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
         const getPlaylistResponse = await app.request(
           `/playlists/${playlist.id}`,
           {
-            method: "GET",
+            method: 'GET',
           }
         );
 
@@ -598,7 +598,7 @@ describe("Integration Flows - Multiple Endpoints", () => {
 
       // Step 4: Verify the song no longer exists
       const getSongResponse = await app.request(`/songs/${songToDelete.id}`, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(getSongResponse.status).toBe(404);

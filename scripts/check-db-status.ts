@@ -1,6 +1,6 @@
-import { PrismaClient } from "../server/generated/prisma";
-import { execSync } from "child_process";
-import { testConfig } from "../config.test";
+import { PrismaClient } from '../server/generated/prisma';
+import { execSync } from 'child_process';
+import { testConfig } from '../config.test';
 
 /**
  * Checks the status of the test database and validates its configuration
@@ -26,16 +26,16 @@ import { testConfig } from "../config.test";
  */
 export async function checkDatabaseStatus(): Promise<boolean> {
   try {
-    console.log("Verificando estado de la base de datos de test...");
+    console.log('Verificando estado de la base de datos de test...');
     console.log(`Configuración de conexión:`);
     console.log(`   Host: ${testConfig.DB_HOST}`);
     console.log(`   Port: ${testConfig.DATABASE_PORT}`);
     console.log(`   User: ${testConfig.DB_USER}`);
     console.log(`   Database: ${testConfig.DB_NAME}`);
-    console.log("");
+    console.log('');
 
     const prisma = new PrismaClient({
-      log: ["query", "info", "warn", "error"],
+      log: ['query', 'info', 'warn', 'error'],
     });
 
     // Test connection
@@ -54,45 +54,45 @@ export async function checkDatabaseStatus(): Promise<boolean> {
 
     // Comprobar que las tablas sean {Song, Playlist, PlaylistsSongs}
     if (tables.length !== 3) {
-      console.log("❌ Las tablas no son correctas");
+      console.log('❌ Las tablas no son correctas');
       console.log(`   Tablas encontradas: ${tables.length}`);
       return false;
     }
 
-    const tableNames = (tables as any[]).map((t) => t.table_name);
+    const tableNames = (tables as any[]).map(t => t.table_name);
 
-    if (!tableNames.includes("Song")) {
-      console.log("❌ La tabla Song no existe");
+    if (!tableNames.includes('Song')) {
+      console.log('❌ La tabla Song no existe');
       return false;
     }
-    if (!tableNames.includes("Playlist")) {
-      console.log("❌ La tabla Playlist no existe");
+    if (!tableNames.includes('Playlist')) {
+      console.log('❌ La tabla Playlist no existe');
       return false;
     }
-    if (!tableNames.includes("PlaylistsSongs")) {
-      console.log("❌ La tabla PlaylistsSongs no existe");
+    if (!tableNames.includes('PlaylistsSongs')) {
+      console.log('❌ La tabla PlaylistsSongs no existe');
       return false;
     }
 
-    console.log("✅ Base de datos de test está funcionando correctamente");
-    console.log(`   Tablas encontradas: ${tableNames.join(", ")}`);
+    console.log('✅ Base de datos de test está funcionando correctamente');
+    console.log(`   Tablas encontradas: ${tableNames.join(', ')}`);
     return true;
   } catch (error) {
-    console.log("❌ Error verificando la base de datos de test:");
-    console.log(`   Código: ${(error as any).code || "N/A"}`);
+    console.log('❌ Error verificando la base de datos de test:');
+    console.log(`   Código: ${(error as any).code || 'N/A'}`);
     console.log(`   Mensaje: ${(error as any).message}`);
-    console.log("");
-    console.log("💡 Para levantar la BD de test, ejecuta:");
-    console.log("   npm run test:db:up");
-    console.log("");
-    console.log("💡 Para verificar el estado de Docker:");
-    console.log("   docker ps");
-    console.log("");
-    console.log("💡 Para ver los logs del contenedor PostgreSQL:");
-    console.log("   docker logs melodia-db-test");
-    console.log("");
-    console.log("💡 Para ejecutar las migraciones de Prisma:");
-    console.log("   npx prisma migrate deploy");
+    console.log('');
+    console.log('💡 Para levantar la BD de test, ejecuta:');
+    console.log('   npm run test:db:up');
+    console.log('');
+    console.log('💡 Para verificar el estado de Docker:');
+    console.log('   docker ps');
+    console.log('');
+    console.log('💡 Para ver los logs del contenedor PostgreSQL:');
+    console.log('   docker logs melodia-db-test');
+    console.log('');
+    console.log('💡 Para ejecutar las migraciones de Prisma:');
+    console.log('   npx prisma migrate deploy');
     return false;
   }
 }
@@ -118,21 +118,21 @@ export async function checkDatabaseStatus(): Promise<boolean> {
  */
 async function checkDockerStatus() {
   try {
-    console.log("Verificando estado de contenedores Docker...");
+    console.log('Verificando estado de contenedores Docker...');
 
-    const output = execSync("docker ps --filter name=test", {
-      encoding: "utf8",
+    const output = execSync('docker ps --filter name=test', {
+      encoding: 'utf8',
     });
 
-    if (output.includes("postgres")) {
-      console.log("✅ Contenedor PostgreSQL de test está ejecutándose");
+    if (output.includes('postgres')) {
+      console.log('✅ Contenedor PostgreSQL de test está ejecutándose');
       return true;
     } else {
-      console.log("❌ Contenedor PostgreSQL de test no está ejecutándose");
+      console.log('❌ Contenedor PostgreSQL de test no está ejecutándose');
       return false;
     }
   } catch (error) {
-    console.log("❌ Error verificando contenedores Docker:");
+    console.log('❌ Error verificando contenedores Docker:');
     console.log(`   ${(error as any).message}`);
     return false;
   }
@@ -155,7 +155,7 @@ async function checkDockerStatus() {
  */
 async function main() {
   const dockerOk = await checkDockerStatus();
-  console.log("");
+  console.log('');
 
   if (dockerOk) {
     await checkDatabaseStatus();

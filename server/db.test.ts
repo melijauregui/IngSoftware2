@@ -1,7 +1,7 @@
 // db.test.ts
-import { testConfig } from "../config.test";
-import { PrismaClient } from "./generated/prisma";
-import logger from "./logger";
+import { testConfig } from '../config.test';
+import { PrismaClient } from './generated/prisma';
+import logger from './logger';
 
 const testPrisma = new PrismaClient({
   datasources: {
@@ -9,13 +9,13 @@ const testPrisma = new PrismaClient({
       url: testConfig.DATABASE_URL,
     },
   },
-  log: ["error"],
+  log: ['error'],
 });
 
 testPrisma
   .$connect()
   .then(() => {
-    logger.info("Test database connection established successfully");
+    logger.info('Test database connection established successfully');
   })
   .catch((error: Error) => {
     logger.error(`Test database connection failed: ${error.message}`);
@@ -24,40 +24,40 @@ testPrisma
 export const TEST_SONGS = {
   SONG_1: {
     id: 1,
-    title: "Test Song 1",
-    artist: "Test Artist 1",
+    title: 'Test Song 1',
+    artist: 'Test Artist 1',
   },
   SONG_2: {
     id: 2,
-    title: "Test Song 2",
-    artist: "Test Artist 2",
+    title: 'Test Song 2',
+    artist: 'Test Artist 2',
   },
   SONG_3: {
     id: 3,
-    title: "Test Song 3",
-    artist: "Test Artist 3",
+    title: 'Test Song 3',
+    artist: 'Test Artist 3',
   },
 };
 
 export const TEST_PLAYLISTS = {
   PLAYLIST_1: {
-    id: "550e8400-e29b-41d4-a716-446655440001",
-    name: "Test Playlist 1",
-    description: "A".repeat(50),
-    publishedAt: new Date("2024-02-03"),
+    id: '550e8400-e29b-41d4-a716-446655440001',
+    name: 'Test Playlist 1',
+    description: 'A'.repeat(50),
+    publishedAt: new Date('2024-02-03'),
     isPublished: true,
   },
   PLAYLIST_2: {
-    id: "550e8400-e29b-41d4-a716-446655440002",
-    name: "Test Playlist 2",
-    description: "B".repeat(50),
-    publishedAt: new Date("2025-02-03"),
+    id: '550e8400-e29b-41d4-a716-446655440002',
+    name: 'Test Playlist 2',
+    description: 'B'.repeat(50),
+    publishedAt: new Date('2025-02-03'),
     isPublished: true,
   },
   PLAYLIST_3: {
-    id: "550e8400-e29b-41d4-a716-446655440003",
-    name: "Unpublished Playlist",
-    description: "C".repeat(50),
+    id: '550e8400-e29b-41d4-a716-446655440003',
+    name: 'Unpublished Playlist',
+    description: 'C'.repeat(50),
     publishedAt: null,
     isPublished: false,
   },
@@ -65,19 +65,19 @@ export const TEST_PLAYLISTS = {
 
 export const TEST_PLAYLISTS_SONGS = {
   PLAYLIST_1_SONG_1: {
-    playlistId: "550e8400-e29b-41d4-a716-446655440001",
+    playlistId: '550e8400-e29b-41d4-a716-446655440001',
     songId: 1,
   },
   PLAYLIST_1_SONG_2: {
-    playlistId: "550e8400-e29b-41d4-a716-446655440001",
+    playlistId: '550e8400-e29b-41d4-a716-446655440001',
     songId: 2,
   },
   PLAYLIST_2_SONG_3: {
-    playlistId: "550e8400-e29b-41d4-a716-446655440002",
+    playlistId: '550e8400-e29b-41d4-a716-446655440002',
     songId: 3,
   },
   PLAYLIST_3_SONG_1: {
-    playlistId: "550e8400-e29b-41d4-a716-446655440003",
+    playlistId: '550e8400-e29b-41d4-a716-446655440003',
     songId: 1,
   },
 };
@@ -92,9 +92,9 @@ export const cleanupTestDatabase = async () => {
     await testPrisma.playlistsSongs.deleteMany();
     await testPrisma.playlist.deleteMany();
     await testPrisma.song.deleteMany();
-    console.log("Test database cleaned up");
+    console.log('Test database cleaned up');
   } catch (error) {
-    console.error("Error cleaning up test database:", error);
+    console.error('Error cleaning up test database:', error);
   }
 };
 
@@ -110,9 +110,9 @@ export const setupTestJustOnePlaylistDatabase = async () => {
         isPublished: TEST_PLAYLISTS.PLAYLIST_1.isPublished,
       },
     });
-    console.log("Test database setup completed");
+    console.log('Test database setup completed');
   } catch (error) {
-    console.error("Error setting up test database:", error);
+    console.error('Error setting up test database:', error);
   }
 };
 
@@ -130,9 +130,9 @@ export const setupTestJustOneSongDatabase = async () => {
     // Reset the sequence to the next available ID
     await testPrisma.$executeRaw`SELECT setval('"Song_id_seq"', (SELECT MAX(id) FROM "Song"))`;
 
-    console.log("Test database setup completed");
+    console.log('Test database setup completed');
   } catch (error) {
-    console.error("Error setting up test database:", error);
+    console.error('Error setting up test database:', error);
   }
 };
 
@@ -180,9 +180,9 @@ export const setupCompleteTestDatabase = async () => {
       });
     }
 
-    console.log("Test database setup completed");
+    console.log('Test database setup completed');
   } catch (error) {
-    console.error("Error setting up test database:", error);
+    console.error('Error setting up test database:', error);
   }
 };
 

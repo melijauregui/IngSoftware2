@@ -1,6 +1,6 @@
-import winston, { level } from "winston";
-import path from "path";
-import { config } from "../config";
+import winston, { level } from 'winston';
+import path from 'path';
+import { config } from '../config';
 
 /**
  * Winston logger configuration
@@ -39,28 +39,28 @@ const levels = {
 };
 
 const colors = {
-  error: "red",
-  warn: "yellow",
-  info: "green",
-  debug: "white",
+  error: 'red',
+  warn: 'yellow',
+  info: 'green',
+  debug: 'white',
 };
 
 winston.addColors(colors);
 
 // Format for console (with colors)
 const consoleFormat = winston.format.combine(
-  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
   winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`
+    info => `${info.timestamp} ${info.level}: ${info.message}`
   )
 );
 
 // Format for files (without colors)
 const fileFormat = winston.format.combine(
-  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`
+    info => `${info.timestamp} ${info.level}: ${info.message}`
   )
 );
 
@@ -70,18 +70,18 @@ const transports = [
     format: consoleFormat,
   }),
   new winston.transports.File({
-    filename: path.join(process.cwd(), "logs", "error.log"),
-    level: "error",
+    filename: path.join(process.cwd(), 'logs', 'error.log'),
+    level: 'error',
     format: fileFormat,
   }),
   new winston.transports.File({
-    filename: path.join(process.cwd(), "logs", "combined.log"),
+    filename: path.join(process.cwd(), 'logs', 'combined.log'),
     format: fileFormat,
   }),
 ];
 
 // Set log level based on environment
-const logLevel = config.ENVIRONMENT === "production" ? "info" : "debug";
+const logLevel = config.ENVIRONMENT === 'production' ? 'info' : 'debug';
 
 // Create the logger
 const logger = winston.createLogger({

@@ -1,5 +1,5 @@
-import { config } from "dotenv";
-import { beforeAll, afterAll } from "vitest";
+import { config } from 'dotenv';
+import { beforeAll, afterAll } from 'vitest';
 
 // Load environment variables for tests
 config();

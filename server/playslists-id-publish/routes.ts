@@ -1,11 +1,11 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { ErrorResponseSchema } from "../../schemas/error";
-import { Context } from "hono";
-import { handlerError } from "../app";
-import logger from "../logger";
-import { PlaylistResponseSchema } from "../../schemas/playlists";
-import { PlaylistIdSchema } from "../../schemas/playlists-id";
-import { publishPlaylist } from "./functions";
+import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
+import { ErrorResponseSchema } from '../../schemas/error';
+import { Context } from 'hono';
+import { handlerError } from '../app';
+import logger from '../logger';
+import { PlaylistResponseSchema } from '../../schemas/playlists';
+import { PlaylistIdSchema } from '../../schemas/playlists-id';
+import { publishPlaylist } from './functions';
 
 const playlistsIdPublishApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -51,34 +51,34 @@ export default playlistsIdPublishApp;
 //           schema:
 //             $ref: '#/components/schemas/ErrorResponse'
 const publishPlaylistRoute = createRoute({
-  method: "post",
-  path: "/",
+  method: 'post',
+  path: '/',
   request: {
     params: PlaylistIdSchema,
   },
   responses: {
     200: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: PlaylistResponseSchema,
         },
       },
-      description: "Playlist published",
+      description: 'Playlist published',
     },
     404: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Playlist not found",
+      description: 'Playlist not found',
     },
   },
 });
 
-playlistsIdPublishApp.openapi(publishPlaylistRoute, async (c) => {
+playlistsIdPublishApp.openapi(publishPlaylistRoute, async c => {
   logger.http(`POST /playlists/:id/publish - Publishing playlist`);
-  const { id } = c.req.valid("param");
+  const { id } = c.req.valid('param');
   const res = await publishPlaylist(id);
   return c.json({ data: res }, 200);
 });

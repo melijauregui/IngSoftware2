@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-import "../config.test";
+import '../config.test';
 
-import app from "../server/app";
+import app from '../server/app';
 import {
   cleanupTestDatabase,
   getAllTestPlaylists,
@@ -10,24 +10,24 @@ import {
   setupTestJustOnePlaylistDatabase,
   TEST_PLAYLISTS,
   TEST_PLAYLISTS_SONGS,
-} from "../server/db.test";
-import { comparePlaylistsData, compareSongs } from "./tests-functions";
+} from '../server/db.test';
+import { comparePlaylistsData, compareSongs } from './tests-functions';
 
-describe("GET /playlists", () => {
+describe('GET /playlists', () => {
   beforeEach(async () => {
     await cleanupTestDatabase();
   });
 
-  describe("Case 1: Default behavior - published=true, sort=desc", () => {
-    it("should return only published playlists ordered by publishedAt desc (default)", async () => {
+  describe('Case 1: Default behavior - published=true, sort=desc', () => {
+    it('should return only published playlists ordered by publishedAt desc (default)', async () => {
       await setupCompleteTestDatabase();
-      const response = await app.request("/playlists", {
-        method: "GET",
+      const response = await app.request('/playlists', {
+        method: 'GET',
       });
 
       expect(response.status).toBe(200);
       const body = await response.json();
-      expect(body).toHaveProperty("data");
+      expect(body).toHaveProperty('data');
       expect(Array.isArray(body.data)).toBe(true);
 
       // Should only return published playlists (2 out of 3)
@@ -52,28 +52,28 @@ describe("GET /playlists", () => {
       compareSongs(secondPlaylistSongs, secondPlaylistExpectedSongIds);
     });
 
-    it("should return empty array when no playlists exist", async () => {
-      const response = await app.request("/playlists", {
-        method: "GET",
+    it('should return empty array when no playlists exist', async () => {
+      const response = await app.request('/playlists', {
+        method: 'GET',
       });
       expect(response.status).toBe(200);
       const body = await response.json();
-      expect(body).toHaveProperty("data");
+      expect(body).toHaveProperty('data');
       expect(Array.isArray(body.data)).toBe(true);
       expect(body.data.length).toBe(0);
     });
   });
 
-  describe("Case 2: Explicit published=true", () => {
-    it("should return only published playlists when published=true", async () => {
+  describe('Case 2: Explicit published=true', () => {
+    it('should return only published playlists when published=true', async () => {
       await setupCompleteTestDatabase();
-      const response = await app.request("/playlists?published=true", {
-        method: "GET",
+      const response = await app.request('/playlists?published=true', {
+        method: 'GET',
       });
 
       expect(response.status).toBe(200);
       const body = await response.json();
-      expect(body).toHaveProperty("data");
+      expect(body).toHaveProperty('data');
       expect(Array.isArray(body.data)).toBe(true);
       expect(body.data.length).toBe(2);
 
@@ -97,17 +97,17 @@ describe("GET /playlists", () => {
     });
   });
 
-  describe("Case 3: published=false - all playlists", () => {
-    it("should return all playlists when published=false", async () => {
+  describe('Case 3: published=false - all playlists', () => {
+    it('should return all playlists when published=false', async () => {
       await setupCompleteTestDatabase();
-      const url = "/playlists?published=false";
+      const url = '/playlists?published=false';
       const response = await app.request(url, {
-        method: "GET",
+        method: 'GET',
       });
 
       expect(response.status).toBe(200);
       const body = await response.json();
-      expect(body).toHaveProperty("data");
+      expect(body).toHaveProperty('data');
       expect(Array.isArray(body.data)).toBe(true);
       expect(body.data.length).toBe(3);
 
@@ -140,11 +140,11 @@ describe("GET /playlists", () => {
     });
   });
 
-  describe("Case 4: sort parameter", () => {
-    it("should order by publishedAt asc when sort=asc", async () => {
+  describe('Case 4: sort parameter', () => {
+    it('should order by publishedAt asc when sort=asc', async () => {
       await setupCompleteTestDatabase();
-      const response = await app.request("/playlists?sort=asc", {
-        method: "GET",
+      const response = await app.request('/playlists?sort=asc', {
+        method: 'GET',
       });
 
       expect(response.status).toBe(200);
@@ -173,10 +173,10 @@ describe("GET /playlists", () => {
       compareSongs(secondPlaylistSongs, secondPlaylistExpectedSongIds);
     });
 
-    it("should order by publishedAt desc when sort=desc", async () => {
+    it('should order by publishedAt desc when sort=desc', async () => {
       await setupCompleteTestDatabase();
-      const response = await app.request("/playlists?sort=desc", {
-        method: "GET",
+      const response = await app.request('/playlists?sort=desc', {
+        method: 'GET',
       });
 
       expect(response.status).toBe(200);
@@ -205,12 +205,12 @@ describe("GET /playlists", () => {
       compareSongs(secondPlaylistSongs, secondPlaylistExpectedSongIds);
     });
 
-    it("should order all playlists by publishedAt asc with unpublished at beginning", async () => {
+    it('should order all playlists by publishedAt asc with unpublished at beginning', async () => {
       await setupCompleteTestDatabase();
       const response = await app.request(
-        "/playlists?published=false&sort=asc",
+        '/playlists?published=false&sort=asc',
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
@@ -249,13 +249,13 @@ describe("GET /playlists", () => {
     });
   });
 
-  describe("Case 5: Parameter combinations", () => {
-    it("should handle published=false&sort=desc", async () => {
+  describe('Case 5: Parameter combinations', () => {
+    it('should handle published=false&sort=desc', async () => {
       await setupCompleteTestDatabase();
       const response = await app.request(
-        "/playlists?published=false&sort=desc",
+        '/playlists?published=false&sort=desc',
         {
-          method: "GET",
+          method: 'GET',
         }
       );
 
@@ -291,10 +291,10 @@ describe("GET /playlists", () => {
       compareSongs(thirdPlaylistSongs, thirdPlaylistExpectedSongIds);
     });
 
-    it("should handle published=true&sort=asc", async () => {
+    it('should handle published=true&sort=asc', async () => {
       await setupCompleteTestDatabase();
-      const response = await app.request("/playlists?published=true&sort=asc", {
-        method: "GET",
+      const response = await app.request('/playlists?published=true&sort=asc', {
+        method: 'GET',
       });
 
       expect(response.status).toBe(200);
@@ -321,15 +321,15 @@ describe("GET /playlists", () => {
     });
   });
 
-  describe("Case 6: Edge cases", () => {
-    it("should handle single playlist without songs", async () => {
+  describe('Case 6: Edge cases', () => {
+    it('should handle single playlist without songs', async () => {
       await setupTestJustOnePlaylistDatabase();
-      const response = await app.request("/playlists", {
-        method: "GET",
+      const response = await app.request('/playlists', {
+        method: 'GET',
       });
       expect(response.status).toBe(200);
       const body = await response.json();
-      expect(body).toHaveProperty("data");
+      expect(body).toHaveProperty('data');
       expect(Array.isArray(body.data)).toBe(true);
 
       const playlist = body.data[0];
@@ -338,35 +338,35 @@ describe("GET /playlists", () => {
     });
   });
 
-  describe("Case 7: Invalid query parameters", () => {
-    it("should return 400 for invalid published parameter", async () => {
-      const response = await app.request("/playlists?published=invalid", {
-        method: "GET",
+  describe('Case 7: Invalid query parameters', () => {
+    it('should return 400 for invalid published parameter', async () => {
+      const response = await app.request('/playlists?published=invalid', {
+        method: 'GET',
       });
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Validation Error",
+        type: 'about:blank',
+        title: 'Validation Error',
         status: 400,
         detail:
           "published: Invalid enum value. Expected 'true' | 'false', received 'invalid'",
-        instance: "/playlists",
+        instance: '/playlists',
       });
     });
-    it("should return 400 for invalid sort parameter", async () => {
-      const response = await app.request("/playlists?sort=invalid", {
-        method: "GET",
+    it('should return 400 for invalid sort parameter', async () => {
+      const response = await app.request('/playlists?sort=invalid', {
+        method: 'GET',
       });
       expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
-        type: "about:blank",
-        title: "Validation Error",
+        type: 'about:blank',
+        title: 'Validation Error',
         status: 400,
         detail:
           "sort: Invalid enum value. Expected 'asc' | 'desc', received 'invalid'",
-        instance: "/playlists",
+        instance: '/playlists',
       });
     });
   });

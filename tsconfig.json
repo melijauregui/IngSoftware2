@@ -17,13 +17,6 @@
     "sourceMap": true,
     "types": ["node"]
   },
-  "include": [
-    "server/**/*",
-    "schemas/**/*",
-    "config.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["server/**/*", "schemas/**/*", "config.ts"],
+  "exclude": ["node_modules", "dist"]
 }

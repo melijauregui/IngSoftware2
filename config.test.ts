@@ -1,7 +1,7 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 
 // Load test environment variables and override existing ones
-dotenv.config({ path: ".env.test", override: true });
+dotenv.config({ path: '.env.test', override: true });
 
 const {
   PORT,
@@ -37,7 +37,7 @@ if (missingVars.length > 0) {
   throw new Error(
     `❌ Missing environment variables: ${missingVars
       .map(([key]) => key)
-      .join(", ")}`
+      .join(', ')}`
   );
 }
 
@@ -51,6 +51,6 @@ export const testConfig = {
   DB_NAME,
   DATABASE_PORT,
   DB_HOST,
-  ENVIRONMENT: ENVIRONMENT || "test",
+  ENVIRONMENT: ENVIRONMENT || 'test',
   DATABASE_URL,
 };

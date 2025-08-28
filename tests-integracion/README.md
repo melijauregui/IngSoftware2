@@ -56,6 +56,7 @@ npm run test:db:up
 Una vez que la base de datos esté funcionando, puedes ejecutar los tests:
 
 #### Tests de Integración Completos
+
 ```bash
 npm run test:integration
 ```
@@ -94,6 +95,7 @@ npm run test:integration:file songs-id-delete-test
 Los siguientes archivos de test están disponibles para ejecución:
 
 #### Tests de Playlists
+
 - `playlists-get-test.ts` - Tests para GET /playlists (incluye filtros `published` y `sort`)
 - `playlists-post-test.ts` - Tests para POST /playlists
 - `playlists-id-get-test.ts` - Tests para GET /playlists/:id
@@ -103,6 +105,7 @@ Los siguientes archivos de test están disponibles para ejecución:
 - `integration-flows-test.ts` - Tests de flujos completos usando múltiples endpoints
 
 #### Tests de Songs
+
 - `songs-get-test.ts` - Tests para GET /songs
 - `songs-post-test.ts` - Tests para POST /songs
 - `songs-id-get-test.ts` - Tests para GET /songs/:id
@@ -110,20 +113,22 @@ Los siguientes archivos de test están disponibles para ejecución:
 - `songs-id-delete-test.ts` - Tests para DELETE /songs/:id
 
 #### Archivos de Soporte
-- `tests-functions.ts` - Funciones auxiliares para los tests
 
+- `tests-functions.ts` - Funciones auxiliares para los tests
 
 ## Casos de Prueba
 
 Cada endpoint se prueba en:
 
 ### Casos Felices (Happy Path)
+
 - ✅ Respuestas exitosas (200, 201, 204)
 - ✅ Estructura correcta de datos
 - ✅ Verificación en base de datos
 - ✅ Validación de datos retornados
 
 ### Casos de Error
+
 - ❌ Datos faltantes (400)
 - ❌ IDs inválidos (400)
 - ❌ Recursos no encontrados (404)
@@ -134,6 +139,7 @@ Cada endpoint se prueba en:
 El endpoint `GET /playlists` soporta los siguientes parámetros de consulta:
 
 ### Parámetro `published`
+
 - **Valores**: `"true"` | `"false"`
 - **Por defecto**: `"true"` (solo playlists publicadas)
 - **Comportamiento**:
@@ -141,6 +147,7 @@ El endpoint `GET /playlists` soporta los siguientes parámetros de consulta:
   - `published=false`: Retorna todas las playlists (publicadas y no publicadas)
 
 ### Parámetro `sort`
+
 - **Valores**: `"asc"` | `"desc"`
 - **Por defecto**: `"desc"` (más recientes primero)
 - **Comportamiento**:
@@ -149,6 +156,7 @@ El endpoint `GET /playlists` soporta los siguientes parámetros de consulta:
   - **Playlists no publicadas**: Siempre aparecen al final, independientemente del valor de `sort`
 
 ### Ejemplos de Uso
+
 ```bash
 # Obtener solo playlists publicadas, ordenadas por fecha descendente (por defecto)
 GET /playlists
@@ -167,13 +175,12 @@ GET /playlists?published=false&sort=asc
 
 Cada test se ejecuta en aislamiento:
 
-+ **AfterEach**: Se limpia la base de datos después de cada test
-+ **En cada test, se popula la base de datos con el escenario adecuado para el test**
+- **AfterEach**: Se limpia la base de datos después de cada test
+- **En cada test, se popula la base de datos con el escenario adecuado para el test**
 
 Esto garantiza que cada test comience con un estado conocido y no interfiera con otros tests.
 
-
 ### Variables de Entorno
+
 - Si hay problemas con las variables de entorno, verificar que el archivo `.env.test` existe
 - Los valores por defecto están en `config.test.ts`
-

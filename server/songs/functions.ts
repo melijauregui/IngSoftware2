@@ -4,9 +4,9 @@ import {
   SongSchema,
   SongSchemaType,
   SongsResponseSchemaType,
-} from "../../schemas/songs";
-import { db } from "../db.config";
-import logger from "../logger";
+} from '../../schemas/songs';
+import { db } from '../db.config';
+import logger from '../logger';
 
 /**
  * Creates a new song in the database

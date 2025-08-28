@@ -1,6 +1,6 @@
-import { db } from "../db.config";
-import logger from "../logger";
-import { createNotFoundError } from "../../schemas/error";
+import { db } from '../db.config';
+import logger from '../logger';
+import { createNotFoundError } from '../../schemas/error';
 import {
   PlaylistDataSchema,
   PlaylistDataSchemaType,
@@ -8,7 +8,7 @@ import {
   PlaylistSongSchema,
   PlaylistSongSchemaType,
   PlaylistSongsSchemaType,
-} from "../../schemas/playlists";
+} from '../../schemas/playlists';
 
 /**
  * Creates a new playlist in the database
@@ -79,7 +79,7 @@ export async function getPlaylistDataById(
   });
 
   if (!playlist) {
-    throw createNotFoundError("Playlist", id, instance);
+    throw createNotFoundError('Playlist', id, instance);
   }
 
   const playlistData = {
@@ -101,7 +101,7 @@ export async function getPlaylistDataById(
     logger.error(
       `Invalid playlist data for playlist id ${id}: ${JSON.stringify(error)}`
     );
-    throw new Error("Failed to get playlist data");
+    throw new Error('Failed to get playlist data');
   }
   return dataPlaylist;
 }
@@ -215,14 +215,14 @@ export async function getPlaylistSongsById(
  */
 export async function getPlaylists(
   published: boolean = true,
-  sort: "asc" | "desc" = "desc"
+  sort: 'asc' | 'desc' = 'desc'
 ): Promise<PlaylistSchemaType[]> {
   let response: PlaylistSchemaType[];
 
   const playlists = await db.playlist.findMany({
     where: published ? { isPublished: true } : {},
     orderBy: [
-      { isPublished: "desc" }, // Siempre true primero, false después
+      { isPublished: 'desc' }, // Siempre true primero, false después
       { publishedAt: sort }, // Luego ordena por fecha
     ],
   });

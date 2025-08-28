@@ -1,4 +1,4 @@
-# 20252C - Individual: Trabajo Practico Individual 
+# 20252C - Individual: Trabajo Practico Individual
 
 Gracias por tu interés en unirte a Melodia como Software Engineer. Estamos construyendo la próxima gran experiencia de streaming musical: intuitiva, envolvente y diseñada para que cada usuario descubra su nueva canción favorita en segundos. Queremos que formar parte de Melodia se sienta como diseñar el futuro de la música… porque eso es exactamente lo que harás.
 
@@ -11,15 +11,16 @@ La entrega del proyecto se realizará mediante un repositorio privado en GitHub.
 ⚠️ Aviso importante: Si durante la revisión de tu entrega surge alguna duda o inconsistencia, el equipo podrá solicitar una breve defensa oral a través de una reunión virtual (Google Meet u otra plataforma similar).
 
 El repositorio debe incluir un archivo README.md (en español) con:
-+ Una tabla de contenido.
-+ Una introducción con no más de un párrafo pequeño y conciso sobre la solución planteada.
-+ Una sección sobre qué fue lo más desafiante del proyecto.
-+ Un apartado de pre-requisitos listando lo necesario para levantar el entorno de desarrollo, especificando los lenguajes y versiones de los manejadores de paquetes necesarios.
-+ Link al “user-guide” de la libreria que se uso para testear, o en su defecto link al repo. e.g: Junit, gin-gonic
-+ Comandos para construir la imagen de Docker.
-+ Comandos para correr la base de datos.
-+ Comandos para correr la imagen del servicio.
-+ Fecha máxima de entrega: 28-08-2025
+
+- Una tabla de contenido.
+- Una introducción con no más de un párrafo pequeño y conciso sobre la solución planteada.
+- Una sección sobre qué fue lo más desafiante del proyecto.
+- Un apartado de pre-requisitos listando lo necesario para levantar el entorno de desarrollo, especificando los lenguajes y versiones de los manejadores de paquetes necesarios.
+- Link al “user-guide” de la libreria que se uso para testear, o en su defecto link al repo. e.g: Junit, gin-gonic
+- Comandos para construir la imagen de Docker.
+- Comandos para correr la base de datos.
+- Comandos para correr la imagen del servicio.
+- Fecha máxima de entrega: 28-08-2025
 
 **Formulario de entrega:**
 Se deberá completar el siguiente formulario con Padrón, Nombre, Apellido y Link al repositorio con la solución: [Formulario](https://forms.gle/vBRbDpQBYDzm1cd7A)
@@ -28,115 +29,121 @@ Luego de haber completado este formulario, les solicitaremos que agreguen al usu
 
 ## Criterios de Evaluación
 
-| Criterio                  | Descripción                                                                                 |
-|---------------------------|--------------------------------------------------------------------------------------------|
-| Calidad del Código        | Código limpio, legible y mantenible.                                                        |
-| Implementación            | Implementación correcta de endpoints y features, siguiendo la especificación                |
-| Testing                   | Calidad de las pruebas para cada endpoint.                                                  |
-| Dockerfile                | Creación adecuada del Dockerfile con las mejores prácticas.                                 |
-| Configuración del Entorno | Uso de variables de entorno para configuraciones, sin codificar ningún valor.               |
-| Manejo de Errores        | Manejo correcto y estandarizado de errores usando RFC 7807.                                 |
-| Persistencia              | Obligatoria en base de datos (relacional o no). Modelado adecuado.                          |
-| Desafíos (si los hay)     | Implementación exitosa de cualquier desafío opcional.                                       |
-| Documentación             | README claro y conciso con todas las secciones requeridas.                                  |
-| Proceso de Pensamiento    | Explicación de decisiones y proceso de pensamiento a lo largo de la implementación.          |
+| Criterio                  | Descripción                                                                         |
+| ------------------------- | ----------------------------------------------------------------------------------- |
+| Calidad del Código        | Código limpio, legible y mantenible.                                                |
+| Implementación            | Implementación correcta de endpoints y features, siguiendo la especificación        |
+| Testing                   | Calidad de las pruebas para cada endpoint.                                          |
+| Dockerfile                | Creación adecuada del Dockerfile con las mejores prácticas.                         |
+| Configuración del Entorno | Uso de variables de entorno para configuraciones, sin codificar ningún valor.       |
+| Manejo de Errores         | Manejo correcto y estandarizado de errores usando RFC 7807.                         |
+| Persistencia              | Obligatoria en base de datos (relacional o no). Modelado adecuado.                  |
+| Desafíos (si los hay)     | Implementación exitosa de cualquier desafío opcional.                               |
+| Documentación             | README claro y conciso con todas las secciones requeridas.                          |
+| Proceso de Pensamiento    | Explicación de decisiones y proceso de pensamiento a lo largo de la implementación. |
 
+## Enunciado
 
-## Enunciado 
 En este trabajo práctico individual desarrollarás un servicio backend para Melodía, una plataforma de descubrimiento y reproducción musical. La API debe gestionar playlists y canciones, incluyendo el ciclo de vida de Canción y su vinculación con Playlist. La persistencia debe ser en una base de datos (relacional o no relacional).
 
-## Historias de Usuario 
+## Historias de Usuario
 
-### Gestión de canciones 
+### Gestión de canciones
+
 Descripción: Como usuario de Melodía, quiero poder gestionar canciones (crear, consultar, actualizar y eliminar) para tener un catálogo disponible que pueda usar en mis playlists.
 Criterio de Aceptación: El sistema debe permitir agregar nuevas canciones, ver su información, modificarlas y eliminarlas. Cada canción debe incluir un título y un artista.
 
-### Publicación de playlists 
+### Publicación de playlists
+
 Descripción: Como usuario de Melodía, quiero poder crear y publicar playlists para que otros usuarios puedan escucharlas.
 Criterio de Aceptación: El sistema debe permitir a los usuarios crear y publicar playlists que incluyan un nombre, una descripción y una lista de canciones vinculadas desde el catálogo existente. Al crear una playlist, esta queda automáticamente publicada y visible para otros usuarios.
 
-### Agregar canciones a playlists 
+### Agregar canciones a playlists
+
 Descripción: Como usuario, quiero poder agregar canciones existentes a mis playlists manteniendo un registro de cuándo las agregué.
 Criterio de Aceptación: El sistema debe permitir agregar canciones a playlists y registrar automáticamente la fecha y hora de agregado para cada canción en la playlist.
 
-### Visualizar playlists 
+### Visualizar playlists
+
 Descripción: Como usuario, quiero tener acceso a todas las playlists publicadas en la plataforma.
 Criterio de Aceptación: Cuando ingrese a la lista de playlists, se deben mostrar todas las playlists en orden cronológico inverso según fecha y hora de publicación. Las canciones dentro de cada playlist deben estar ordenadas por fecha de agregado (más recientes primero).
 
-### Requisitos 
+### Requisitos
+
 1. **Especificaciones del Servicio Backend:**
-    + El servicio debe ser una API REST-like y devolver datos en formato JSON.
-    + Asegurate de probar cada endpoint con al menos una prueba E2E (End to End) o de integración, de manera que las pruebas sean claras y descriptivas en su propósito.
+   - El servicio debe ser una API REST-like y devolver datos en formato JSON.
+   - Asegurate de probar cada endpoint con al menos una prueba E2E (End to End) o de integración, de manera que las pruebas sean claras y descriptivas en su propósito.
 
 2. **Endpoints a Implementar:**
-    + Utiliza la siguiente especificación de OpenAPI para implementar los endpoints, que se puede visualizar en Swagger Editor para una vista más gráfica.
-    +  Las respuestas de error deben seguir el RFC 7807 (**). Para este proyecto, por la complejidad, el campo type debe ser about:blank.
+   - Utiliza la siguiente especificación de OpenAPI para implementar los endpoints, que se puede visualizar en Swagger Editor para una vista más gráfica.
+   - Las respuestas de error deben seguir el RFC 7807 (\*\*). Para este proyecto, por la complejidad, el campo type debe ser about:blank.
 
-        [ENDPOINTS](https://editor.swagger.io/?_gl=1*6yg7iw*_gcl_au*NDUzMDQ0OTM1LjE3NTU3OTQ3OTk.)
+     [ENDPOINTS](https://editor.swagger.io/?_gl=1*6yg7iw*_gcl_au*NDUzMDQ0OTM1LjE3NTU3OTQ3OTk.)
 
-    
 3. **Persistencia de Datos:**
-    + La persistencia en base de datos es obligatoria (relacional o no relacional). Se debe implementar un modelado adecuado.
+   - La persistencia en base de datos es obligatoria (relacional o no relacional). Se debe implementar un modelado adecuado.
 
 4. **Requisitos de CI/CD y DevOps:**
-    1. Uso de Variables de Entorno: 
-        + Entorno de desarrollo: Utilizar variables de entorno para configurar parámetros básicos del servicio, como HOST, PORT, y ENVIRONMENT.
-        + Persistencia: Utilizar las variables relacionadas con la conexión a bases de datos (DATABASE_HOST, DATABASE_NAME, DATABASE_PORT, DATABASE_USER, DATABASE_PASSWORD).
-        + Aclaraciones: 
-            + ENVIRONMENT: Define si el entorno es de desarrollo (development) o producción (production).
-            + PORT: Define el puerto en el que corre la aplicación, por defecto 8080.
-            + HOST: Define la IP donde el servicio escucha. 0.0.0.0 permite acceso desde cualquier red, por ejemplo, desde otro contenedor; 127.0.0.1 restringe a conexiones locales. La necesidad de definir HOST dependerá de la tecnología.
-    2. Dockerfile: Crear un Dockerfile para el servicio siguiendo las mejores prácticas para una imagen concisa y eficiente.
+   1. Uso de Variables de Entorno:
+      - Entorno de desarrollo: Utilizar variables de entorno para configurar parámetros básicos del servicio, como HOST, PORT, y ENVIRONMENT.
+      - Persistencia: Utilizar las variables relacionadas con la conexión a bases de datos (DATABASE_HOST, DATABASE_NAME, DATABASE_PORT, DATABASE_USER, DATABASE_PASSWORD).
+      - Aclaraciones:
+        - ENVIRONMENT: Define si el entorno es de desarrollo (development) o producción (production).
+        - PORT: Define el puerto en el que corre la aplicación, por defecto 8080.
+        - HOST: Define la IP donde el servicio escucha. 0.0.0.0 permite acceso desde cualquier red, por ejemplo, desde otro contenedor; 127.0.0.1 restringe a conexiones locales. La necesidad de definir HOST dependerá de la tecnología.
+   2. Dockerfile: Crear un Dockerfile para el servicio siguiendo las mejores prácticas para una imagen concisa y eficiente.
 
+### Requerimientos no funcionales
 
-### Requerimientos no funcionales 
-+ Usa cualquier lenguaje de programación para el servicio, preferiblemente las últimas versiones LTS.
-+ El servicio debe ejecutarse en un contenedor de Docker.
-+ El Dockerfile debe estar en la raíz del repositorio
-+ Documenta funciones y clases siguiendo el estándar del lenguaje elegido.
-+ Implementación de logs, utiliza una biblioteca externa de logging para facilitar la configuración.
-+ Formatea el código con el formatter preferido del lenguaje.
-+ El código debe estar escrito en inglés.
-+ Los commits deben ser atómicos y descriptivos, para asegurar consistencia y legibilidad desde el inicio del proyecto.
+- Usa cualquier lenguaje de programación para el servicio, preferiblemente las últimas versiones LTS.
+- El servicio debe ejecutarse en un contenedor de Docker.
+- El Dockerfile debe estar en la raíz del repositorio
+- Documenta funciones y clases siguiendo el estándar del lenguaje elegido.
+- Implementación de logs, utiliza una biblioteca externa de logging para facilitar la configuración.
+- Formatea el código con el formatter preferido del lenguaje.
+- El código debe estar escrito en inglés.
+- Los commits deben ser atómicos y descriptivos, para asegurar consistencia y legibilidad desde el inicio del proyecto.
 
-### Desafíos Opcionales 
+### Desafíos Opcionales
+
 1. Longitud minima y maxima de la descripcion de una playlist:
-    + Requiere que el campo description tenga al menos 50 caracteres y máximo 255 caracteres al crear una playlist.
-    + Responde con código 400 si la validación falla.
+   - Requiere que el campo description tenga al menos 50 caracteres y máximo 255 caracteres al crear una playlist.
+   - Responde con código 400 si la validación falla.
 2. Agrega un test para este caso.
-    + UUID para playlists:
-    + Asegura que cada playlist tenga un UUID v4.
-    + El servidor debe generar automáticamente el UUID al momento de la creación de la playlist, como respuesta de (POST /playlists).
-    + El UUID debe manejarse internamente con la API o biblioteca nativa del lenguaje como un identificador de 128 bits.
-    + En el contrato REST, el UUID V4 debe representarse como un string en formato estándar y debe usarse como identificador en todas las operaciones en lugar del ID numérico.
+   - UUID para playlists:
+   - Asegura que cada playlist tenga un UUID v4.
+   - El servidor debe generar automáticamente el UUID al momento de la creación de la playlist, como respuesta de (POST /playlists).
+   - El UUID debe manejarse internamente con la API o biblioteca nativa del lenguaje como un identificador de 128 bits.
+   - En el contrato REST, el UUID V4 debe representarse como un string en formato estándar y debe usarse como identificador en todas las operaciones en lugar del ID numérico.
 3. Usar Middleware para Manejar Errores:
-    + Implementa middleware para el manejo centralizado de errores.
+   - Implementa middleware para el manejo centralizado de errores.
 4. Mejoras a la Solución:
-¿Hay espacio para mejorar tu solución? Por favor, elabora.
+   ¿Hay espacio para mejorar tu solución? Por favor, elabora.
 5. Uso de Docker Compose:
-    + Agrega un archivo compose.yaml para definir los servicios.
-    + La base de datos y el contenedor de la aplicación deben estar definidos en compose.yml.
-    + El servicio de Docker debe apuntar al Dockerfile para la construcción del backend.
+   - Agrega un archivo compose.yaml para definir los servicios.
+   - La base de datos y el contenedor de la aplicación deben estar definidos en compose.yml.
+   - El servicio de Docker debe apuntar al Dockerfile para la construcción del backend.
 6. CI/CD con GitHub Actions para tests:
-    + Configurar un workflow de GitHub Actions que, en cada push o pull request a la rama main, ejecute los tests del proyecto automáticamente.
-    + El workflow debe instalar dependencias, levantar el entorno necesario (ej. base de datos en Docker si aplica) y ejecutar los tests.
-    + Documentar en el README.md cómo funciona y cómo se podría adaptar para producción.
+   - Configurar un workflow de GitHub Actions que, en cada push o pull request a la rama main, ejecute los tests del proyecto automáticamente.
+   - El workflow debe instalar dependencias, levantar el entorno necesario (ej. base de datos en Docker si aplica) y ejecutar los tests.
+   - Documentar en el README.md cómo funciona y cómo se podría adaptar para producción.
 7. Publicación diferida de playlists:
-    + Objetivo: incorporar un flujo de publicación donde una playlist recién creada no queda visible hasta que el usuario la publique.
-    + API mínima:
-        + Agregar un endpoint para publicar una playlist: POST /playlists/{id}/publish (idempotente).
-        + Agregar un filtro en el listado: GET /playlists?published=true (por defecto muestra solo las publicadas; con published=false puede devolver todas para backoffice/tests).
-        + El listado de playlists visibles debe mostrar primero las más recientes.
-    + En esta variante, POST /playlists crea la playlist no publicada (isPublished=false) y sin publishedAt (o publishedAt: null).
-    + Tests sugeridos: verificar que una playlist recién creada no aparece hasta publicarse, que el endpoint de publicación sea idempotente y que el listado respete el filtro published y el orden por fecha.
-    
-    **Contrato aditivo para el Desafío Opcional (7):**
-    
-    [ENDPOINTS](https://editor.swagger.io/) 
+   - Objetivo: incorporar un flujo de publicación donde una playlist recién creada no queda visible hasta que el usuario la publique.
+   - API mínima:
+     - Agregar un endpoint para publicar una playlist: POST /playlists/{id}/publish (idempotente).
+     - Agregar un filtro en el listado: GET /playlists?published=true (por defecto muestra solo las publicadas; con published=false puede devolver todas para backoffice/tests).
+     - El listado de playlists visibles debe mostrar primero las más recientes.
+   - En esta variante, POST /playlists crea la playlist no publicada (isPublished=false) y sin publishedAt (o publishedAt: null).
+   - Tests sugeridos: verificar que una playlist recién creada no aparece hasta publicarse, que el endpoint de publicación sea idempotente y que el listado respete el filtro published y el orden por fecha.
 
+   **Contrato aditivo para el Desafío Opcional (7):**
 
-## Ejemplo de Respuesta de Error en Formato RFC 7807 
+   [ENDPOINTS](https://editor.swagger.io/)
+
+## Ejemplo de Respuesta de Error en Formato RFC 7807
+
 Ejemplo de una respuesta de error usando el formato RFC 7807:
+
 ```
 {
    "type": "about:blank",
@@ -146,6 +153,7 @@ Ejemplo de una respuesta de error usando el formato RFC 7807:
    "instance": "/playlists/12345"
 }
 ```
+
 ## Ejemplo de Lanzamiento de Contenedores para Base de Datos
 
 ```
@@ -166,4 +174,5 @@ docker run --name db-container --network <melodia-network-name> -p 3306:3306 \
 ```
 
 ## Aclaraciones
+
 Para asegurar la comunicación entre contenedores lanzados manualmente, primero crea una red de Docker con docker network create <melodia-network-name> y luego usa --network <melodia-network-name> al lanzar los contenedores. De lo contrario, no podrán comunicarse. Alternativamente, puedes usar Docker Compose, que los coloca automáticamente en la misma red.

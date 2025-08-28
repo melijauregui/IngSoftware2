@@ -1,16 +1,16 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { ErrorResponseSchema } from "../../schemas/error";
-import { createPlaylist, getPlaylists } from "./functions";
-import { Context } from "hono";
-import { handlerError } from "../app";
-import logger from "../logger";
+import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
+import { ErrorResponseSchema } from '../../schemas/error';
+import { createPlaylist, getPlaylists } from './functions';
+import { Context } from 'hono';
+import { handlerError } from '../app';
+import logger from '../logger';
 import {
   CreatePlaylistRequestSchema,
   PlaylistResponseArraySchema,
   PlaylistResponseSchema,
   GetPlaylistsQuerySchema,
-} from "../../schemas/playlists";
-import { PlaylistIdSchema } from "../../schemas/playlists-id";
+} from '../../schemas/playlists';
+import { PlaylistIdSchema } from '../../schemas/playlists-id';
 
 const playlistsApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -56,14 +56,14 @@ export default playlistsApp;
 
 // post playlist endpoint
 const postPlaylistRoute = createRoute({
-  method: "post",
-  path: "/",
+  method: 'post',
+  path: '/',
   request: {
     required: true,
     body: {
       required: true,
       content: {
-        "application/json": {
+        'application/json': {
           schema: CreatePlaylistRequestSchema,
         },
       },
@@ -72,34 +72,34 @@ const postPlaylistRoute = createRoute({
   responses: {
     201: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: PlaylistResponseSchema,
         },
       },
-      description: "Playlist created successfully",
+      description: 'Playlist created successfully',
     },
     400: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Bad request error",
+      description: 'Bad request error',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-playlistsApp.openapi(postPlaylistRoute, async (c) => {
+playlistsApp.openapi(postPlaylistRoute, async c => {
   logger.http(`POST /playlists - Creating a new playlist`);
-  const { name, description } = c.req.valid("json");
+  const { name, description } = c.req.valid('json');
   const response = await createPlaylist(name, description);
   return c.json({ data: response }, 201);
 });
@@ -135,37 +135,37 @@ playlistsApp.openapi(postPlaylistRoute, async (c) => {
 //               items:
 //                 $ref: '#/components/schemas/Playlist'
 const getPlaylistsRoute = createRoute({
-  method: "get",
-  path: "/",
+  method: 'get',
+  path: '/',
   request: {
     query: GetPlaylistsQuerySchema,
   },
   responses: {
     200: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: PlaylistResponseArraySchema,
         },
       },
       description:
-        "A list of published playlists ordered by publishedAt desc (songs ordered by addedAt desc)",
+        'A list of published playlists ordered by publishedAt desc (songs ordered by addedAt desc)',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-playlistsApp.openapi(getPlaylistsRoute, async (c) => {
+playlistsApp.openapi(getPlaylistsRoute, async c => {
   logger.http(`GET /playlists - Retrieving playlists`);
-  const query = c.req.valid("query");
-  const published = query.published === "false" ? false : true; // Default to true if not specified
-  const sort = query.sort ?? "desc";
+  const query = c.req.valid('query');
+  const published = query.published === 'false' ? false : true; // Default to true if not specified
+  const sort = query.sort ?? 'desc';
 
   const res = await getPlaylists(published, sort);
   return c.json({ data: res }, 200);

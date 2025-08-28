@@ -1,5 +1,5 @@
-import { expect, describe, it } from "vitest";
-import { TEST_SONGS } from "../server/db.test";
+import { expect, describe, it } from 'vitest';
+import { TEST_SONGS } from '../server/db.test';
 
 // UUID v4 validation regex
 // ref: https://stackoverflow.com/questions/7905929/how-to-test-valid-uuid-guid
@@ -60,15 +60,15 @@ export function comparePlaylistsData(
   testPlaylist: any,
   fullComparison: boolean
 ) {
-  expect(playlistResponse).toHaveProperty("id");
-  expect(playlistResponse).toHaveProperty("name");
-  expect(playlistResponse).toHaveProperty("description");
-  expect(playlistResponse).toHaveProperty("publishedAt");
-  expect(playlistResponse).toHaveProperty("songs");
+  expect(playlistResponse).toHaveProperty('id');
+  expect(playlistResponse).toHaveProperty('name');
+  expect(playlistResponse).toHaveProperty('description');
+  expect(playlistResponse).toHaveProperty('publishedAt');
+  expect(playlistResponse).toHaveProperty('songs');
   expect(Array.isArray(playlistResponse.songs)).toBe(true);
 
   // Validate that the ID is a valid UUID v4 and 128 bits
-  expect(playlistResponse.id).toBeTypeOf("string");
+  expect(playlistResponse.id).toBeTypeOf('string');
   expect(isValidUUIDv4(playlistResponse.id)).toBe(true);
 
   if (fullComparison) {
@@ -144,9 +144,9 @@ export function compareSongs(
  * ```
  */
 export function compareSong(songResponse: any, testSong: any) {
-  expect(songResponse).toHaveProperty("id");
-  expect(songResponse).toHaveProperty("title");
-  expect(songResponse).toHaveProperty("artist");
+  expect(songResponse).toHaveProperty('id');
+  expect(songResponse).toHaveProperty('title');
+  expect(songResponse).toHaveProperty('artist');
 
   expect(songResponse.title).toBe(testSong.title);
   expect(songResponse.artist).toBe(testSong.artist);

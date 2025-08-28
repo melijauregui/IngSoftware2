@@ -1,33 +1,33 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
-import songsApp from "./songs/routes";
-import { Context } from "hono";
-import { ZodError } from "zod";
-import logger from "./logger";
-import songsIdApp from "./songs-id/routes";
-import playlistsApp from "./playlists/routes";
-import playlistsIdApp from "./playlists-id/routes";
-import playlistsIdSongsApp from "./playlists-id-songs/routes";
-import playlistsIdPublishApp from "./playslists-id-publish/routes";
-import { NotFoundError } from "../schemas/error";
-import { Prisma } from "./generated/prisma";
+import { OpenAPIHono } from '@hono/zod-openapi';
+import songsApp from './songs/routes';
+import { Context } from 'hono';
+import { ZodError } from 'zod';
+import logger from './logger';
+import songsIdApp from './songs-id/routes';
+import playlistsApp from './playlists/routes';
+import playlistsIdApp from './playlists-id/routes';
+import playlistsIdSongsApp from './playlists-id-songs/routes';
+import playlistsIdPublishApp from './playslists-id-publish/routes';
+import { NotFoundError } from '../schemas/error';
+import { Prisma } from './generated/prisma';
 
 const app = new OpenAPIHono();
 
 // Mount songs routes
-app.route("/songs/:id", songsIdApp);
-app.route("/songs", songsApp);
-app.route("/playlists/:id/publish", playlistsIdPublishApp);
-app.route("/playlists/:id/songs", playlistsIdSongsApp);
-app.route("/playlists/:id", playlistsIdApp);
-app.route("/playlists", playlistsApp);
+app.route('/songs/:id', songsIdApp);
+app.route('/songs', songsApp);
+app.route('/playlists/:id/publish', playlistsIdPublishApp);
+app.route('/playlists/:id/songs', playlistsIdSongsApp);
+app.route('/playlists/:id', playlistsIdApp);
+app.route('/playlists', playlistsApp);
 export default app;
 
 export function handlerError(err: Error, c: Context) {
   // Handle JSON parsing errors as validation errors
-  if (err.constructor.name === "HTTPException") {
+  if (err.constructor.name === 'HTTPException') {
     const errorResponse = {
-      type: "about:blank",
-      title: "Validation Error",
+      type: 'about:blank',
+      title: 'Validation Error',
       status: 400,
       detail: err.message,
       instance: c.req.path,
@@ -39,14 +39,14 @@ export function handlerError(err: Error, c: Context) {
 
   if (err instanceof ZodError) {
     const errorResponse = {
-      type: "about:blank",
-      title: "Validation Error",
+      type: 'about:blank',
+      title: 'Validation Error',
       status: 400,
       detail: err.errors
-        .map((e) =>
-          e.path.length > 0 ? `${e.path.join(".")}: ${e.message}` : e.message
+        .map(e =>
+          e.path.length > 0 ? `${e.path.join('.')}: ${e.message}` : e.message
         )
-        .join(", "),
+        .join(', '),
       instance: c.req.path,
     };
 
@@ -71,14 +71,14 @@ export function handlerError(err: Error, c: Context) {
   // Handle Prisma errors
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     // Handle 409 Duplicate Song errors (unique constraint violation)
-    if (err.code === "P2002") {
+    if (err.code === 'P2002') {
       const errorResponse = handlePrismaDuplicateError(err, c.req.path);
       logger.warn(`Prisma duplicate error on ${c.req.path}: ${err.message}`);
       return c.json(errorResponse, 409);
     }
 
     // Handle 404 Not Found errors (foreign key constraint violation)
-    if (err.code === "P2003") {
+    if (err.code === 'P2003') {
       const errorResponse = handlePrismaNotFoundError2(
         err,
         c.req.path,
@@ -89,7 +89,7 @@ export function handlerError(err: Error, c: Context) {
     }
 
     // P2025: Record to delete does not exist
-    if (err.code === "P2025") {
+    if (err.code === 'P2025') {
       const errorResponse = handlePrismaNotFoundError(err, c.req.path);
       logger.warn(
         `Prisma record not found error on ${c.req.path}: ${err.message}`
@@ -99,8 +99,8 @@ export function handlerError(err: Error, c: Context) {
 
     // Handle other Prisma errors
     const errorResponse = {
-      type: "about:blank",
-      title: "Database Error",
+      type: 'about:blank',
+      title: 'Database Error',
       status: 500,
       detail: err.message,
       instance: c.req.path,
@@ -112,10 +112,10 @@ export function handlerError(err: Error, c: Context) {
 
   // Handle other errors
   const errorResponse = {
-    type: "about:blank",
-    title: "Internal Server Error",
+    type: 'about:blank',
+    title: 'Internal Server Error',
     status: 500,
-    detail: err.message || "An unexpected error occurred",
+    detail: err.message || 'An unexpected error occurred',
     instance: c.req.path,
   };
 
@@ -125,19 +125,19 @@ export function handlerError(err: Error, c: Context) {
 
 // Function to handle Prisma not found errors and determine resource type
 function handlePrismaNotFoundError(err: any, path: string) {
-  const pathParts = path.split("/");
+  const pathParts = path.split('/');
   const id = pathParts[pathParts.length - 1];
 
   // Determine if it's a playlist or song based on path
-  let resourceType = "Resource";
-  if (path.includes("/playlists/")) {
-    resourceType = "Playlist";
-  } else if (path.includes("/songs/")) {
-    resourceType = "Song";
+  let resourceType = 'Resource';
+  if (path.includes('/playlists/')) {
+    resourceType = 'Playlist';
+  } else if (path.includes('/songs/')) {
+    resourceType = 'Song';
   }
 
   return {
-    type: "about:blank",
+    type: 'about:blank',
     title: `${resourceType} Not Found`,
     status: 404,
     detail: `The ${resourceType} with ID ${id} was not found`,
@@ -147,19 +147,19 @@ function handlePrismaNotFoundError(err: any, path: string) {
 
 // Function to handle Prisma not found errors and determine resource type
 function handlePrismaNotFoundError2(err: any, path: string, meta: string) {
-  const pathParts = path.split("/");
+  const pathParts = path.split('/');
   const id = pathParts[pathParts.length - 2];
 
   // Determine if it's a playlist or song based on path
-  let resourceType = "Resource";
-  if (meta === "PlaylistsSongs_songId_fkey") {
-    resourceType = "Song";
-  } else if (meta === "PlaylistsSongs_playlistId_fkey") {
-    resourceType = "Playlist";
+  let resourceType = 'Resource';
+  if (meta === 'PlaylistsSongs_songId_fkey') {
+    resourceType = 'Song';
+  } else if (meta === 'PlaylistsSongs_playlistId_fkey') {
+    resourceType = 'Playlist';
   }
 
   return {
-    type: "about:blank",
+    type: 'about:blank',
     title: `${resourceType} Not Found`,
     status: 404,
     detail: `The ${resourceType} was not found`,
@@ -169,8 +169,8 @@ function handlePrismaNotFoundError2(err: any, path: string, meta: string) {
 
 function handlePrismaDuplicateError(err: any, path: string) {
   return {
-    type: "about:blank",
-    title: "Duplicate Error",
+    type: 'about:blank',
+    title: 'Duplicate Error',
     status: 409,
     detail: `The song is already in the playlist`,
     instance: path,

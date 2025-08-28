@@ -1,4 +1,3 @@
-
 services:
   postgres-test:
     image: postgres:15
@@ -12,14 +11,14 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     restart: unless-stopped
     ports:
-      - "${DATABASE_PORT}:5432"
+      - '${DATABASE_PORT}:5432'
     volumes:
       - postgres_test_data:/var/lib/postgresql/data
       - ./database:/docker-entrypoint-initdb.d
     networks:
       - melodia-test-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
       timeout: 10s
       retries: 5
       interval: 5s

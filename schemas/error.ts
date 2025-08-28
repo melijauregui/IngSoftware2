@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 // ErrorResponse:
 //       type: object
 //       properties:
@@ -82,9 +82,9 @@ export class NotFoundError extends Error {
 
   constructor(message: string, instance: string, title: string) {
     super(message);
-    this.name = "NotFoundError";
+    this.name = 'NotFoundError';
     this.status = 404;
-    this.type = "about:blank";
+    this.type = 'about:blank';
     this.title = title;
     this.detail = message;
     this.instance = instance;

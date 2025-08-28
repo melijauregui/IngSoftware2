@@ -1,20 +1,20 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
     globals: true,
-    environment: "node",
-    setupFiles: ["./tests-integracion/setup.ts"],
-    include: ["tests-integracion/**/*.ts"],
+    environment: 'node',
+    setupFiles: ['./tests-integracion/setup.ts'],
+    include: ['tests-integracion/**/*.ts'],
     exclude: [
-      "tests-integracion/setup.ts",
-      "tests-integracion/tests-functions.ts",
+      'tests-integracion/setup.ts',
+      'tests-integracion/tests-functions.ts',
     ],
     env: {
-      NODE_ENV: "test",
+      NODE_ENV: 'test',
     },
     // Configuración para ejecutar tests secuencialmente
-    pool: "forks",
+    pool: 'forks',
     poolOptions: {
       forks: {
         singleFork: true,
@@ -29,6 +29,6 @@ export default defineConfig({
     },
     // Optimizaciones para velocidad
     silent: false,
-    reporters: ["verbose"],
+    reporters: ['verbose'],
   },
 });

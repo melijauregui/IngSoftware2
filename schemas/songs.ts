@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // CreateSongRequest:
 //       type: object
@@ -16,13 +16,13 @@ export const SongRequestSchema = z
     title: z
       .string()
       .trim()
-      .min(1, "Title is required")
-      .max(50, "Title is too long"),
+      .min(1, 'Title is required')
+      .max(50, 'Title is too long'),
     artist: z
       .string()
       .trim()
-      .min(1, "Artist is required")
-      .max(50, "Artist is too long"),
+      .min(1, 'Artist is required')
+      .max(50, 'Artist is too long'),
   })
   .strict();
 

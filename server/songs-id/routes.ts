@@ -1,15 +1,15 @@
-import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import {
   AllSongsResponseSchema,
   SongRequestSchema,
   SongResponseSchema,
-} from "../../schemas/songs";
-import { ErrorResponseSchema } from "../../schemas/error";
-import { deleteSongById, getSongById, updateSongById } from "./functions";
-import { Context } from "hono";
-import { handlerError } from "../app";
-import logger from "../logger";
-import { SongIdSchema, UpdateSongRequestSchema } from "../../schemas/songs-id";
+} from '../../schemas/songs';
+import { ErrorResponseSchema } from '../../schemas/error';
+import { deleteSongById, getSongById, updateSongById } from './functions';
+import { Context } from 'hono';
+import { handlerError } from '../app';
+import logger from '../logger';
+import { SongIdSchema, UpdateSongRequestSchema } from '../../schemas/songs-id';
 
 const songsIdApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -55,8 +55,8 @@ export default songsIdApp;
 
 // get song by id endpoint
 const getSongByIdRoute = createRoute({
-  method: "get",
-  path: "/",
+  method: 'get',
+  path: '/',
   request: {
     required: true,
     params: SongIdSchema,
@@ -64,42 +64,42 @@ const getSongByIdRoute = createRoute({
   responses: {
     200: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: SongResponseSchema,
         },
       },
-      description: "Song retrieved successfully",
+      description: 'Song retrieved successfully',
     },
     400: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Bad request error",
+      description: 'Bad request error',
     },
     404: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Song not found",
+      description: 'Song not found',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-songsIdApp.openapi(getSongByIdRoute, async (c) => {
+songsIdApp.openapi(getSongByIdRoute, async c => {
   logger.http(`GET /songs/:id - Getting song by id`);
-  const { id } = c.req.valid("param");
+  const { id } = c.req.valid('param');
   const response = await getSongById(id, `/songs/${id}`);
   return c.json({ data: response }, 200);
 });
@@ -143,15 +143,15 @@ songsIdApp.openapi(getSongByIdRoute, async (c) => {
 
 // put song by id endpoint
 const putSongByIdRoute = createRoute({
-  method: "put",
-  path: "/",
+  method: 'put',
+  path: '/',
   request: {
     required: true,
     params: SongIdSchema,
     body: {
       required: true,
       content: {
-        "application/json": {
+        'application/json': {
           schema: UpdateSongRequestSchema,
         },
       },
@@ -161,43 +161,43 @@ const putSongByIdRoute = createRoute({
   responses: {
     200: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: SongResponseSchema,
         },
       },
-      description: "Song updated successfully",
+      description: 'Song updated successfully',
     },
     400: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Bad request error",
+      description: 'Bad request error',
     },
     404: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Song not found",
+      description: 'Song not found',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-songsIdApp.openapi(putSongByIdRoute, async (c) => {
+songsIdApp.openapi(putSongByIdRoute, async c => {
   logger.http(`PUT /songs/:id - Updating song by id`);
-  const { id } = c.req.valid("param");
-  const { title, artist } = c.req.valid("json");
+  const { id } = c.req.valid('param');
+  const { title, artist } = c.req.valid('json');
   const response = await updateSongById(id, title, artist);
   return c.json({ data: response }, 200);
 });
@@ -222,29 +222,29 @@ songsIdApp.openapi(putSongByIdRoute, async (c) => {
 
 // delete song by id endpoint
 const deleteSongByIdRoute = createRoute({
-  method: "delete",
-  path: "/",
+  method: 'delete',
+  path: '/',
   request: {
     params: SongIdSchema,
   },
   responses: {
     204: {
-      description: "Song deleted successfully",
+      description: 'Song deleted successfully',
     },
     404: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Song not found",
+      description: 'Song not found',
     },
   },
 });
 
-songsIdApp.openapi(deleteSongByIdRoute, async (c) => {
+songsIdApp.openapi(deleteSongByIdRoute, async c => {
   logger.http(`DELETE /songs/:id - Deleting song by id`);
-  const { id } = c.req.valid("param");
+  const { id } = c.req.valid('param');
   await deleteSongById(id);
   return new Response(null, { status: 204 });
 });

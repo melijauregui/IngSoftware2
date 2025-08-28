@@ -1,12 +1,12 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { ErrorResponseSchema } from "../../schemas/error";
-import { addSongToPlaylist } from "./functions";
-import { Context } from "hono";
-import { handlerError } from "../app";
-import logger from "../logger";
-import { PlaylistResponseSchema } from "../../schemas/playlists";
-import { PlaylistIdSchema } from "../../schemas/playlists-id";
-import { AddSongToPlaylistRequestSchema } from "../../schemas/playlists-id-songs";
+import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
+import { ErrorResponseSchema } from '../../schemas/error';
+import { addSongToPlaylist } from './functions';
+import { Context } from 'hono';
+import { handlerError } from '../app';
+import logger from '../logger';
+import { PlaylistResponseSchema } from '../../schemas/playlists';
+import { PlaylistIdSchema } from '../../schemas/playlists-id';
+import { AddSongToPlaylistRequestSchema } from '../../schemas/playlists-id-songs';
 
 const playlistsIdSongsApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -63,15 +63,15 @@ export default playlistsIdSongsApp;
 //                 $ref: '#/components/schemas/ErrorResponse'
 
 const addSongToPlaylistRoute = createRoute({
-  method: "post",
-  path: "/",
+  method: 'post',
+  path: '/',
   request: {
     required: true,
     params: PlaylistIdSchema,
     body: {
       required: true,
       content: {
-        "application/json": {
+        'application/json': {
           schema: AddSongToPlaylistRequestSchema,
         },
       },
@@ -80,51 +80,51 @@ const addSongToPlaylistRoute = createRoute({
   responses: {
     200: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: PlaylistResponseSchema,
         },
       },
-      description: "Song added to playlist successfully",
+      description: 'Song added to playlist successfully',
     },
     400: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Bad request error",
+      description: 'Bad request error',
     },
     404: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Playlist or song not found",
+      description: 'Playlist or song not found',
     },
     409: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Song already exists in playlist",
+      description: 'Song already exists in playlist',
     },
     500: {
       content: {
-        "application/json": {
+        'application/json': {
           schema: ErrorResponseSchema,
         },
       },
-      description: "Internal server error",
+      description: 'Internal server error',
     },
   },
 });
 
-playlistsIdSongsApp.openapi(addSongToPlaylistRoute, async (c) => {
+playlistsIdSongsApp.openapi(addSongToPlaylistRoute, async c => {
   logger.http(`POST /playlists/{id}/songs - Adding a song to a playlist`);
-  const { id } = c.req.valid("param");
-  const { songId } = c.req.valid("json");
+  const { id } = c.req.valid('param');
+  const { songId } = c.req.valid('json');
   const response = await addSongToPlaylist(id, songId);
   return c.json({ data: response }, 200);
 });

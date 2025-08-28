@@ -1,7 +1,8 @@
 # IngSoftware2 - TP0 Individual
 
 El repositorio debe incluir un archivo README.md (en español) con:
-+ Un apartado de pre-requisitos listando lo necesario para levantar el entorno de desarrollo, especificando los lenguajes y versiones de los manejadores de paquetes necesarios.
+
+- Un apartado de pre-requisitos listando lo necesario para levantar el entorno de desarrollo, especificando los lenguajes y versiones de los manejadores de paquetes necesarios.
 
 ## Tabla de Contenido
 
@@ -31,21 +32,24 @@ El mayor desafío fue implementar un sistema de testing robusto que cubriera tan
 - **Configuración de tests de integración** con base de datos real en Docker
 - **Aislamiento de tests** para garantizar que no interfieran entre sí
 
-Gracias a que ya trabajé con creación de endpoints y manejo de base de datos relacionales en mi proyecto de tesis y trabajos prácticos de materias como arquitectura de software, en sí la implementación de los mismos no fue un gran desafio. 
+Gracias a que ya trabajé con creación de endpoints y manejo de base de datos relacionales en mi proyecto de tesis y trabajos prácticos de materias como arquitectura de software, en sí la implementación de los mismos no fue un gran desafio.
 
 ## Pre-requisitos
 
 ### Lenguajes y Versiones
+
 - **Node.js**: v18.0.0 o superior
 - **TypeScript**: v5.3.2
 - **PostgreSQL**: v15 (via Docker)
 
 ### Manejadores de Paquetes
+
 - **npm**: v9.0.0 o superior
 - **Docker**: v20.0.0 o superior
 - **Docker Compose**: v2.0.0 o superior
 
 ### Dependencias Principales
+
 - **Hono**: v4.0.5 (Framework web)
 - **Prisma**: v6.14.0 (ORM para PostgreSQL)
 - **Vitest**: v3.2.4 (Framework de testing)
@@ -152,10 +156,10 @@ El proyecto utiliza **Prisma ORM** con **PostgreSQL** como base de datos:
 npm run db:generate
 ```
 
-
 ## Docker
 
 **Comandos**
+
 ```bash
 # Construir imagen de la aplicación
 npm run docker:build
@@ -170,6 +174,7 @@ npm run docker:logs
 ## Testing
 
 ### Framework de Testing
+
 - **Vitest**: Framework principal para tests unitarios y de integración
 - **Supertest**: Para testing de APIs HTTP
 - **Referencia**: [Vitest User Guide](https://vitest.dev/guide/)
@@ -208,6 +213,7 @@ npm run test:integration:songs
 # Ejecutar test específico
 npm run test:integration:file playlists-get-test
 ```
+
 ### Documentación Adicional
 
 Para información más detallada sobre los tests, consulta:
@@ -222,11 +228,13 @@ Para información más detallada sobre los tests, consulta:
 **Implementado**: Validación de longitud mínima (50 caracteres) y máxima (255 caracteres) para el campo `description` de las playlists.
 
 **Schema de validación**: `CreatePlaylistRequestSchema` en `schemas/playlists.ts` utiliza Zod para validar:
+
 - Mínimo: 50 caracteres
 - Máximo: 255 caracteres
 - Respuesta con código 400 si la validación falla
 
 **Tests de verificación**: Ubicados en `tests-integracion/playlists-post-test.ts`:
+
 - `"should create a playlist successfully and return 201"` - Test de descripción mínima válida (50 caracteres)
 - `"should handle maximum valid description length"` - Test de descripción máxima válida (255 caracteres)
 - `"should return 400 when the description is too short"` - Test de descripción muy corta (código 400)
@@ -238,13 +246,15 @@ Para información más detallada sobre los tests, consulta:
 **Implementado**: Sistema completo de UUID v4 para playlists con verificación de 128 bits.
 
 **Características**:
+
 - **Generación automática**: PostgreSQL genera automáticamente UUIDs v4 usando `gen_random_uuid()` en la base de datos. [Referencia](https://www.postgresql.org/docs/current/functions-uuid.html)
 - **Formato estándar**: Los UUIDs se representan como strings en formato estándar en el contrato REST
 - **Reemplazo de IDs numéricos**: Se utilizan UUIDs como identificadores en todas las operaciones
 
-**Tests de verificación**: 
+**Tests de verificación**:
+
 - Ubicados en `tests-integracion/playlists-post-test.ts`
-- Incluyen validación de formato UUID v4 
+- Incluyen validación de formato UUID v4
 - Verifican unicidad de UUIDs generados
 
 ### 3. Middleware para Manejo Centralizado de Errores ✅
@@ -252,6 +262,7 @@ Para información más detallada sobre los tests, consulta:
 **Implementado**: Sistema de manejo centralizado de errores usando Hono.
 
 **Características**:
+
 - **defaultHook**: Configurado en OpenAPIHono para manejar errores de validación automáticamente
 - **onError middleware**: Manejo centralizado de errores con formato RFC 7807
 - **Referencias utilizadas**:
@@ -261,6 +272,7 @@ Para información más detallada sobre los tests, consulta:
 ### 4. Mejoras a la Solución ✅
 
 **Mejoras implementadas**:
+
 - **Migración de MySQL a PostgreSQL**: Cambio de MySQL con queries manuales a PostgreSQL con Prisma ORM
 - **Código más mantenible**: Uso de Prisma simplifica el código y mejora la mantenibilidad
 - **Generación automática de UUIDs**: PostgreSQL genera UUIDs v4 nativamente, permitiendo implementar el desafío opcional #2
@@ -271,6 +283,7 @@ Para información más detallada sobre los tests, consulta:
 **Implementado**: Configuración completa con Docker Compose.
 
 **Características**:
+
 - **compose.yaml**: Define servicios de aplicación y base de datos
 - **Base de datos**: PostgreSQL configurado como servicio independiente
 - **Aplicación**: Contenedor de la aplicación que apunta al Dockerfile
@@ -282,6 +295,7 @@ Para información más detallada sobre los tests, consulta:
 **Implementado**: Sistema de publicación diferida donde las playlists recién creadas no son visibles hasta que se publiquen explícitamente.
 
 **Características**:
+
 - **Estado por defecto**: Las playlists se crean con `isPublished: false` y `publishedAt: null`
 - **Endpoint de publicación**: `POST /playlists/{id}/publish` (idempotente)
 - **Filtrado en listado**: `GET /playlists?published=true` (por defecto) vs `GET /playlists?published=false` (todas)
@@ -289,11 +303,13 @@ Para información más detallada sobre los tests, consulta:
 - **Integridad de datos**: Validación que `publishedAt` no puede ser null si `isPublished` es true
 
 **Endpoints implementados**:
+
 - `POST /playlists/{id}/publish` - Publica una playlist (idempotente)
 - `GET /playlists?published=true&sort=desc` - Lista solo playlists publicadas (por defecto)
 - `GET /playlists?published=false&sort=desc` - Lista todas las playlists (publicadas y no publicadas)
 
 **Parámetros de consulta para GET /playlists**:
+
 - `published`: `"true"` | `"false"` (por defecto: `"true"`)
   - `published=true`: Solo playlists publicadas
   - `published=false`: Todas las playlists (publicadas y no publicadas)
@@ -303,6 +319,7 @@ Para información más detallada sobre los tests, consulta:
   - Las playlists no publicadas siempre aparecen al final
 
 **Ejemplos de uso**:
+
 ```bash
 # Obtener solo playlists publicadas, ordenadas por fecha descendente (por defecto)
 GET /playlists
@@ -316,7 +333,6 @@ GET /playlists?published=false
 # Obtener todas las playlists, ordenadas por fecha ascendente
 GET /playlists?published=false&sort=asc
 ```
-
 
 ## Estructura del Proyecto
 
@@ -339,7 +355,7 @@ IngSoft2/
 │   └── *.ts               # Archivos de tests
 ├── tests-integracion/     # Tests de integración con BD real
 │   ├── README.md          # Documentación de tests de integración
-│   └── *.ts               # Archivos de tests 
+│   └── *.ts               # Archivos de tests
 ├── scripts/               # Scripts de utilidad
 ├── schemas/               # Esquemas de validación Zod
 ├── database/              # Scripts de inicialización de BD
@@ -351,4 +367,3 @@ IngSoft2/
 ## 📅 Fecha de Entrega
 
 **Fecha máxima de entrega**: 28-08-2025
-
