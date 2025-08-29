@@ -95,7 +95,7 @@ npm run dev:db:down
 git clone git@github.com:melijauregui/IngSoftware2.git
 cd IngSoft2
 
-# 2. Instalar dependencias
+# 2. Instalar dependencias (si no fueron ya instaladas)
 npm install
 
 # 3. Configurar variables de entorno de producción
@@ -115,6 +115,10 @@ npm run prod:down
 ### Entorno de Testing
 
 ```bash
+# Configurar variables de entorno
+cp .env.test_example .env.test
+# Editar .env con las configuraciones de test (ENVIRONMENT=test)
+
 # Levantar BD de testing
 npm run test:db:up
 

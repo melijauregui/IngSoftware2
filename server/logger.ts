@@ -1,6 +1,5 @@
 import winston, { level } from 'winston';
 import path from 'path';
-import { config } from '../config';
 
 /**
  * Winston logger configuration
@@ -81,7 +80,7 @@ const transports = [
 ];
 
 // Set log level based on environment
-const logLevel = config.ENVIRONMENT === 'production' ? 'info' : 'debug';
+const logLevel = process.env.ENVIRONMENT === 'production' ? 'info' : 'debug';
 
 // Create the logger
 const logger = winston.createLogger({
