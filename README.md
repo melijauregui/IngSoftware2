@@ -292,7 +292,7 @@ Para información más detallada sobre los tests, consulta:
 - **Base de datos**: PostgreSQL configurado como servicio independiente
 - **Aplicación**: Contenedor de la aplicación que apunta al Dockerfile
 - **Networking**: Comunicación automática entre contenedores
-- **Variables de entorno**: Configuración separada para desarrollo y testing
+- **Variables de entorno**: Configuración separada para desarrollo, testing y produccion
 
 ### 7. Publicación Diferida de Playlists ✅
 
