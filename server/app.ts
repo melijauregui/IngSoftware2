@@ -7,7 +7,7 @@ import songsIdApp from './songs-id/routes';
 import playlistsApp from './playlists/routes';
 import playlistsIdApp from './playlists-id/routes';
 import playlistsIdSongsApp from './playlists-id-songs/routes';
-import playlistsIdPublishApp from './playslists-id-publish/routes';
+import playlistsIdPublishApp from './playlists-id-publish/routes';
 import { NotFoundError } from '../schemas/error';
 import { Prisma } from './generated/prisma';
 
@@ -16,6 +16,8 @@ const app = new OpenAPIHono();
 // Mount songs routes
 app.route('/songs/:id', songsIdApp);
 app.route('/songs', songsApp);
+
+// Mount playlists routes (order matters - more specific routes first)
 app.route('/playlists/:id/publish', playlistsIdPublishApp);
 app.route('/playlists/:id/songs', playlistsIdSongsApp);
 app.route('/playlists/:id', playlistsIdApp);
