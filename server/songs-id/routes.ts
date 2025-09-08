@@ -74,14 +74,6 @@ const getSongByIdRoute = createRoute({
       },
       description: 'Song retrieved successfully',
     },
-    400: {
-      content: {
-        'application/json': {
-          schema: ErrorResponseSchema,
-        },
-      },
-      description: 'Bad request error',
-    },
     404: {
       content: {
         'application/json': {
