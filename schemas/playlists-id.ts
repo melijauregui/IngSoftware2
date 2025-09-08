@@ -6,4 +6,10 @@ export const PlaylistIdSchema = z
   })
   .strict();
 
+export const IdSchema = z
+  .object({
+    id: z.string(),
+  })
+  .strict();
+
 export type PlaylistIdSchemaType = z.infer<typeof PlaylistIdSchema>;

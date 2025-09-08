@@ -1,11 +1,15 @@
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
-import { ErrorResponseSchema } from '../../schemas/error';
+import {
+  createNotFoundError,
+  ErrorResponseSchema,
+  NotFoundError,
+} from '../../schemas/error';
 import { deletePlaylist, getPlaylistById } from './functions';
 import { Context } from 'hono';
 import { handlerError } from '../app';
 import logger from '../logger';
 import { PlaylistResponseSchema } from '../../schemas/playlists';
-import { PlaylistIdSchema } from '../../schemas/playlists-id';
+import { IdSchema, PlaylistIdSchema } from '../../schemas/playlists-id';
 
 const playlistsIdApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -55,7 +59,7 @@ const getPlaylistByIdRoute = createRoute({
   path: '/',
   request: {
     required: true,
-    params: PlaylistIdSchema,
+    params: IdSchema,
   },
   responses: {
     200: {
@@ -65,14 +69,6 @@ const getPlaylistByIdRoute = createRoute({
         },
       },
       description: 'Playlist retrieved successfully',
-    },
-    400: {
-      content: {
-        'application/json': {
-          schema: ErrorResponseSchema,
-        },
-      },
-      description: 'Bad request error',
     },
     404: {
       content: {
@@ -96,6 +92,10 @@ const getPlaylistByIdRoute = createRoute({
 playlistsIdApp.openapi(getPlaylistByIdRoute, async c => {
   logger.http(`GET /playlists/{id} - Retrieving a playlist by ID`);
   const { id } = c.req.valid('param');
+  const parse = PlaylistIdSchema.safeParse({ id });
+  if (!parse.success) {
+    throw createNotFoundError('Playlist', id, `/playlists/${id}`);
+  }
   const response = await getPlaylistById(id);
   return c.json({ data: response }, 200);
 });
@@ -122,7 +122,7 @@ const deletePlaylistByIdRoute = createRoute({
   path: '/',
   request: {
     required: true,
-    params: PlaylistIdSchema,
+    params: IdSchema,
   },
   responses: {
     204: {
@@ -150,6 +150,10 @@ const deletePlaylistByIdRoute = createRoute({
 playlistsIdApp.openapi(deletePlaylistByIdRoute, async c => {
   logger.http(`DELETE /playlists/{id} - Deleting a playlist by ID`);
   const { id } = c.req.valid('param');
+  const parse = PlaylistIdSchema.safeParse({ id });
+  if (!parse.success) {
+    throw createNotFoundError('Playlist', id, `/playlists/${id}`);
+  }
   await deletePlaylist(id);
   return new Response(null, { status: 204 });
 });

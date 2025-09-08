@@ -221,7 +221,7 @@ describe('PUT /songs/:id', () => {
       });
     });
 
-    it('should return 400 when ID is negative', async () => {
+    it('should return 404 when ID is negative', async () => {
       const updateData = {
         title: 'Updated Title',
         artist: 'Updated Artist',
@@ -235,13 +235,13 @@ describe('PUT /songs/:id', () => {
         body: JSON.stringify(updateData),
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
-        title: 'Validation Error',
-        status: 400,
-        detail: 'id: Invalid song ID, must be greater than 0',
+        title: 'Song Not Found',
+        status: 404,
+        detail: `The Song with ID -1 was not found`,
         instance: '/songs/-1',
       });
     });

@@ -4,12 +4,16 @@ import {
   SongRequestSchema,
   SongResponseSchema,
 } from '../../schemas/songs';
-import { ErrorResponseSchema } from '../../schemas/error';
+import { createNotFoundError, ErrorResponseSchema } from '../../schemas/error';
 import { deleteSongById, getSongById, updateSongById } from './functions';
 import { Context } from 'hono';
 import { handlerError } from '../app';
 import logger from '../logger';
-import { SongIdSchema, UpdateSongRequestSchema } from '../../schemas/songs-id';
+import {
+  SongIdSchema,
+  SongIdSchemaComplete,
+  UpdateSongRequestSchema,
+} from '../../schemas/songs-id';
 
 const songsIdApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -100,6 +104,10 @@ const getSongByIdRoute = createRoute({
 songsIdApp.openapi(getSongByIdRoute, async c => {
   logger.http(`GET /songs/:id - Getting song by id`);
   const { id } = c.req.valid('param');
+  const parse = SongIdSchemaComplete.safeParse({ id });
+  if (!parse.success) {
+    throw createNotFoundError('Song', id, `/songs/${id}`);
+  }
   const response = await getSongById(id, `/songs/${id}`);
   return c.json({ data: response }, 200);
 });
@@ -197,6 +205,10 @@ const putSongByIdRoute = createRoute({
 songsIdApp.openapi(putSongByIdRoute, async c => {
   logger.http(`PUT /songs/:id - Updating song by id`);
   const { id } = c.req.valid('param');
+  const parse = SongIdSchemaComplete.safeParse({ id });
+  if (!parse.success) {
+    throw createNotFoundError('Song', id, `/songs/${id}`);
+  }
   const { title, artist } = c.req.valid('json');
   const response = await updateSongById(id, title, artist);
   return c.json({ data: response }, 200);
@@ -245,6 +257,10 @@ const deleteSongByIdRoute = createRoute({
 songsIdApp.openapi(deleteSongByIdRoute, async c => {
   logger.http(`DELETE /songs/:id - Deleting song by id`);
   const { id } = c.req.valid('param');
+  const parse = SongIdSchemaComplete.safeParse({ id });
+  if (!parse.success) {
+    throw createNotFoundError('Song', id, `/songs/${id}`);
+  }
   await deleteSongById(id);
   return new Response(null, { status: 204 });
 });

@@ -9,7 +9,13 @@ import { z } from 'zod';
 //     type: integer
 export const AddSongToPlaylistRequestSchema = z
   .object({
-    songId: z.number().int().min(0),
+    songId: z.number(),
+  })
+  .strict();
+
+export const AddSongToPlaylistRequestCompleteSchema = z
+  .object({
+    songId: z.number().int().min(1),
   })
   .strict();
 

@@ -94,7 +94,7 @@ describe('POST /playlists/:id/songs', () => {
       });
     });
 
-    it('should return 400 when songId is a negative number', async () => {
+    it('should return 404 when songId is a negative number', async () => {
       const playlistId = TEST_PLAYLISTS.PLAYLIST_1.id;
       const requestBody = { songId: -5 };
 
@@ -106,18 +106,18 @@ describe('POST /playlists/:id/songs', () => {
         body: JSON.stringify(requestBody),
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
-        title: 'Validation Error',
-        status: 400,
-        detail: 'songId: Number must be greater than or equal to 0',
+        title: 'Song Not Found',
+        status: 404,
+        detail: `The Song with ID ${requestBody.songId} was not found`,
         instance: `/playlists/${playlistId}/songs`,
       });
     });
 
-    it('should return 400 when songId is a decimal number', async () => {
+    it('should return 404 when songId is a decimal number', async () => {
       const playlistId = TEST_PLAYLISTS.PLAYLIST_1.id;
       const requestBody = { songId: 5.5 };
 
@@ -129,13 +129,13 @@ describe('POST /playlists/:id/songs', () => {
         body: JSON.stringify(requestBody),
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
-        title: 'Validation Error',
-        status: 400,
-        detail: 'songId: Expected integer, received float',
+        title: 'Song Not Found',
+        status: 404,
+        detail: `The Song with ID ${requestBody.songId} was not found`,
         instance: `/playlists/${playlistId}/songs`,
       });
     });
@@ -230,8 +230,8 @@ describe('POST /playlists/:id/songs', () => {
     });
   });
 
-  describe('Case 3: Validation error - Invalid playlist ID (400)', () => {
-    it('should return 400 when playlist ID is not a valid UUID v4', async () => {
+  describe('Case 3: Validation error - Invalid playlist ID (404)', () => {
+    it('should return 404 when playlist ID is not a valid UUID v4', async () => {
       const playlistId = 'invalid';
       const requestBody = { songId: 5 };
 
@@ -243,18 +243,18 @@ describe('POST /playlists/:id/songs', () => {
         body: JSON.stringify(requestBody),
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
-        title: 'Validation Error',
-        status: 400,
-        detail: 'id: Expected valid UUID v4',
+        title: 'Playlist Not Found',
+        status: 404,
+        detail: `The Playlist with ID ${playlistId} was not found`,
         instance: `/playlists/${playlistId}/songs`,
       });
     });
 
-    it('should return 400 when playlist ID is a decimal number', async () => {
+    it('should return 404 when playlist ID is a decimal number', async () => {
       const playlistId = 1.5;
       const requestBody = { songId: 5 };
 
@@ -266,13 +266,13 @@ describe('POST /playlists/:id/songs', () => {
         body: JSON.stringify(requestBody),
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
-        title: 'Validation Error',
-        status: 400,
-        detail: 'id: Expected valid UUID v4',
+        title: 'Playlist Not Found',
+        status: 404,
+        detail: `The Playlist with ID ${playlistId} was not found`,
         instance: `/playlists/${playlistId}/songs`,
       });
     });
@@ -362,13 +362,13 @@ describe('POST /playlists/:id/songs', () => {
         body: JSON.stringify(requestBody),
       });
 
-      // Should return an error (409 Conflict or 400 Bad Request)
-      expect(response.status).toBe(409);
+      // Should return an error (400 Bad Request)
+      expect(response.status).toBe(400);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
         title: 'Duplicate Error',
-        status: 409,
+        status: 400,
         detail: `The song is already in the playlist`,
         instance: `/playlists/${playlistId}/songs`,
       });
@@ -425,12 +425,12 @@ describe('POST /playlists/:id/songs', () => {
         });
 
         // Should return an error for each duplicate
-        expect(response.status).toBe(409);
+        expect(response.status).toBe(400);
         const responseBody = await response.json();
         expect(responseBody).toEqual({
           type: 'about:blank',
           title: 'Duplicate Error',
-          status: 409,
+          status: 400,
           detail: `The song is already in the playlist`,
           instance: `/playlists/${playlistId}/songs`,
         });

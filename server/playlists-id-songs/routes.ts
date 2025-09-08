@@ -1,12 +1,15 @@
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
-import { ErrorResponseSchema } from '../../schemas/error';
+import { createNotFoundError, ErrorResponseSchema } from '../../schemas/error';
 import { addSongToPlaylist } from './functions';
 import { Context } from 'hono';
 import { handlerError } from '../app';
 import logger from '../logger';
 import { PlaylistResponseSchema } from '../../schemas/playlists';
-import { PlaylistIdSchema } from '../../schemas/playlists-id';
-import { AddSongToPlaylistRequestSchema } from '../../schemas/playlists-id-songs';
+import { IdSchema, PlaylistIdSchema } from '../../schemas/playlists-id';
+import {
+  AddSongToPlaylistRequestCompleteSchema,
+  AddSongToPlaylistRequestSchema,
+} from '../../schemas/playlists-id-songs';
 
 const playlistsIdSongsApp = new OpenAPIHono({
   defaultHook: (result, c) => {
@@ -67,7 +70,7 @@ const addSongToPlaylistRoute = createRoute({
   path: '/',
   request: {
     required: true,
-    params: PlaylistIdSchema,
+    params: IdSchema,
     body: {
       required: true,
       content: {
@@ -92,7 +95,7 @@ const addSongToPlaylistRoute = createRoute({
           schema: ErrorResponseSchema,
         },
       },
-      description: 'Bad request error',
+      description: 'Bad request error or duplicate',
     },
     404: {
       content: {
@@ -101,14 +104,6 @@ const addSongToPlaylistRoute = createRoute({
         },
       },
       description: 'Playlist or song not found',
-    },
-    409: {
-      content: {
-        'application/json': {
-          schema: ErrorResponseSchema,
-        },
-      },
-      description: 'Song already exists in playlist',
     },
     500: {
       content: {
@@ -124,7 +119,15 @@ const addSongToPlaylistRoute = createRoute({
 playlistsIdSongsApp.openapi(addSongToPlaylistRoute, async c => {
   logger.http(`POST /playlists/{id}/songs - Adding a song to a playlist`);
   const { id } = c.req.valid('param');
+  const parse = PlaylistIdSchema.safeParse({ id });
+  if (!parse.success) {
+    throw createNotFoundError('Playlist', id, `/playlists/${id}/songs`);
+  }
   const { songId } = c.req.valid('json');
+  const parse2 = AddSongToPlaylistRequestCompleteSchema.safeParse({ songId });
+  if (!parse2.success) {
+    throw createNotFoundError('Song', songId, `/playlists/${id}/songs`);
+  }
   const response = await addSongToPlaylist(id, songId);
   return c.json({ data: response }, 200);
 });

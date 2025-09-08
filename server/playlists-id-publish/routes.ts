@@ -1,10 +1,10 @@
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
-import { ErrorResponseSchema } from '../../schemas/error';
+import { createNotFoundError, ErrorResponseSchema } from '../../schemas/error';
 import { Context } from 'hono';
 import { handlerError } from '../app';
 import logger from '../logger';
 import { PlaylistResponseSchema } from '../../schemas/playlists';
-import { PlaylistIdSchema } from '../../schemas/playlists-id';
+import { IdSchema, PlaylistIdSchema } from '../../schemas/playlists-id';
 import { publishPlaylist } from './functions';
 
 const playlistsIdPublishApp = new OpenAPIHono({
@@ -54,7 +54,7 @@ const publishPlaylistRoute = createRoute({
   method: 'post',
   path: '/',
   request: {
-    params: PlaylistIdSchema,
+    params: IdSchema,
   },
   responses: {
     200: {
@@ -79,6 +79,10 @@ const publishPlaylistRoute = createRoute({
 playlistsIdPublishApp.openapi(publishPlaylistRoute, async c => {
   logger.http(`POST /playlists/:id/publish - Publishing playlist`);
   const { id } = c.req.valid('param');
+  const parse = PlaylistIdSchema.safeParse({ id });
+  if (!parse.success) {
+    throw createNotFoundError('Playlist', id, `/playlists/${id}/publish`);
+  }
   const res = await publishPlaylist(id);
   return c.json({ data: res }, 200);
 });

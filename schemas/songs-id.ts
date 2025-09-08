@@ -3,6 +3,16 @@ import { SongRequestSchema } from './songs';
 
 export const SongIdSchema = z
   .object({
+    id: z.coerce.number({
+      invalid_type_error: 'Invalid song ID, must be a number',
+    }),
+  })
+  .strict();
+
+export type SongIdSchemaType = z.infer<typeof SongIdSchema>;
+
+export const SongIdSchemaComplete = z
+  .object({
     id: z.coerce
       .number({
         invalid_type_error: 'Invalid song ID, must be a number',
@@ -15,8 +25,6 @@ export const SongIdSchema = z
       }),
   })
   .strict();
-
-export type SongIdSchemaType = z.infer<typeof SongIdSchema>;
 
 // UpdateSongRequest:
 // type: object

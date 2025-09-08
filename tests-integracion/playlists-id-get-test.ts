@@ -1,11 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 import '../config.test';
 
 import app from '../server/app';
 import {
   cleanupTestDatabase,
-  getAllTestPlaylists,
   setupCompleteTestDatabase,
   setupTestJustOnePlaylistDatabase,
   TEST_PLAYLISTS,
@@ -57,57 +56,57 @@ describe('GET /playlists/:id', () => {
       comparePlaylistsData(playlist, TEST_PLAYLISTS.PLAYLIST_1, true);
       expect(playlist.songs).toHaveLength(0);
     });
+  });
 
-    describe('Case 2: Validation error - Invalid ID (400)', () => {
-      it('should return 400 when ID is not a number', async () => {
-        const playlistId = 'abc';
-        const response = await app.request(`/playlists/${playlistId}`, {
-          method: 'GET',
-        });
-
-        expect(response.status).toBe(400);
-        const responseBody = await response.json();
-        expect(responseBody).toEqual({
-          type: 'about:blank',
-          title: 'Validation Error',
-          status: 400,
-          detail: 'id: Expected valid UUID v4',
-          instance: `/playlists/${playlistId}`,
-        });
+  describe('Case 2: Validation error - Invalid ID (404)', () => {
+    it('should return 404 when ID is not a number', async () => {
+      const playlistId = 'abc';
+      const response = await app.request(`/playlists/${playlistId}`, {
+        method: 'GET',
       });
 
-      it('should return 400 when ID is negative', async () => {
-        const playlistId = -1;
-        const response = await app.request(`/playlists/${playlistId}`, {
-          method: 'GET',
-        });
+      expect(response.status).toBe(404);
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        type: 'about:blank',
+        title: 'Playlist Not Found',
+        status: 404,
+        detail: `The Playlist with ID ${playlistId} was not found`,
+        instance: `/playlists/${playlistId}`,
+      });
+    });
 
-        expect(response.status).toBe(400);
-        const responseBody = await response.json();
-        expect(responseBody).toEqual({
-          type: 'about:blank',
-          title: 'Validation Error',
-          status: 400,
-          detail: 'id: Expected valid UUID v4',
-          instance: `/playlists/${playlistId}`,
-        });
+    it('should return 404 when ID is negative', async () => {
+      const playlistId = -1;
+      const response = await app.request(`/playlists/${playlistId}`, {
+        method: 'GET',
       });
 
-      it('should return 400 when ID is a decimal number', async () => {
-        const playlistId = 1.5;
-        const response = await app.request(`/playlists/${playlistId}`, {
-          method: 'GET',
-        });
+      expect(response.status).toBe(404);
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        type: 'about:blank',
+        title: 'Playlist Not Found',
+        status: 404,
+        detail: `The Playlist with ID ${playlistId} was not found`,
+        instance: `/playlists/${playlistId}`,
+      });
+    });
 
-        expect(response.status).toBe(400);
-        const responseBody = await response.json();
-        expect(responseBody).toEqual({
-          type: 'about:blank',
-          title: 'Validation Error',
-          status: 400,
-          detail: 'id: Expected valid UUID v4',
-          instance: `/playlists/${playlistId}`,
-        });
+    it('should return 404 when ID is a decimal number', async () => {
+      const playlistId = 1.5;
+      const response = await app.request(`/playlists/${playlistId}`, {
+        method: 'GET',
+      });
+
+      expect(response.status).toBe(404);
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        type: 'about:blank',
+        title: 'Playlist Not Found',
+        status: 404,
+        detail: `The Playlist with ID ${playlistId} was not found`,
+        instance: `/playlists/${playlistId}`,
       });
     });
   });

@@ -128,7 +128,7 @@ describe('POST /playlists/{id}/publish', () => {
       });
     });
 
-    it('should return 400 for invalid UUID format', async () => {
+    it('should return 404 for invalid UUID format', async () => {
       await setupCompleteTestDatabase();
 
       const invalidId = 'invalid-uuid';
@@ -137,14 +137,14 @@ describe('POST /playlists/{id}/publish', () => {
         method: 'POST',
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
-        title: 'Validation Error',
-        status: 400,
-        detail: 'id: Expected valid UUID v4',
-        instance: '/playlists/invalid-uuid/publish',
+        title: 'Playlist Not Found',
+        status: 404,
+        detail: `The Playlist with ID ${invalidId} was not found`,
+        instance: `/playlists/${invalidId}/publish`,
       });
     });
   });

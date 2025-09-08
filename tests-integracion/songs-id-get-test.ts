@@ -69,34 +69,34 @@ describe('GET /songs/:id', () => {
       });
     });
 
-    it('should return 400 when ID is negative', async () => {
+    it('should return 404 when ID is negative', async () => {
       const response = await app.request('/songs/-1', {
         method: 'GET',
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
-        title: 'Validation Error',
-        status: 400,
-        detail: 'id: Invalid song ID, must be greater than 0',
+        title: 'Song Not Found',
+        status: 404,
+        detail: `The Song with ID -1 was not found`,
         instance: '/songs/-1',
       });
     });
 
-    it('should return 400 when ID is a decimal number', async () => {
+    it('should return 404 when ID is a decimal number', async () => {
       const response = await app.request('/songs/1.5', {
         method: 'GET',
       });
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       const responseBody = await response.json();
       expect(responseBody).toEqual({
         type: 'about:blank',
-        title: 'Validation Error',
-        status: 400,
-        detail: 'id: Invalid song ID, must be an integer',
+        title: 'Song Not Found',
+        status: 404,
+        detail: `The Song with ID 1.5 was not found`,
         instance: '/songs/1.5',
       });
     });

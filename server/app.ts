@@ -76,7 +76,7 @@ export function handlerError(err: Error, c: Context) {
     if (err.code === 'P2002') {
       const errorResponse = handlePrismaDuplicateError(err, c.req.path);
       logger.warn(`Prisma duplicate error on ${c.req.path}: ${err.message}`);
-      return c.json(errorResponse, 409);
+      return c.json(errorResponse, 400);
     }
 
     // Handle 404 Not Found errors (foreign key constraint violation)
@@ -173,7 +173,7 @@ function handlePrismaDuplicateError(err: any, path: string) {
   return {
     type: 'about:blank',
     title: 'Duplicate Error',
-    status: 409,
+    status: 400,
     detail: `The song is already in the playlist`,
     instance: path,
   };
