@@ -1,8 +1,8 @@
-# IngSoftware2 - TP0 Individual
+# 🎵 Playlist API
 
-El repositorio debe incluir un archivo README.md (en español) con:
+API REST para gestión de playlists y canciones, construida con **Node.js**, **TypeScript**, **Hono** y **PostgreSQL** (Prisma ORM). Incluye validación de esquemas con Zod, manejo centralizado de errores (RFC 7807), publicación diferida de contenido y una suite completa de tests unitarios (mocks) e integración (base de datos real), todo dockerizado para desarrollo, testing y producción.
 
-- Un apartado de pre-requisitos listando lo necesario para levantar el entorno de desarrollo, especificando los lenguajes y versiones de los manejadores de paquetes necesarios.
+> Proyecto desarrollado para la materia Ingeniería de Software 2 (FIUBA), con foco en buenas prácticas de arquitectura, testing y calidad de código.
 
 ## Tabla de Contenido
 
